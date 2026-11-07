@@ -26,6 +26,20 @@
       "observations_added": 0,
       "changed_characters": [],
       "error": null
+    },
+    {
+      "started_at": "2026-11-07T22:58:24Z",
+      "finished_at": "2026-11-07T22:58:27Z",
+      "trigger": "push",
+      "scheduled_for_estimate": null,
+      "estimated_delay_seconds": null,
+      "run_id": "42423058896",
+      "attempt": "1",
+      "result": "success",
+      "character_count": 1,
+      "observations_added": 0,
+      "changed_characters": [],
+      "error": null
     }
   ]
 }
