@@ -1,13 +1,17 @@
 {
   "last_success": null,
   "last_error": {
-    "at": "2026-11-07T08:52:46Z",
-    "message": "HTTP 403"
+    "at": "2026-11-07T08:56:05Z",
+    "message": "HTTP 403 (edge=cloudfront, content=html)"
   },
   "errors": [
     {
       "at": "2026-11-07T08:52:46Z",
       "message": "HTTP 403"
+    },
+    {
+      "at": "2026-11-07T08:56:05Z",
+      "message": "HTTP 403 (edge=cloudfront, content=html)"
     }
   ]
 }
