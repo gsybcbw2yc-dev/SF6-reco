@@ -85,7 +85,9 @@ def parse_page(raw):
 
 def collect():
     player = os.environ.get('CFN_PLAYER_ID', '')
-    cookie = os.environ.get('BUCKLER_ID', '')
+    cookie = os.environ.get('BUCKLER_ID', '').strip().strip('"\'')
+    if cookie.lower().startswith('buckler_id='):
+        cookie = cookie.split('=', 1)[1]
     if not PROFILE.fullmatch(player) or not cookie or '\n' in cookie or ';' in cookie:
         raise ValueError('Set numeric CFN_PLAYER_ID and BUCKLER_ID in environment/secrets')
     url = f'https://www.streetfighter.com/6/buckler/profile/{player}/battlelog/rank'
