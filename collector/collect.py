@@ -8,7 +8,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -125,9 +125,13 @@ def record(items, timestamp=None):
     new = 0
     for item in items:
         previous = next((x for x in reversed(existing) if x['character'] == item['character'] and x['phase'] == item['phase']), None)
-        # A repeated value within a phase is one observation; subsequent changes retain exact poll time.
+        # Keep changes immediately and a six-hour heartbeat for unchanged values.
+        # This preserves flat periods without writing an identical snapshot every poll.
         if previous and previous['mr'] == item['mr'] and previous['lp'] == item['lp']:
-            continue
+            current_at = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
+            previous_at = datetime.fromisoformat(previous['observed_at'].replace('Z', '+00:00'))
+            if current_at - previous_at < timedelta(hours=6):
+                continue
         existing.append(dict(item, observed_at=timestamp, source='periodic_buckler_snapshot'))
         new += 1
     save('history.json', history)
