@@ -1,1 +1,13 @@
-{"last_success":null,"last_error":null,"errors":[]}
+{
+  "last_success": null,
+  "last_error": {
+    "at": "2026-11-07T08:52:46Z",
+    "message": "HTTP 403"
+  },
+  "errors": [
+    {
+      "at": "2026-11-07T08:52:46Z",
+      "message": "HTTP 403"
+    }
+  ]
+}
