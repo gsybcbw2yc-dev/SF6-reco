@@ -28,3 +28,14 @@ python -m http.server 8000 --directory web
 `http://localhost:8000/` を開きます。手動収集は環境変数 `CFN_PLAYER_ID` と `BUCKLER_ID` を設定し、`python collector/collect.py` を実行します。`.env` は Git 管理外です。`history.json` の各観測値は `observed_at` (UTC), `character`, `phase`, `mr`, `lp`, `source=periodic_buckler_snapshot` を持ちます。画面では JST 表示します。
 
 参考: https://www.streetfighter.com/6/buckler/ · https://github.com/sfstatsapp/buckler-api-docs · https://github.com/LP0101/sf6-mr-tracker · https://github.com/SRGarciaVel/sf6-session-tracker
+
+## iPad / iPhone のみで設定する場合（2026-11-07 調査）
+
+公開サイト SF6 Stats はログイン不要の HTML データを出していますが、JSON API はキーが必要で、閲覧しても保存データは更新されません。対象 ID の公開データを実際に確認できなかったため、30分ごとの一次ソース取得の代替としては採用していません。iPadOS の Safari 標準 Web Inspector は Mac 接続を要します。
+
+1. iPad の Safari で Buckler に通常ログインします。
+2. Safari 拡張で Cookie を確認するなら、開発元・権限を確認した Cookie 管理アプリを利用し、アクセス許可を `www.streetfighter.com` のみに絞ります。たとえばオープンソースの Cookie-Editor (App Store ID `6446215341`) は iPad 対応ですが、Safari 制限により HttpOnly Cookie が表示されない場合があります。表示できない場合は無理に認証情報を回避・抽出しません。
+3. `buckler_id` が表示されたときのみ**値だけ**をコピーし、Safari で `https://github.com/gsybcbw2yc-dev/SF6-reco/settings/secrets/actions` → `New repository secret` → Name `BUCKLER_ID` → Value に貼り付けて保存します。スクリーンショット、チャット、メモアプリ、共有シート、Cookie 全件エクスポートには残さないでください。コピー後は別の無害な文字列をコピーしてクリップボードを上書きします。
+4. GitHub Settings → Actions → General → Workflow permissions を Read and write permissions に、Settings → Pages → Build and deployment → Source を GitHub Actions にします。Actions → Collect SF6 ratings → Run workflow を実行します。取得に失敗したら `web/data/status.json` のエラーを確認します。
+
+Cookie が HttpOnly で表示できない場合は、対応を明示する独立ブラウザでログインして同ブラウザ内の Cookie インスペクタを使う方法もありますが、第三者アプリへログインすることになります。アプリの信頼性とプライバシーを確認できない場合は使用しないでください。
