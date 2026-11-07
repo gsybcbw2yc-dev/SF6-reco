@@ -1,6 +1,6 @@
 # SF6 Rating Archive
 
-個人用 SF6 MR・LP 観測ダッシュボード。Buckler's Boot Camp のログイン済みプロフィール画面から、取得に成功した値だけを30分間隔で保存する非公式ツールです。
+個人用 SF6 MR・LP 観測ダッシュボード。Buckler's Boot Camp のログイン済みプロフィール画面から、取得に成功した値を約30分間隔で観測する非公式ツールです。
 
 ## 検証状況と制限
 
@@ -16,7 +16,7 @@
 4. **Settings → Actions → General → Workflow permissions** を `Read and write permissions` にします。Actions の `Collect SF6 ratings` を手動実行し、`web/data/status.json` を確認します。
 5. **Settings → Pages → Build and deployment → Source** を `GitHub Actions` にし、`Publish dashboard` を実行します。
 
-GitHub の cron は遅延や停止があり、正確な30分間隔を保証しません。401/403/404/429 は再試行せず、その他の一時エラーは最大3回。失敗は `status.json` に最大20件保存します。数値の変化は即座に記録し、同値が続く場合も6時間ごとに観測点を残します。全ポーリング時刻は保存しません。
+GitHub の cron は遅延やスキップがあり、正確な30分間隔を保証しません。実行されなかった時刻は観測値として記録しません。401/403/404/429 は再試行せず、その他の一時エラーは最大3回。失敗は `status.json` に最大20件保存します。数値の変化は即座に記録し、同値が続く場合も6時間ごとに観測点を残します。成功・失敗を含む全実行の時刻、結果、キャラクター数、安全なエラー分類は `web/data/runs.json` に保存します。ワークフローが起動しなかった時刻はこのファイルにも残らず、画面では最終成功から90分超で更新遅延を表示します。
 
 ## ローカル実行
 
@@ -25,7 +25,7 @@ python -m unittest discover -s tests -v
 python -m http.server 8000 --directory web
 ```
 
-`http://localhost:8000/` を開きます。手動収集は環境変数 `CFN_PLAYER_ID` と `BUCKLER_ID` を設定し、`python collector/collect.py` を実行します。`.env` は Git 管理外です。`history.json` の各観測値は `observed_at` (UTC), `character`, `phase`, `mr`, `lp`, `source=periodic_buckler_snapshot` を持ちます。画面では JST 表示します。
+`http://localhost:8000/` を開きます。手動収集は環境変数 `CFN_PLAYER_ID` と `BUCKLER_ID` を設定し、`python collector/collect.py` を実行します。`.env` は Git 管理外です。`history.json` の各観測値は `observed_at` (UTC), `character`, `phase`, `mr`, `lp`, `delta_mr`, `delta_lp`, `observation_type`, `source` を持ちます。フェーズ変更では差分を空欄にし、旧形式の全行は推測値を作らず `legacy` として移行します。`status.json` は最新値と最終成功・最終変動・安全なフェーズ診断を保持します。画面では JST 表示します。
 
 参考: https://www.streetfighter.com/6/buckler/ · https://github.com/sfstatsapp/buckler-api-docs · https://github.com/LP0101/sf6-mr-tracker · https://github.com/SRGarciaVel/sf6-session-tracker
 
@@ -43,3 +43,9 @@ Cookie が HttpOnly で表示できない場合は、対応を明示する独立
 ## 2026-11-07 運用状況
 
 公開URL: https://gsybcbw2yc-dev.github.io/SF6-reco/ 。ページと静的データ配信は HTTP 200 を確認しました。収集・履歴保存・公開サイトへの反映を実測で確認しました。2026-11-07 18:03 JST の初回観測は AKUMA MR 1411 / LP 99763。初回認証前の403はエラー履歴に残ります。status.json の応答種別診断に Cookie 値やレスポンス本文は保存しません。GitHub の schedule は遅延・欠落し得るため、30分間隔は保証されません。
+
+## 履歴とフェーズ判定
+
+`runs.json` はワークフロー内で収集処理に到達した実行のみを蓄積します。テスト、チェックアウト、GitHub 側での起動失敗は記録できません。取得失敗でも履歴と状態をコミットするために Actions のコミット手順を `always()` で実行します。収集と公開は同じワークフローにまとめ、同時実行を直列化し、コミット前に最新 main を取り込みます。
+
+フェーズは `master_league_phase` / `phase_id` / `current_phase` / `current_phase_id` の明示的な数値が実データにある場合だけ採用します。`master_league` は階級なのでフェーズと誤認しません。候補のキー経路のみ `status.json` に記録し、レスポンス本文・Cookie・値の診断ログは保存しません。フェーズ不明時は `unknown` を維持します。

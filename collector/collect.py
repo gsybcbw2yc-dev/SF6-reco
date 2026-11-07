@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Conservative, read-only Buckler snapshot collector. No third-party dependencies."""
+"""Read-only Buckler observation collector. No third-party dependencies or raw response persistence."""
 import html
 import json
 import os
@@ -8,17 +8,22 @@ import sys
 import time
 import urllib.error
 import urllib.request
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / 'web' / 'data'
 PROFILE = re.compile(r'^\d{6,15}$')
 NEXT = re.compile(r'<script[^>]*id=["\']__NEXT_DATA__["\'][^>]*>(.*?)</script>', re.S)
+PHASE_KEYS = ('master_league_phase', 'phase_id', 'current_phase', 'current_phase_id')
 
 
 def now():
     return datetime.now(timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z')
+
+
+def instant(value):
+    return datetime.fromisoformat(value.replace('Z', '+00:00'))
 
 
 def load(name, default):
@@ -35,52 +40,90 @@ def save(name, value):
     temp.replace(DATA / name)
 
 
-def parse_page(raw):
+def rating(value):
+    if value is None or value == '' or value == -1:
+        return None
+    if isinstance(value, bool):
+        raise ValueError('Invalid rating field')
+    number = int(str(value).replace(',', ''))
+    if not 0 <= number <= 10_000_000:
+        raise ValueError('Rating outside expected range')
+    return number
+
+
+def phase_value(league, page):
+    # master_league is a rank/tier, not a phase. Accept only explicit fields.
+    for source, obj in (('league', league), ('page', page)):
+        for key in PHASE_KEYS:
+            value = obj.get(key)
+            if type(value) is int and 1 <= value <= 100:
+                return str(value), source + '.' + key
+            if isinstance(value, str) and re.fullmatch(r'\d{1,2}', value) and int(value) > 0:
+                return str(int(value)), source + '.' + key
+    return 'unknown', None
+
+
+def phase_key_paths(page):
+    """Only schema key names, never values, IDs, response bodies or arbitrary object keys."""
+    paths = set()
+    stack = [(page, 'page', 0)]
+    seen = 0
+    while stack and seen < 20_000:
+        obj, path, depth = stack.pop()
+        seen += 1
+        if depth > 7:
+            continue
+        if isinstance(obj, dict):
+            for key, value in obj.items():
+                if not re.fullmatch(r'[a-z][a-z0-9_]{0,40}', key):
+                    continue
+                next_path = path + '.' + key
+                if key in PHASE_KEYS or key in ('phase', 'season', 'season_id', 'act', 'act_id'):
+                    paths.add(next_path)
+                if isinstance(value, (dict, list)):
+                    stack.append((value, next_path, depth + 1))
+        elif isinstance(obj, list) and obj:
+            stack.append((obj[0], path + '[]', depth + 1))
+    return sorted(paths)[:30]
+
+
+def parse_page(raw, diagnostic=False):
     match = NEXT.search(raw)
     if not match:
-        raise ValueError('Buckler page data absent (login expired or page structure changed)')
+        raise ValueError('Buckler page data absent')
     page = json.loads(html.unescape(match.group(1)))['props']['pageProps']
     banner = page.get('fighter_banner_info') or {}
     if not banner:
         raise ValueError('Profile banner absent')
-    items = []
     candidates = [banner]
-    # Only take character entries with identifiable names; avoid treating aggregate metrics as characters.
+    play = page.get('play') or {}
     for key in ('character_league_info', 'character_league_infos', 'character_rank_info'):
-        values = (page.get('play') or {}).get(key) or page.get(key) or banner.get(key) or []
+        values = play.get(key) or page.get(key) or banner.get(key) or []
         candidates += list(values.values()) if isinstance(values, dict) else values if isinstance(values, list) else []
+    items = []
     for entry in candidates:
         if not isinstance(entry, dict):
             continue
         league = entry.get('favorite_character_league_info') or entry.get('league_info') or entry
         if not isinstance(league, dict):
             continue
-        char = (entry.get('favorite_character_alpha') or entry.get('favorite_character_name') or entry.get('favorite_character_tool_name') or entry.get('character_alpha') or entry.get('character_name') or entry.get('character_tool_name') or league.get('character_name'))
+        char = (entry.get('favorite_character_alpha') or entry.get('favorite_character_name') or
+                entry.get('favorite_character_tool_name') or entry.get('character_alpha') or
+                entry.get('character_name') or entry.get('character_tool_name') or league.get('character_name'))
         if isinstance(char, dict):
             char = char.get('en') or char.get('ja')
         if not isinstance(char, str) or not char.strip():
             continue
-        mr = league.get('master_rating')
-        lp = league.get('league_point', league.get('league_points'))
-        if lp is None:
-            lp = league.get('lp')
+        mr, lp = league.get('master_rating'), league.get('league_point', league.get('league_points', league.get('lp')))
         if mr is None and lp is None:
             continue
-        def number(v):
-            if v is None or v == '':
-                return None
-            if isinstance(v, bool):
-                raise ValueError('Invalid rating')
-            n = int(str(v).replace(',', ''))
-            if n == -1:
-                return None
-            if n < 0 or n > 10000000:
-                raise ValueError('Rating outside expected range')
-            return n
-        items.append({'character': char.strip(), 'mr': number(mr), 'lp': number(lp), 'phase': str(league.get('master_league_phase') or league.get('phase') or 'unknown')})
+        phase, source = phase_value(league, page)
+        items.append({'character': char.strip(), 'mr': rating(mr), 'lp': rating(lp),
+                      'phase': phase, 'phase_source': source})
     if not items:
-        raise ValueError('MR/LP fields absent; refusing to record guessed values')
-    return list({x['character']: x for x in items}.values())
+        raise ValueError('MR/LP fields absent')
+    items = list({x['character']: x for x in items}.values())
+    return (items, phase_key_paths(page)) if diagnostic else items
 
 
 def collect():
@@ -89,9 +132,11 @@ def collect():
     if cookie.lower().startswith('buckler_id='):
         cookie = cookie.split('=', 1)[1]
     if not PROFILE.fullmatch(player) or not cookie or '\n' in cookie or ';' in cookie:
-        raise ValueError('Set numeric CFN_PLAYER_ID and BUCKLER_ID in environment/secrets')
+        raise ValueError('Missing or invalid collection configuration')
     url = f'https://www.streetfighter.com/6/buckler/profile/{player}/battlelog/rank'
-    request = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (compatible; PersonalSF6Tracker/1.0)', 'Cookie': 'buckler_id=' + cookie, 'Accept-Language': 'en-US,en;q=0.8'})
+    request = urllib.request.Request(url, headers={
+        'User-Agent': 'Mozilla/5.0 (compatible; PersonalSF6Tracker/1.0)',
+        'Cookie': 'buckler_id=' + cookie, 'Accept-Language': 'en-US,en;q=0.8'})
     error = None
     for attempt in range(3):
         try:
@@ -99,16 +144,13 @@ def collect():
                 raw = response.read(3_000_001)
             if len(raw) > 3_000_000:
                 raise ValueError('Profile page exceeded size limit')
-            return parse_page(raw.decode('utf-8'))
+            return parse_page(raw.decode('utf-8'), diagnostic=True)
         except urllib.error.HTTPError as exc:
-            # Only classify response metadata; never persist headers, body, URL, or cookies.
+            # Classify metadata only; never persist headers, body or cookie.
             server = (exc.headers.get('Server') or '').lower()
             cache = (exc.headers.get('X-Cache') or '').lower()
-            content = (exc.headers.get('Content-Type') or '').lower()
             edge = 'cloudfront' if 'cloudfront' in server or 'cloudfront' in cache else 'other'
-            kind = 'html' if 'text/html' in content else 'json' if 'json' in content else 'other'
-            blocked = b'request blocked' in exc.read(4096).lower() if exc.code == 403 else False
-            error = f'HTTP {exc.code} (edge={edge}, content={kind}, request_blocked={blocked})'
+            error = f'HTTP {exc.code} ({edge})'
             if exc.code in (401, 403, 404, 429):
                 break
         except (urllib.error.URLError, TimeoutError) as exc:
@@ -118,45 +160,82 @@ def collect():
     raise RuntimeError(error or 'Fetch failed')
 
 
-def record(items, timestamp=None):
-    timestamp = timestamp or now()
-    history = load('history.json', {'schema': 1, 'observations': []})
+def migrate(history):
+    """Keep every v1 observation; do not invent phase or historical change times."""
+    if history.get('schema') == 2:
+        return history
+    for observation in history.get('observations', []):
+        observation.setdefault('phase_source', None)
+        observation.setdefault('delta_mr', None)
+        observation.setdefault('delta_lp', None)
+        observation.setdefault('observation_type', 'legacy')
+    history['schema'] = 2
+    return history
+
+
+def record(items, timestamp, history):
     existing = history['observations']
-    new = 0
+    added, changed = 0, []
     for item in items:
-        previous = next((x for x in reversed(existing) if x['character'] == item['character'] and x['phase'] == item['phase']), None)
-        # Keep changes immediately and a six-hour heartbeat for unchanged values.
-        # This preserves flat periods without writing an identical snapshot every poll.
-        if previous and previous['mr'] == item['mr'] and previous['lp'] == item['lp']:
-            current_at = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
-            previous_at = datetime.fromisoformat(previous['observed_at'].replace('Z', '+00:00'))
-            if current_at - previous_at < timedelta(hours=6):
-                continue
-        existing.append(dict(item, observed_at=timestamp, source='periodic_buckler_snapshot'))
-        new += 1
-    save('history.json', history)
-    return new
+        previous = next((x for x in reversed(existing) if x['character'] == item['character']), None)
+        same_phase = previous is not None and previous['phase'] == item['phase']
+        rating_changed = previous is not None and (previous['mr'] != item['mr'] or previous['lp'] != item['lp'])
+        if previous and not rating_changed and same_phase and instant(timestamp) - instant(previous['observed_at']) < timedelta(hours=6):
+            continue
+        row = dict(item, observed_at=timestamp, source='periodic_buckler_snapshot',
+                   delta_mr=(item['mr'] - previous['mr'] if same_phase and previous['mr'] is not None and item['mr'] is not None else None),
+                   delta_lp=(item['lp'] - previous['lp'] if same_phase and previous['lp'] is not None and item['lp'] is not None else None),
+                   observation_type='phase_start' if previous and not same_phase else 'change' if rating_changed else 'heartbeat' if previous else 'initial')
+        existing.append(row)
+        added += 1
+        if rating_changed and same_phase:
+            changed.append(item['character'])
+    return added, changed
 
 
 def main():
+    started = now()
     status = load('status.json', {'last_success': None, 'last_error': None, 'errors': []})
+    history = migrate(load('history.json', {'schema': 2, 'observations': []}))
+    runs = load('runs.json', {'schema': 1, 'events': []})
+    event = {'started_at': started, 'finished_at': None,
+             'trigger': os.environ.get('GITHUB_EVENT_NAME', 'manual'),
+             'run_id': os.environ.get('GITHUB_RUN_ID'),
+             'attempt': os.environ.get('GITHUB_RUN_ATTEMPT'),
+             'result': 'failure', 'character_count': 0, 'observations_added': 0,
+             'changed_characters': [], 'error': None}
+    status['last_attempt'] = started
     try:
-        items = collect()
-        count = record(items)
-        status['last_success'] = now()
+        items, phase_paths = collect()
+        observed = now()
+        added, changed = record(items, observed, history)
+        status['last_success'] = observed
         status['last_error'] = None
         status['latest'] = items
-        print(f'Collected {len(items)} characters, recorded {count} changed snapshots')
+        status['phase_diagnostic'] = {'candidate_paths': phase_paths,
+                                      'reason': None if all(x['phase'] != 'unknown' for x in items)
+                                      else 'No verified explicit phase value in this profile response'}
+        if changed:
+            status['last_rating_change'] = observed
+        event.update(result='success', character_count=len(items), observations_added=added,
+                     changed_characters=changed)
+        save('history.json', history)
+        print(f'Collected {len(items)} characters; {added} observations; {len(changed)} changed')
+        result = 0
     except Exception as exc:
-        # Never log credential values, URLs containing private identifiers, or response bodies.
-        message = str(exc)[:180]
+        # Error messages are generated by this module; no upstream body or secret is logged.
+        message = str(exc)[:120]
         status['last_error'] = {'at': now(), 'message': message}
         status['errors'] = (status.get('errors') or [])[-19:] + [status['last_error']]
+        event['error'] = message
         print('Collector failed: ' + message, file=sys.stderr)
-        save('status.json', status)
-        return 1
+        save('history.json', history)  # v1 migration is retained even on failure.
+        result = 1
+    event['finished_at'] = now()
+    runs['events'].append(event)
+    save('runs.json', runs)
     save('status.json', status)
-    return 0
+    return result
 
 
 if __name__ == '__main__':

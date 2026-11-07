@@ -5,26 +5,67 @@ from pathlib import Path
 from unittest.mock import patch
 from collector import collect
 
+
+def page(banner, **extra):
+    payload = {'props': {'pageProps': {'fighter_banner_info': banner, **extra}}}
+    return '<script id="__NEXT_DATA__">' + json.dumps(payload) + '</script>'
+
+
 class CollectorTests(unittest.TestCase):
-    def page(self, banner):
-        return '<script id="__NEXT_DATA__">' + json.dumps({'props': {'pageProps': {'fighter_banner_info': banner}}}) + '</script>'
-    def test_parse(self):
-        got = collect.parse_page(self.page({'favorite_character_name':'Akuma','favorite_character_league_info':{'master_rating':1514,'league_point':32000}}))
-        self.assertEqual(got[0]['mr'],1514)
-        self.assertEqual(got[0]['lp'],32000)
-    def test_all_characters_from_play(self):
-        payload={'props': {'pageProps': {'fighter_banner_info': {'favorite_character_alpha':'Gouki','favorite_character_league_info':{'master_rating':1500,'league_point':25000}},'play': {'character_league_infos':[{'character_alpha':'Ryu','league_info':{'master_rating':-1,'league_point':18000}}]}}}}
-        got=collect.parse_page('<script id="__NEXT_DATA__">'+json.dumps(payload)+'</script>')
-        self.assertEqual({x['character'] for x in got},{'Gouki','Ryu'})
-        self.assertIsNone(next(x for x in got if x['character']=='Ryu')['mr'])
-    def test_missing_fails(self):
-        with self.assertRaises(ValueError): collect.parse_page(self.page({'favorite_character_name':'Akuma'}))
-    def test_dedup_phase(self):
-        with tempfile.TemporaryDirectory() as folder, patch.object(collect,'DATA',Path(folder)):
-            item={'character':'Akuma','mr':1500,'lp':30000,'phase':'10'}
-            self.assertEqual(collect.record([item],'2026-01-01T00:00:00Z'),1)
-            self.assertEqual(collect.record([item],'2026-01-01T00:30:00Z'),0)
-            self.assertEqual(collect.record([item],'2026-01-01T06:00:00Z'),1)
-            self.assertEqual(collect.record([dict(item,phase='11')],'2026-02-01T00:00:00Z'),1)
-            self.assertEqual(len(collect.load('history.json',{})['observations']),3)
-if __name__=='__main__': unittest.main()
+    def setUp(self):
+        self.item = {'character': 'AKUMA', 'mr': 1500, 'lp': 30000, 'phase': 'unknown', 'phase_source': None}
+
+    def test_parse_character_and_phase_diagnostic(self):
+        banner = {'favorite_character_alpha': 'AKUMA', 'favorite_character_league_info': {'master_rating': 1514, 'league_point': 32000, 'master_league': 4}}
+        items, keys = collect.parse_page(page(banner), diagnostic=True)
+        self.assertEqual((items[0]['mr'], items[0]['lp'], items[0]['phase']), (1514, 32000, 'unknown'))
+        self.assertEqual(keys, [])  # master_league is a tier, never a phase.
+
+    def test_explicit_phase_and_all_characters(self):
+        banner = {'favorite_character_alpha': 'AKUMA', 'favorite_character_league_info': {'master_rating': 1500, 'league_point': 30000}}
+        items, keys = collect.parse_page(page(banner, current_phase=9, play={'character_league_infos': [
+            {'character_alpha': 'Ryu', 'league_info': {'master_rating': -1, 'league_point': 18000}}]}), diagnostic=True)
+        self.assertEqual({x['character'] for x in items}, {'AKUMA', 'Ryu'})
+        self.assertEqual({x['phase'] for x in items}, {'9'})
+        self.assertEqual(keys, ['page.current_phase'])
+        self.assertIsNone(next(x for x in items if x['character'] == 'Ryu')['mr'])
+
+    def test_missing_fields_fails_closed(self):
+        with self.assertRaises(ValueError):
+            collect.parse_page(page({'favorite_character_alpha': 'AKUMA'}))
+
+    def test_migrate_legacy_without_inventing_deltas(self):
+        legacy = {'schema': 1, 'observations': [dict(self.item, observed_at='2026-01-01T00:00:00Z')]}
+        upgraded = collect.migrate(legacy)
+        self.assertEqual(upgraded['schema'], 2)
+        self.assertEqual(upgraded['observations'][0]['observation_type'], 'legacy')
+        self.assertIsNone(upgraded['observations'][0]['delta_mr'])
+
+    def test_change_heartbeat_and_phase_reset(self):
+        history = {'schema': 2, 'observations': []}
+        self.assertEqual(collect.record([self.item], '2026-01-01T00:00:00Z', history), (1, []))
+        self.assertEqual(collect.record([self.item], '2026-01-01T00:30:00Z', history), (0, []))
+        self.assertEqual(collect.record([self.item], '2026-01-01T06:00:00Z', history), (1, []))
+        changed = dict(self.item, mr=1510)
+        self.assertEqual(collect.record([changed], '2026-01-01T06:30:00Z', history), (1, ['AKUMA']))
+        self.assertEqual(history['observations'][-1]['delta_mr'], 10)
+        reset = dict(self.item, phase='10', phase_source='page.current_phase', mr=1500)
+        self.assertEqual(collect.record([reset], '2026-02-01T00:00:00Z', history), (1, []))
+        self.assertIsNone(history['observations'][-1]['delta_mr'])
+        self.assertEqual(history['observations'][-1]['observation_type'], 'phase_start')
+
+    def test_success_and_failure_runs(self):
+        with tempfile.TemporaryDirectory() as folder, patch.object(collect, 'DATA', Path(folder)):
+            with patch.object(collect, 'collect', return_value=([self.item], [])):
+                self.assertEqual(collect.main(), 0)
+            with patch.object(collect, 'collect', side_effect=RuntimeError('HTTP 403 (cloudfront)')):
+                self.assertEqual(collect.main(), 1)
+            runs = collect.load('runs.json', {})['events']
+            self.assertEqual([x['result'] for x in runs], ['success', 'failure'])
+            self.assertEqual(runs[0]['character_count'], 1)
+            self.assertEqual(len(collect.load('history.json', {})['observations']), 1)
+            self.assertIsNotNone(collect.load('status.json', {})['last_success'])
+
+
+if __name__ == '__main__':
+    unittest.main()
