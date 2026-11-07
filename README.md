@@ -4,7 +4,7 @@
 
 ## 検証状況と制限
 
-解析、値の検証、重複排除、フェーズ別保存は単体テスト済みです。2026-11-07 現在、Buckler セッションがないため実データ取得、GitHub Actions と Pages の稼働は未検証です。デモ値は入れていません。Buckler の `__NEXT_DATA__` は公式公開 API ではなく、ログイン期限切れ、画面構造変更、サーバー側ブロックで停止する可能性があります。認証回避やアクセス制限の突破は行いません。
+解析、値の検証、重複排除、フェーズ別保存は単体テスト済みです。2026-11-07 現在、GitHub Actions と Pages は稼働確認済みですが、Buckler は GitHub-hosted runner から HTTP 403 を返し、実データ取得は未達です。Cookie の状態と実行環境の制限は未切り分けです。デモ値は入れていません。Buckler の `__NEXT_DATA__` は公式公開 API ではなく、ログイン期限切れ、画面構造変更、サーバー側ブロックで停止する可能性があります。認証回避やアクセス制限の突破は行いません。
 
 画面内に個別キャラクターが見つからなければ、お気に入りキャラクターだけ記録します。フェーズを確認できなければ `unknown` とします。試合単位、勝率、対戦回数はこの取得経路では未検証で未実装です。観測値を試合結果として扱わず、過去の欠損を補間しません。
 
@@ -39,3 +39,7 @@ python -m http.server 8000 --directory web
 4. GitHub Settings → Actions → General → Workflow permissions を Read and write permissions に、Settings → Pages → Build and deployment → Source を GitHub Actions にします。Actions → Collect SF6 ratings → Run workflow を実行します。取得に失敗したら `web/data/status.json` のエラーを確認します。
 
 Cookie が HttpOnly で表示できない場合は、対応を明示する独立ブラウザでログインして同ブラウザ内の Cookie インスペクタを使う方法もありますが、第三者アプリへログインすることになります。アプリの信頼性とプライバシーを確認できない場合は使用しないでください。
+
+## 2026-11-07 運用状況
+
+公開URL: https://gsybcbw2yc-dev.github.io/SF6-reco/ 。ページと静的データ配信は HTTP 200 を確認しました。収集ジョブは走りますが、Buckler が 403 を返すため、MR・LP の履歴は空です。status.json の応答種別診断に Cookie 値やレスポンス本文は保存しません。
