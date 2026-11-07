@@ -66,6 +66,25 @@ class CollectorTests(unittest.TestCase):
             self.assertEqual(len(collect.load('history.json', {})['observations']), 1)
             self.assertIsNotNone(collect.load('status.json', {})['last_success'])
 
+    def test_schedule_slot_is_an_estimate_and_never_invents_old_slot(self):
+        self.assertEqual(collect.planned_slot('2026-11-08T00:12:00Z', '11 * * * *'),
+                         ('2026-11-08T00:11:00Z', 60))
+        self.assertEqual(collect.planned_slot('2026-11-08T00:35:00Z', '11 * * * *'), (None, None))
+
+    def test_redundant_schedule_is_logged_without_fetch_or_overwriting_success(self):
+        with tempfile.TemporaryDirectory() as folder, patch.object(collect, 'DATA', Path(folder)):
+            collect.save('status.json', {'last_success': '2026-11-08T00:00:00Z', 'last_attempt': '2026-11-08T00:00:00Z'})
+            with patch.object(collect, 'now', return_value='2026-11-08T00:10:00Z'), \
+                    patch.dict('os.environ', {'GITHUB_EVENT_NAME': 'schedule', 'GITHUB_EVENT_SCHEDULE': '11 * * * *'}), \
+                    patch.object(collect, 'collect', side_effect=AssertionError('must not fetch')):
+                self.assertEqual(collect.main(), 0)
+            self.assertEqual(collect.load('runs.json', {})['events'][0]['result'], 'skipped_recent_success')
+            self.assertEqual(collect.load('status.json', {})['last_attempt'], '2026-11-08T00:00:00Z')
+
+    def test_error_message_cannot_echo_secret_or_response(self):
+        self.assertEqual(collect.safe_error(RuntimeError('cookie=secret')), 'Unexpected collection or parsing error (RuntimeError)')
+        self.assertEqual(collect.safe_error(RuntimeError('HTTP 403 (cloudfront)')), 'HTTP 403 (cloudfront)')
+
 
 if __name__ == '__main__':
     unittest.main()
