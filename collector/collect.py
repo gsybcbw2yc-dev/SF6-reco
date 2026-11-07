@@ -99,7 +99,13 @@ def collect():
                 raise ValueError('Profile page exceeded size limit')
             return parse_page(raw.decode('utf-8'))
         except urllib.error.HTTPError as exc:
-            error = f'HTTP {exc.code}'
+            # Only classify response metadata; never persist headers, body, URL, or cookies.
+            server = (exc.headers.get('Server') or '').lower()
+            cache = (exc.headers.get('X-Cache') or '').lower()
+            content = (exc.headers.get('Content-Type') or '').lower()
+            edge = 'cloudfront' if 'cloudfront' in server or 'cloudfront' in cache else 'other'
+            kind = 'html' if 'text/html' in content else 'json' if 'json' in content else 'other'
+            error = f'HTTP {exc.code} (edge={edge}, content={kind})'
             if exc.code in (401, 403, 404, 429):
                 break
         except (urllib.error.URLError, TimeoutError) as exc:
