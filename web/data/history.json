@@ -1,5 +1,5 @@
 {
-  "schema": 1,
+  "schema": 2,
   "observations": [
     {
       "character": "AKUMA",
@@ -7,7 +7,11 @@
       "lp": 99763,
       "phase": "unknown",
       "observed_at": "2026-11-07T09:03:42Z",
-      "source": "periodic_buckler_snapshot"
+      "source": "periodic_buckler_snapshot",
+      "phase_source": null,
+      "delta_mr": null,
+      "delta_lp": null,
+      "observation_type": "legacy"
     },
     {
       "character": "AKUMA",
@@ -15,7 +19,11 @@
       "lp": 99763,
       "phase": "unknown",
       "observed_at": "2026-11-07T22:20:48Z",
-      "source": "periodic_buckler_snapshot"
+      "source": "periodic_buckler_snapshot",
+      "phase_source": null,
+      "delta_mr": null,
+      "delta_lp": null,
+      "observation_type": "legacy"
     }
   ]
 }
