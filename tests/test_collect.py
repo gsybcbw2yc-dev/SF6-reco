@@ -65,6 +65,7 @@ class CollectorTests(unittest.TestCase):
             self.assertEqual(runs[0]['character_count'], 1)
             self.assertEqual(len(collect.load('history.json', {})['observations']), 1)
             self.assertIsNotNone(collect.load('status.json', {})['last_success'])
+            self.assertEqual(collect.load('status.json', {})['auth_health'], 'needs_review')
 
     def test_schedule_slot_is_an_estimate_and_never_invents_old_slot(self):
         self.assertEqual(collect.planned_slot('2026-11-08T00:12:00Z', '11 * * * *'),
