@@ -24,6 +24,7 @@ class CollectorTests(unittest.TestCase):
             item={'character':'Akuma','mr':1500,'lp':30000,'phase':'10'}
             self.assertEqual(collect.record([item],'2026-01-01T00:00:00Z'),1)
             self.assertEqual(collect.record([item],'2026-01-01T00:30:00Z'),0)
+            self.assertEqual(collect.record([item],'2026-01-01T06:00:00Z'),1)
             self.assertEqual(collect.record([dict(item,phase='11')],'2026-02-01T00:00:00Z'),1)
-            self.assertEqual(len(collect.load('history.json',{})['observations']),2)
+            self.assertEqual(len(collect.load('history.json',{})['observations']),3)
 if __name__=='__main__': unittest.main()
