@@ -105,7 +105,8 @@ def collect():
             content = (exc.headers.get('Content-Type') or '').lower()
             edge = 'cloudfront' if 'cloudfront' in server or 'cloudfront' in cache else 'other'
             kind = 'html' if 'text/html' in content else 'json' if 'json' in content else 'other'
-            error = f'HTTP {exc.code} (edge={edge}, content={kind})'
+            blocked = b'request blocked' in exc.read(4096).lower() if exc.code == 403 else False
+            error = f'HTTP {exc.code} (edge={edge}, content={kind}, request_blocked={blocked})'
             if exc.code in (401, 403, 404, 429):
                 break
         except (urllib.error.URLError, TimeoutError) as exc:
