@@ -1,1 +1,13 @@
-{"schema":1,"observations":[]}
+{
+  "schema": 1,
+  "observations": [
+    {
+      "character": "AKUMA",
+      "mr": 1411,
+      "lp": 99763,
+      "phase": "unknown",
+      "observed_at": "2026-11-07T09:03:42Z",
+      "source": "periodic_buckler_snapshot"
+    }
+  ]
+}
