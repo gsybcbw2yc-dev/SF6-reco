@@ -26,8 +26,11 @@ GitHub schedule が欠落する環境では、[外部スケジューラー設定
 
 ```bash
 python -m unittest discover -s tests -v
+node tests/test_dashboard.cjs
 python -m http.server 8000 --directory web
 ```
+
+画面は表示中に60秒ごとに3つの公開JSONを `cache: no-store` と時刻付きURLで再取得します。Safariから別アプリへ移動した後は、復帰時に再確認します。バックグラウンドでは定期通信せず、iPadOSの制限でタイマーが止まっても復帰イベントで追いつきます。ページ全体は再読込せず、履歴が変わったときだけMR・LPの数値とグラフを再描画します。手動の「今すぐ更新」も使えます。通信失敗時は最後に取得できた表示を保持し、画面確認エラーを表示します。デプロイ前から開き続けていた古いページには新しいJavaScriptが載っていないため、**今回の公開後に一度だけSafariでページを再読み込み**してください。
 
 `http://localhost:8000/` を開きます。手動収集は環境変数 `CFN_PLAYER_ID` と `BUCKLER_ID` を設定し、`python collector/collect.py` を実行します。`.env` は Git 管理外です。`history.json` の各観測値は `observed_at` (UTC), `character`, `phase`, `mr`, `lp`, `delta_mr`, `delta_lp`, `observation_type`, `source` を持ちます。フェーズ変更では差分を空欄にし、旧形式の全行は推測値を作らず `legacy` として移行します。`status.json` は最新値と最終成功・最終変動・安全なフェーズ診断を保持します。画面では JST 表示します。
 
