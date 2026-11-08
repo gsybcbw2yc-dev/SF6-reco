@@ -40,6 +40,8 @@ jobs:
           python-version: '3.12'
       - name: Test collection logic
         run: python -m unittest discover -s tests -v
+      - name: Test dashboard refresh
+        run: node tests/test_dashboard.cjs
       - name: Collect
         env:
           CFN_PLAYER_ID: "1866568348"
