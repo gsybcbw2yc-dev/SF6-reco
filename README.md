@@ -18,7 +18,7 @@
 
 GitHub の cron は遅延やスキップがあり、正確な30分間隔を保証しません。実行されなかった時刻は観測値として記録しません。401/403/404/429 は再試行せず、その他の一時エラーは最大3回。失敗は `status.json` に最大20件保存します。数値の変化は即座に記録し、同値が続く場合も6時間ごとに観測点を残します。成功・失敗を含む全実行の時刻、結果、キャラクター数、安全なエラー分類は `web/data/runs.json` に保存します。ワークフローが起動しなかった時刻はこのファイルにも残らず、画面では最終成功から90分超で更新遅延を表示します。
 
-現在の cron は毎時11分・41分を主枠、26分・56分を予備枠としています。前回成功から25分未満の scheduled 実行は Buckler へアクセスせず `skipped_recent_success` として記録します。予備枠が起動しても30分間隔を保証しません。`scheduled_for_estimate` は cron 式と起動時刻から求めた**推定枠**であり、GitHub が正確な予定イベント時刻を渡さないため、曖昧な遅延時は null にします。実際の開始時刻は `started_at` です。公開後には Pages 上の実行IDとリポジトリ内の最終実行IDを照合します。失敗時は Actions の publish ジョブを確認してください。
+現在の cron は毎時00分・30分の外部起動を主枠、GitHub cron の11分・41分を予備枠としています。前回成功から25分未満の scheduled または外部起動は Buckler へアクセスせず `skipped_recent_success` として記録します。予備枠が起動しても30分間隔を保証しません。`scheduled_for_estimate` は cron 式と起動時刻から求めた**推定枠**であり、GitHub が正確な予定イベント時刻を渡さないため、曖昧な遅延時は null にします。実際の開始時刻は `started_at` です。公開後には Pages 上の実行IDとリポジトリ内の最終実行IDを照合します。失敗時は Actions の publish ジョブを確認してください。
 
 GitHub schedule が欠落する環境では、[外部スケジューラー設定](docs/external-scheduler.md)の手順で cron-job.org から `workflow_dispatch` する構成に対応しています。外部の認証設定は本人が行う必要があり、設定前は未稼働です。外部起動は `runs.json` の `trigger: external_dispatch` で区別し、GitHub 側の直近成功と重なったら25分以内の取得を省きます。
 
@@ -53,3 +53,7 @@ Cookie が HttpOnly で表示できない場合は、対応を明示する独立
 `runs.json` はワークフロー内で収集処理に到達した実行のみを蓄積します。テスト、チェックアウト、GitHub 側での起動失敗は記録できません。取得失敗でも履歴と状態をコミットするために Actions のコミット手順を `always()` で実行します。収集と公開は同じワークフローにまとめ、同時実行を直列化し、コミット前に最新 main を取り込みます。
 
 フェーズは `master_league_phase` / `phase_id` / `current_phase` / `current_phase_id` の明示的な数値が実データにある場合だけ採用します。`master_league` は階級なのでフェーズと誤認しません。候補のキー経路のみ `status.json` に記録し、レスポンス本文・Cookie・値の診断ログは保存しません。フェーズ不明時は `unknown` を維持します。
+
+## 外部起動トークンの更新（期限 2026-12-08）
+
+GitHub の fine-grained token は 2026年12月8日に期限切れとなる。期限の約14日前からダッシュボードに更新案内を表示するが、**トークン自体の残存有効性を読み取る仕組みではない**。期限前に GitHub Settings → Developer settings → Personal access tokens → Fine-grained tokens で、対象を SF6-reco、権限を Actions: Read and write のみにした新トークンを作る。iPad の cron-job.org 管理画面で対象ジョブの Authorization ヘッダー値だけを差し替え、Test run 後に `external_dispatch` の Actions 実行結果を確認する。旧トークンは不要になれば GitHub で失効させる。トークンはチャット・リポジトリ・報告書に貼らない。

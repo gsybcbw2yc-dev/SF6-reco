@@ -16,7 +16,7 @@ DATA = ROOT / 'web' / 'data'
 PROFILE = re.compile(r'^\d{6,15}$')
 NEXT = re.compile(r'<script[^>]*id=["\']__NEXT_DATA__["\'][^>]*>(.*?)</script>', re.S)
 PHASE_KEYS = ('master_league_phase', 'phase_id', 'current_phase', 'current_phase_id')
-SCHEDULE_MINUTES = (11, 26, 41, 56)
+SCHEDULE_MINUTES = (11, 41)
 MIN_COLLECTION_GAP = timedelta(minutes=25)
 
 

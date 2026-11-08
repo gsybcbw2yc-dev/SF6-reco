@@ -1,11 +1,9 @@
 name: Collect SF6 ratings
 on:
   schedule:
-    # Primary slots at :11/:41, backup opportunities at :26/:56.
+    # Backup slots after external :00/:30 primary slots.
     - cron: '11 * * * *'
-    - cron: '26 * * * *'
     - cron: '41 * * * *'
-    - cron: '56 * * * *'
   workflow_dispatch:
     inputs:
       origin:

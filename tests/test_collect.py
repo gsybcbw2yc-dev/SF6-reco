@@ -4,6 +4,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 from collector import collect
+from collector import verify_pages
 
 
 def page(banner, **extra):
@@ -55,7 +56,9 @@ class CollectorTests(unittest.TestCase):
         self.assertEqual(history['observations'][-1]['observation_type'], 'phase_start')
 
     def test_success_and_failure_runs(self):
-        with tempfile.TemporaryDirectory() as folder, patch.object(collect, 'DATA', Path(folder)):
+        with tempfile.TemporaryDirectory() as folder, patch.object(collect, 'DATA', Path(folder)), \
+                patch.dict('os.environ', {'GITHUB_EVENT_NAME': 'workflow_dispatch',
+                                          'COLLECTION_ORIGIN': 'manual', 'EXTERNAL_TRIGGER_UNIX': ''}):
             with patch.object(collect, 'collect', return_value=([self.item], [])):
                 self.assertEqual(collect.main(), 0)
             with patch.object(collect, 'collect', side_effect=RuntimeError('HTTP 403 (cloudfront)')):
@@ -101,6 +104,15 @@ class CollectorTests(unittest.TestCase):
                 self.assertEqual(collect.main(), 0)
             event = collect.load('runs.json', {})['events'][0]
             self.assertEqual((event['trigger'], event['result']), ('external_dispatch', 'skipped_recent_success'))
+
+    def test_pages_check_rejects_stale_run_before_network(self):
+        with tempfile.TemporaryDirectory() as folder, \
+                patch.object(verify_pages, 'DATA', Path(folder)), \
+                patch.dict('os.environ', {'GITHUB_RUN_ID': 'new-run'}):
+            (Path(folder) / 'runs.json').write_text(json.dumps({'events': [
+                {'run_id': 'old-run', 'started_at': '2026-01-01T00:00:00Z'}]}))
+            with self.assertRaisesRegex(RuntimeError, 'did not write a run event'):
+                verify_pages.verify()
 
 
 if __name__ == '__main__':
