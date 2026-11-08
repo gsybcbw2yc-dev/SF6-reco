@@ -36,6 +36,18 @@
       "delta_mr": -22,
       "delta_lp": 120,
       "observation_type": "change"
+    },
+    {
+      "character": "AKUMA",
+      "mr": 1382,
+      "lp": 100893,
+      "phase": "unknown",
+      "phase_source": null,
+      "observed_at": "2026-11-08T03:30:36Z",
+      "source": "periodic_buckler_snapshot",
+      "delta_mr": -7,
+      "delta_lp": 1010,
+      "observation_type": "change"
     }
   ]
 }
