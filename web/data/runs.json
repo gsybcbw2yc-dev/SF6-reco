@@ -129,6 +129,23 @@
       "observations_added": 0,
       "changed_characters": [],
       "error": null
+    },
+    {
+      "started_at": "2026-11-08T03:00:42Z",
+      "finished_at": "2026-11-08T03:00:44Z",
+      "trigger": "external_dispatch",
+      "external_trigger_at": "2026-11-08T02:59:05Z",
+      "scheduled_for_estimate": null,
+      "estimated_delay_seconds": null,
+      "run_id": "42440871173",
+      "attempt": "1",
+      "result": "success",
+      "character_count": 1,
+      "observations_added": 1,
+      "changed_characters": [
+        "AKUMA"
+      ],
+      "error": null
     }
   ]
 }

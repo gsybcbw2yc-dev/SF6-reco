@@ -1,5 +1,5 @@
 {
-  "last_success": "2026-11-08T02:32:26Z",
+  "last_success": "2026-11-08T03:00:44Z",
   "last_error": null,
   "errors": [
     {
@@ -22,16 +22,17 @@
   "latest": [
     {
       "character": "AKUMA",
-      "mr": 1411,
-      "lp": 99763,
+      "mr": 1389,
+      "lp": 99883,
       "phase": "unknown",
       "phase_source": null
     }
   ],
-  "last_attempt": "2026-11-08T02:32:23Z",
+  "last_attempt": "2026-11-08T03:00:42Z",
   "phase_diagnostic": {
     "candidate_paths": [],
     "reason": "No verified explicit phase value in this profile response"
   },
-  "auth_health": "ok"
+  "auth_health": "ok",
+  "last_rating_change": "2026-11-08T03:00:44Z"
 }
