@@ -86,6 +86,22 @@ class CollectorTests(unittest.TestCase):
         self.assertEqual(collect.safe_error(RuntimeError('cookie=secret')), 'Unexpected collection or parsing error (RuntimeError)')
         self.assertEqual(collect.safe_error(RuntimeError('HTTP 403 (cloudfront)')), 'HTTP 403 (cloudfront)')
 
+    def test_external_dispatch_marker_and_overlap(self):
+        self.assertEqual(collect.external_trigger('2026-11-08T00:13:05Z', 'cron_job_org', '1794096780'),
+                         '2026-11-08T00:13:00Z')
+        self.assertIsNone(collect.external_trigger('2026-11-08T00:13:05Z', 'manual', '1794096780'))
+        self.assertIsNone(collect.external_trigger('2026-11-08T00:13:05Z', 'cron_job_org', '1794090000'))
+        with tempfile.TemporaryDirectory() as folder, patch.object(collect, 'DATA', Path(folder)):
+            collect.save('status.json', {'last_success': '2026-11-08T00:11:00Z'})
+            with patch.object(collect, 'now', return_value='2026-11-08T00:13:05Z'), \
+                    patch.dict('os.environ', {'GITHUB_EVENT_NAME': 'workflow_dispatch',
+                                              'COLLECTION_ORIGIN': 'cron_job_org',
+                                              'EXTERNAL_TRIGGER_UNIX': '1794096780'}), \
+                    patch.object(collect, 'collect', side_effect=AssertionError('must not fetch')):
+                self.assertEqual(collect.main(), 0)
+            event = collect.load('runs.json', {})['events'][0]
+            self.assertEqual((event['trigger'], event['result']), ('external_dispatch', 'skipped_recent_success'))
+
 
 if __name__ == '__main__':
     unittest.main()

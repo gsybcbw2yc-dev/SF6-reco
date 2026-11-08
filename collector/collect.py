@@ -48,6 +48,16 @@ def planned_slot(started, expression):
     return slot.isoformat(timespec='seconds').replace('+00:00', 'Z'), delay
 
 
+def external_trigger(started, origin, epoch):
+    """Only accept a fresh cron-job.org execution marker, never raw input in logs."""
+    if origin != 'cron_job_org' or not re.fullmatch(r'\d{10}', epoch or ''):
+        return None
+    trigger = datetime.fromtimestamp(int(epoch), timezone.utc)
+    if not 0 <= (instant(started) - trigger).total_seconds() <= 600:
+        return None
+    return trigger.isoformat(timespec='seconds').replace('+00:00', 'Z')
+
+
 def safe_error(exc):
     # Never persist arbitrary exception strings (URLs, request headers and secrets).
     message = str(exc)
@@ -237,14 +247,18 @@ def main():
     runs = load('runs.json', {'schema': 1, 'events': []})
     trigger = os.environ.get('GITHUB_EVENT_NAME', 'manual')
     planned, delay = planned_slot(started, os.environ.get('GITHUB_EVENT_SCHEDULE', '')) if trigger == 'schedule' else (None, None)
+    external_at = external_trigger(started, os.environ.get('COLLECTION_ORIGIN', ''),
+                                   os.environ.get('EXTERNAL_TRIGGER_UNIX', '')) if trigger == 'workflow_dispatch' else None
+    source = 'external_dispatch' if external_at else trigger
     event = {'started_at': started, 'finished_at': None,
-             'trigger': trigger, 'scheduled_for_estimate': planned, 'estimated_delay_seconds': delay,
+             'trigger': source, 'external_trigger_at': external_at,
+             'scheduled_for_estimate': planned, 'estimated_delay_seconds': delay,
              'run_id': os.environ.get('GITHUB_RUN_ID'),
              'attempt': os.environ.get('GITHUB_RUN_ATTEMPT'),
              'result': 'failure', 'character_count': 0, 'observations_added': 0,
              'changed_characters': [], 'error': None}
     last_success = status.get('last_success')
-    if trigger == 'schedule' and last_success and timedelta(0) <= instant(started) - instant(last_success) < MIN_COLLECTION_GAP:
+    if source in ('schedule', 'external_dispatch') and last_success and timedelta(0) <= instant(started) - instant(last_success) < MIN_COLLECTION_GAP:
         event.update(result='skipped_recent_success', finished_at=now())
         runs['events'].append(event)
         save('runs.json', runs)

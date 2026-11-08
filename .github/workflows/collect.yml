@@ -7,6 +7,17 @@ on:
     - cron: '41 * * * *'
     - cron: '56 * * * *'
   workflow_dispatch:
+    inputs:
+      origin:
+        description: 'manual or cron_job_org'
+        required: false
+        default: manual
+        type: choice
+        options: [manual, cron_job_org]
+      external_trigger_unix:
+        description: 'cron-job.org execution Unix timestamp (optional)'
+        required: false
+        type: string
   push:
     branches: [main]
     paths: ['collector/**', 'tests/**', '.github/workflows/collect.yml']
@@ -36,6 +47,8 @@ jobs:
           CFN_PLAYER_ID: "1866568348"
           BUCKLER_ID: ${{ secrets.BUCKLER_ID }}
           GITHUB_EVENT_SCHEDULE: ${{ github.event.schedule }}
+          COLLECTION_ORIGIN: ${{ inputs.origin }}
+          EXTERNAL_TRIGGER_UNIX: ${{ inputs.external_trigger_unix }}
         run: python collector/collect.py
       - name: Commit observations and status
         if: always()

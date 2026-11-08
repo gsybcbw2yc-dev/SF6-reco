@@ -20,6 +20,8 @@ GitHub の cron は遅延やスキップがあり、正確な30分間隔を保�
 
 現在の cron は毎時11分・41分を主枠、26分・56分を予備枠としています。前回成功から25分未満の scheduled 実行は Buckler へアクセスせず `skipped_recent_success` として記録します。予備枠が起動しても30分間隔を保証しません。`scheduled_for_estimate` は cron 式と起動時刻から求めた**推定枠**であり、GitHub が正確な予定イベント時刻を渡さないため、曖昧な遅延時は null にします。実際の開始時刻は `started_at` です。公開後には Pages 上の実行IDとリポジトリ内の最終実行IDを照合します。失敗時は Actions の publish ジョブを確認してください。
 
+GitHub schedule が欠落する環境では、[外部スケジューラー設定](docs/external-scheduler.md)の手順で cron-job.org から `workflow_dispatch` する構成に対応しています。外部の認証設定は本人が行う必要があり、設定前は未稼働です。外部起動は `runs.json` の `trigger: external_dispatch` で区別し、GitHub 側の直近成功と重なったら25分以内の取得を省きます。
+
 ## ローカル実行
 
 ```bash
