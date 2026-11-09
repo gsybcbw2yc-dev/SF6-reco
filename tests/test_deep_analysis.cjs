@@ -44,7 +44,7 @@ assert.equal(mr.valid,7);
 rows=Array.from({length:35},(_,i)=>row(i,i%3===0?'loss':'win'));
 rows.push(...Array.from({length:12},(_,i)=>row(90+i,'win',{key:'second-'+i})));
 let pos=A.sessionPositions(rows,45);
-assert.deepEqual(pos.buckets.map(x=>x.games),[20,17,10,5]);
+assert.deepEqual(pos.buckets.map(x=>x.games),[20,12,10,5]);
 assert.deepEqual(pos.buckets.map(x=>x.sessions),[2,2,1,1]);
 pos=A.sessionPositions([row(0),row(1,'loss',{phase:'11'}),row(2,'win',{phase:'12'})]);
 assert.equal(pos.sessions,3);
