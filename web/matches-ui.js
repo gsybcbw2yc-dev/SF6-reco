@@ -28,6 +28,14 @@
       $('match-prev').onclick = () => { this.page = Math.max(0,this.page-1); this.render(); };
       $('match-next').onclick = () => { this.page++; this.render(); };
       $('sessions-more').onclick = () => { this.sessionLimit += 20; this.render(); };
+      document.querySelectorAll('[data-deep-tab]').forEach(button => button.onclick = () => {
+        document.querySelectorAll('[data-deep-tab]').forEach(b => {
+          b.classList.toggle('active', b===button);
+          b.setAttribute('aria-selected', String(b===button));
+        });
+        for (const id of ['streak','rating','position','recent'])
+          $('deep-panel-'+id).hidden = id !== button.dataset.deepTab;
+      });
     }
     options() { return {days:$('match-period').value,mode:$('match-mode').value,character:$('match-character').value,ownControl:$('match-own-control').value,opponentControl:$('match-opponent-control').value}; }
     async json(url, cache='no-store') {
@@ -66,6 +74,60 @@
       } finally {
         this.busy=false;
         if(this.pending){this.pending=false;this.refresh();}
+      }
+    }
+    renderDeep(rows) {
+      const gap=Number($('session-gap').value);
+      const result=SF6DeepAnalysis.analyze(rows,gap);
+      function bars(id,items,note) {
+        const holder=$(id);holder.replaceChildren();
+        for (const s of items) {
+          const card=element('div',undefined,'deep-row'+(s.winRate===null?' empty':''));
+          const head=element('div',undefined,'deep-row-head');
+          head.append(element('span',s.label,'deep-row-label'),element('strong',percent(s.winRate),'deep-row-rate'));
+          card.append(head);
+          const track=element('div',undefined,'deep-track');
+          track.setAttribute('role','img');
+          track.setAttribute('aria-label',`${s.label}、${s.games}試合、${s.wins}勝${s.losses}敗、勝率${percent(s.winRate)}`);
+          if(s.winRate!==null){
+            const fill=element('span',undefined,'deep-fill'+(s.winRate<50?' low':''));
+            fill.style.width=`${s.winRate}%`;track.append(fill);
+          }
+          card.append(track);
+          const detail=`${s.games}試合（${s.wins}勝 ${s.losses}敗 ${s.draws}分 不明${s.unknown}）${note?s.sessions!==undefined?` ／ ${s.sessions}セッション`:'' :''} ${s.games<20?'・少数データにつき参考値':''}`;
+          card.append(element('small',detail.trim(),'deep-row-detail'));
+          holder.append(card);
+        }
+      }
+      const loss=result.loss;
+      $('deep-streak-note').textContent=`セッションを${gap}分の空白で分割し、直前までの連敗数別に「次戦の勝率」を集計。対象${loss.sessions}セッション。各セッションの最初${loss.firstMatches}試合と直前結果不明${loss.unresolved}試合は連敗数を判断せず除外。同一時刻で順序不明の${loss.ambiguousSessions}セッション（${loss.excludedAmbiguousMatches}試合）も除外。`;
+      bars('deep-streak-list',loss.buckets,false);
+      $('deep-rating-note').textContent=`相手の対戦前MR − 自分の対戦前MRで区分。対象${result.mr.valid}試合、MR欠損・0など比較不可${result.mr.excluded}試合。ランクマッチのみ。プレイヤーの実力差はMRだけでは表せません。`;
+      bars('deep-rating-list',result.mr.buckets,false);
+      const position=result.position;
+      $('deep-position-note').textContent=`記録されたセッション${position.sessions}件、分割閾値${gap}分。同一時刻で順序不明の${position.ambiguousSessions}セッション（${position.excludedAmbiguousMatches}試合）は除外。後半の集計ほど長く続いたセッションに偏り、プレイ時間による疲労の証明ではありません。`;
+      bars('deep-position-list',position.buckets,true);
+      const recent=result.recent;
+      $('deep-recent-note').textContent=`対象のランクマッチ${recent.total}試合を日時の新しい順に比較。各N試合と、その直前の別のN試合を比べます（重複なし）。同時刻で順序不明${recent.ambiguousExcluded}試合、時刻欠損${recent.undated}試合を除外。十分な試合がなければ前期間との差は計算しません。`;
+      const list=$('deep-recent-list');list.replaceChildren();
+      for(const w of recent.windows){
+        const card=element('article',undefined,'deep-recent-card');
+        card.append(element('strong',`直近${w.size}試合`));
+        card.append(element('span',percent(w.current.winRate),'deep-recent-rate'));
+        card.append(element('small',`取得 ${w.available}/${w.size}試合 · ${w.current.wins}勝 ${w.current.losses}敗 ${w.current.draws}分 不明${w.current.unknown}`));
+        if(w.comparisonsComplete&&w.previous?.winRate!==null){
+          card.append(element('small',`直前の別の${w.size}試合：${percent(w.previous.winRate)}。差 ${signed(w.current.winRate-w.previous.winRate)}ポイント`));
+          const changes=element('div',undefined,'deep-matchup-changes');
+          changes.append(element('small','相手キャラ別・前後とも3試合以上の変化（最大5件）'));
+          for(const c of w.matchupShift){
+            changes.append(element('small',`${c.opponent}：${percent(c.prior.winRate)} → ${percent(c.recent.winRate)}（${signed(c.change)}pt、前${c.prior.games}／新${c.recent.games}試合）`));
+          }
+          if(!w.matchupShift.length)changes.append(element('small','比較可能な相手キャラの試合数が不足しています。'));
+          card.append(changes);
+        } else {
+          card.append(element('small',`比較に必要な${w.size*2}試合に不足（旧期間 ${w.previousAvailable}/${w.size}試合）。差分は算定不可。`));
+        }
+        list.append(card);
       }
     }
     renderTimePerformance(rows) {
@@ -172,6 +234,7 @@
       }
       if(!matchups.length)line(matchupList,'この条件の組合せはありません。');
       this.renderTimePerformance(rows);
+      this.renderDeep(rows);
     }
   }
   window.matchDashboard=new Dashboard();
