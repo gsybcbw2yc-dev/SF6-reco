@@ -29,9 +29,16 @@
     if (segment.length) {
       const start = Math.ceil((segment[0].time - TOLERANCE + JST) / width) * width - JST;
       const end = Math.floor((segment.at(-1).time + JST) / width) * width - JST;
-      // Limit an excessively long unobserved history to practical display and computation.
-      for (let boundary = Math.max(start, end - 20000 * width); boundary + width <= end; boundary += width) {
-        const at = t => segment.find(p => p.time >= t && p.time <= t + TOLERANCE);
+      const at = t => {
+        let low = 0, high = segment.length;
+        while (low < high) {
+          const mid = (low + high) >>> 1;
+          if (segment[mid].time < t) low = mid + 1;
+          else high = mid;
+        }
+        return segment[low]?.time <= t + TOLERANCE ? segment[low] : null;
+      };
+      for (let boundary = start; boundary + width <= end; boundary += width) {
         const first = at(boundary), last = at(boundary + width);
         const valid = first && last && first.time < last.time && first.phase === last.phase;
         bars.push({ start: boundary, end: boundary + width, delta: valid ? last.mr - first.mr : null,
@@ -41,7 +48,7 @@
     }
     const validBars = bars.filter(b => b.delta !== null);
     const recent = validBars.slice(-6);
-    const peak = segment.length ? Math.max(...segment.map(p => p.mr)) : null;
+    const peak = segment.length ? segment.reduce((v, p) => Math.max(v, p.mr), -Infinity) : null;
     const current = segment.at(-1)?.mr ?? null;
     let high = -Infinity, maxDrawdown = 0;
     const highRecords = [];
@@ -50,8 +57,8 @@
       maxDrawdown = Math.max(maxDrawdown, high - p.mr);
     }
     return { bars, validBars, segment, lastPhase, selectedCount: selected.length,
-      maxRise: validBars.length ? Math.max(...validBars.map(b => b.delta)) : null,
-      maxFall: validBars.length ? Math.min(...validBars.map(b => b.delta)) : null,
+      maxRise: validBars.length ? validBars.reduce((v, b) => Math.max(v, b.delta), -Infinity) : null,
+      maxFall: validBars.length ? validBars.reduce((v, b) => Math.min(v, b.delta), Infinity) : null,
       averageRate: recent.length ? recent.reduce((n, b) => n + b.rate, 0) / recent.length : null,
       peak, current, belowPeak: peak === null ? null : peak - current,
       toNewHigh: peak === null ? null : Math.max(0, peak + 1 - current), maxDrawdown,

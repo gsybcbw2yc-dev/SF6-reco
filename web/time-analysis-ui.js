@@ -18,7 +18,8 @@ function renderTimeAnalysis(observations, range, minutes) {
   byId('rise-fall').textContent = `期間内の最大上昇 ${value(a.maxRise)} MR ／ 最大下落 ${value(a.maxFall)} MR`;
   byId('drawdown').textContent = a.current === null ? 'データ不足' :
     `期間内最高 ${value(a.peak)} MR ／ 最高値から現在 ${value(-a.belowPeak)} MR ／ 更新に必要 ${value(a.toNewHigh)} MR ／ 最大ドローダウン ${value(a.maxDrawdown)} MR ／ 最高値更新 ${a.recordCount} 回（直近 ${local(a.highRecords.at(-1).observed_at)} JST）`;
-  byId('time-summary').textContent = `対象 ${range === 'all' ? '全期間' : `過去${range}日`}・${character}・フェーズ ${String(a.lastPhase ?? '不明')}。比較可能な観測 ${a.segment.length} 件（選択内 ${a.selectedCount} 件）、有効窓 ${a.validBars.length}/${a.bars.length} 件。直近の平均は有効な最大6窓のMR/h。`;
+  const coverage = a.bars.length ? `${(100 * a.validBars.length / a.bars.length).toFixed(1)}%` : '算定不可';
+  byId('time-summary').textContent = `対象 ${range === 'all' ? '全期間' : `過去${range}日`}・${character}・フェーズ ${String(a.lastPhase ?? '不明')}。比較可能な観測 ${a.segment.length} 件（選択内 ${a.selectedCount} 件）、有効窓 ${a.validBars.length}/${a.bars.length} 件（${coverage}）。直近の平均は有効な最大6窓のMR/h。`;
   const note = a.lastPhase === 'unknown' ? 'フェーズ番号は未判定です。同じ unknown の間でも実際のフェーズ切替を検証できないため、長期比較には注意してください。' : '異なるフェーズの観測値は連結・比較しません。';
   byId('time-note').textContent = `定期観測値の差です。実プレイ時間や試合ごとの変動ではありません。各窓の開始・終了境界から5分以内の実測だけを比較し、欠測は補間しません。${note}`;
   const container = byId('time-bars');

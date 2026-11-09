@@ -26,7 +26,7 @@ function updateStatus(){
   let attempts=successful.length+failedRuns.length,successRate=attempts?Math.round(successful.length/attempts*100)+'%':'算定不可';
   $('coverage').textContent=`直近24時間：取得成功 ${successful.length} 回、失敗 ${failedRuns.length} 回、省略 ${skipped.length} 回。到達済み取得の成功率 ${successRate}（予定枠への到達率とは別）。`;
   let allSuccess=runs.filter(x=>x.result==='success'),prevSuccess=allSuccess.at(-2),lastSuccess=allSuccess.at(-1),gap=prevSuccess&&lastSuccess?Math.round((new Date(lastSuccess.started_at)-new Date(prevSuccess.started_at))/60000):null;
-  $('cadence').textContent=`外部00・30分／GitHub予備11・41分。直近の成功間隔：${gap==null?'比較不可':gap+'分'}。GitHubの予定起動は保証されません。`;
+  let recentSuccess=allSuccess.filter(x=>new Date(x.started_at).getTime()>=Date.now()-864e5),intervals=recentSuccess.slice(1).map((x,i)=>(new Date(x.started_at)-new Date(recentSuccess[i].started_at))/60000).filter(x=>x>=0),meanInterval=intervals.length?Math.round(intervals.reduce((a,b)=>a+b,0)/intervals.length):null;$('cadence').textContent=`外部00・30分／GitHub予備11・41分。直近の成功間隔：${gap==null?'比較不可':gap+'分'}。直近24時間の成功間隔平均：${meanInterval==null?'比較不可':meanInterval+'分'}（${intervals.length}区間）。GitHubの予定起動は保証されません。`;
   let gaps=allSuccess.slice(1).map((x,i)=>(new Date(x.started_at)-new Date(allSuccess[i].started_at))/60000);
   $('longest-gap').textContent=gaps.length?`記録済み成功間の最長空白：${Math.round(Math.max(...gaps))}分（runs.json導入後のみ）。`:'成功間の空白はまだ計算できません。';
   let daysLeft=Math.ceil((new Date('2026-12-08T00:00:00+09:00')-Date.now())/864e5);

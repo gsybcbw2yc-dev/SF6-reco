@@ -36,4 +36,17 @@ assert.equal(a.maxDrawdown, 40); assert.equal(a.recordCount, 1);
 assert.equal(a.highRecords.at(-1).observed_at, '2026-11-08T07:00:30Z');
 assert.equal(analyze([], opts).averageRate, null);
 assert.throws(() => analyze([], { ...opts, minutes: 1 }), RangeError);
+for (const [minutes, delta] of [[30, 5], [60, 10], [180, 30], [1440, 240]]) {
+  const first = Date.parse('2026-11-08T15:00:00Z'); // 00:00 JST
+  const observations = [
+    { character: 'AKUMA', phase: '1', mr: 1500, observed_at: new Date(first + 40_000).toISOString() },
+    { character: 'AKUMA', phase: '1', mr: 1500 + delta, observed_at: new Date(first + minutes * 60_000 + 45_000).toISOString() },
+  ];
+  const result = analyze(observations, { ...opts, minutes });
+  assert.equal(result.validBars.length, 1, `${minutes} minute window`);
+  assert.equal(result.validBars[0].delta, delta);
+  assert.equal(result.validBars[0].rate, 10);
+}
+const heartbeat = analyze([p('05:00:40', 1500), p('06:00:35', 1500)], opts);
+assert.equal(heartbeat.validBars[0].delta, 0);
 console.log('Fixed-window MR analysis passed; 14:00–15:00 JST = -55 MR');

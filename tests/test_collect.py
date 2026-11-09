@@ -1,6 +1,8 @@
 import json
 import tempfile
 import unittest
+from datetime import datetime, timedelta, timezone
+from itertools import count
 from pathlib import Path
 from unittest.mock import patch
 from collector import collect
@@ -45,7 +47,8 @@ class CollectorTests(unittest.TestCase):
     def test_change_heartbeat_and_phase_reset(self):
         history = {'schema': 2, 'observations': []}
         self.assertEqual(collect.record([self.item], '2026-01-01T00:00:00Z', history), (1, []))
-        self.assertEqual(collect.record([self.item], '2026-01-01T00:30:00Z', history), (0, []))
+        self.assertEqual(collect.record([self.item], '2026-01-01T00:30:00Z', history), (1, []))
+        self.assertEqual(history['observations'][-1]['observation_type'], 'heartbeat')
         self.assertEqual(collect.record([self.item], '2026-01-01T06:00:00Z', history), (1, []))
         changed = dict(self.item, mr=1510)
         self.assertEqual(collect.record([changed], '2026-01-01T06:30:00Z', history), (1, ['AKUMA']))
@@ -55,18 +58,38 @@ class CollectorTests(unittest.TestCase):
         self.assertIsNone(history['observations'][-1]['delta_mr'])
         self.assertEqual(history['observations'][-1]['observation_type'], 'phase_start')
 
+    def test_each_success_is_observed_but_same_attempt_is_idempotent(self):
+        history = {'schema': 2, 'observations': []}
+        t1 = '2026-11-09T06:00:40Z'
+        t2 = '2026-11-09T06:30:41Z'
+        self.assertEqual(collect.record([self.item], t1, history, '100', '1'), (1, []))
+        self.assertEqual(collect.record([self.item], t2, history, '101', '1'), (1, []))
+        self.assertEqual(collect.record([self.item], t2, history, '101', '1'), (0, []))
+        self.assertEqual(collect.record([self.item], '2026-11-09T06:30:42Z', history, '101', '1'), (0, []))
+        self.assertEqual(collect.record([self.item], t2, history, 'different', '1'), (0, []))
+        self.assertEqual(len(history['observations']), 2)
+        self.assertEqual(history['observations'][-1]['delta_mr'], 0)
+        self.assertEqual(history['observations'][-1]['delta_lp'], 0)
+
     def test_success_and_failure_runs(self):
+        ticks = count()
+        test_clock = lambda: (datetime(2026, 11, 9, tzinfo=timezone.utc) +
+                              timedelta(seconds=next(ticks))).strftime('%Y-%m-%dT%H:%M:%SZ')
         with tempfile.TemporaryDirectory() as folder, patch.object(collect, 'DATA', Path(folder)), \
+                patch.object(collect, 'now', side_effect=test_clock), \
                 patch.dict('os.environ', {'GITHUB_EVENT_NAME': 'workflow_dispatch',
                                           'COLLECTION_ORIGIN': 'manual', 'EXTERNAL_TRIGGER_UNIX': ''}):
             with patch.object(collect, 'collect', return_value=([self.item], [])):
                 self.assertEqual(collect.main(), 0)
+                self.assertEqual(collect.main(), 0)
             with patch.object(collect, 'collect', side_effect=RuntimeError('HTTP 403 (cloudfront)')):
                 self.assertEqual(collect.main(), 1)
             runs = collect.load('runs.json', {})['events']
-            self.assertEqual([x['result'] for x in runs], ['success', 'failure'])
+            self.assertEqual([x['result'] for x in runs], ['success', 'success', 'failure'])
             self.assertEqual(runs[0]['character_count'], 1)
-            self.assertEqual(len(collect.load('history.json', {})['observations']), 1)
+            self.assertEqual(len(collect.load('history.json', {})['observations']), 2)
+            self.assertEqual(runs[1]['observations_added'], 1)
+            self.assertEqual(runs[2]['observations_added'], 0)
             self.assertIsNotNone(collect.load('status.json', {})['last_success'])
             self.assertEqual(collect.load('status.json', {})['auth_health'], 'needs_review')
 
@@ -83,6 +106,7 @@ class CollectorTests(unittest.TestCase):
                     patch.object(collect, 'collect', side_effect=AssertionError('must not fetch')):
                 self.assertEqual(collect.main(), 0)
             self.assertEqual(collect.load('runs.json', {})['events'][0]['result'], 'skipped_recent_success')
+            self.assertEqual(collect.load('history.json', {'observations': []})['observations'], [])
             self.assertEqual(collect.load('status.json', {})['last_attempt'], '2026-11-08T00:00:00Z')
 
     def test_error_message_cannot_echo_secret_or_response(self):

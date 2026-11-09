@@ -57,6 +57,8 @@ async function run() {
   assert.equal(element('mr').textContent, '1,411');
   assert.match(element('last-check').textContent, /11\/8/);
   assert.match(element('last-sync').textContent, /12:00/);
+  assert.match(element('cadence').textContent, /成功間隔平均/);
+  assert.match(element('time-summary').textContent, /有効窓.*算定不可/);
 
   element('character').value = 'AKUMA';
   vm.runInContext("range='30'", context);

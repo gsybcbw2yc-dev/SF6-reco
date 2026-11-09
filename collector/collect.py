@@ -220,19 +220,28 @@ def migrate(history):
     return history
 
 
-def record(items, timestamp, history):
+def record(items, timestamp, history, run_id=None, attempt=None):
     existing = history['observations']
     added, changed = 0, []
     for item in items:
+        # A successful fetch is an observation even when MR/LP did not move.
+        # Only an identical instant or a replay of the same Actions attempt is redundant.
+        observation_id = (f'{run_id}:{attempt or "1"}:{item["character"]}'
+                          if run_id else None)
+        if any(x['character'] == item['character'] and
+               (x['observed_at'] == timestamp or
+                (observation_id and x.get('observation_id') == observation_id))
+               for x in existing):
+            continue
         previous = next((x for x in reversed(existing) if x['character'] == item['character']), None)
         same_phase = previous is not None and previous['phase'] == item['phase']
         rating_changed = previous is not None and (previous['mr'] != item['mr'] or previous['lp'] != item['lp'])
-        if previous and not rating_changed and same_phase and instant(timestamp) - instant(previous['observed_at']) < timedelta(hours=6):
-            continue
         row = dict(item, observed_at=timestamp, source='periodic_buckler_snapshot',
                    delta_mr=(item['mr'] - previous['mr'] if same_phase and previous['mr'] is not None and item['mr'] is not None else None),
                    delta_lp=(item['lp'] - previous['lp'] if same_phase and previous['lp'] is not None and item['lp'] is not None else None),
                    observation_type='phase_start' if previous and not same_phase else 'change' if rating_changed else 'heartbeat' if previous else 'initial')
+        if observation_id:
+            row['observation_id'] = observation_id
         existing.append(row)
         added += 1
         if rating_changed and same_phase:
@@ -268,7 +277,7 @@ def main():
     try:
         items, phase_paths = collect()
         observed = now()
-        added, changed = record(items, observed, history)
+        added, changed = record(items, observed, history, event['run_id'], event['attempt'])
         status['last_success'] = observed
         status['last_error'] = None
         status['auth_health'] = 'ok'
