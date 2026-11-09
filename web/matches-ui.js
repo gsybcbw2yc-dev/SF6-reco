@@ -109,8 +109,22 @@
       $('sessions-more').hidden=sessions.length<=this.sessionLimit;
       const matchups=SF6Matches.matchups(rows,$('matchup-order').value),matchupList=$('matchup-list');matchupList.replaceChildren();
       for(const m of matchups) {
-        const card=element('article',undefined,'battle-card');const heading=element('div',undefined,'battle-heading');heading.append(element('strong',`${m.character} vs ${m.opponent}`),element('b',percent(m.winRate)));card.append(heading);
+        const card=element('article',undefined,'battle-card');
+        const heading=element('div',undefined,'battle-heading');
+        heading.append(element('strong',`${m.character} vs ${m.opponent}`),element('b',percent(m.winRate)));
+        card.append(heading);
         line(card,`${m.games}試合 · ${m.wins}勝 ${m.losses}敗 ${m.draws}分 不明${m.unknown} · MR収支 ${m.mrDelta===null?'算定不可':signed(m.mrDelta)}`);
+        const bar=element('div',undefined,'matchup-bar');
+        bar.setAttribute('role','img');
+        bar.setAttribute('aria-label',`勝利 ${m.wins}試合、敗北 ${m.losses}試合、引き分け ${m.draws}試合、結果不明 ${m.unknown}試合`);
+        for(const [outcome,count] of [['win',m.wins],['loss',m.losses],['draw',m.draws],['unknown',m.unknown]]) {
+          if(!count || !m.games)continue;
+          const segment=element('span',undefined,`matchup-bar-segment ${outcome}`);
+          segment.style.width=`${count/m.games*100}%`;
+          segment.title=`${text(outcome)} ${count}試合`;
+          bar.append(segment);
+        }
+        card.append(bar);
         if(m.smallSample)line(card,'5試合未満の参考値。相性の良し悪しは判断できません。','sample-warning');
         matchupList.append(card);
       }
