@@ -190,9 +190,10 @@ def safe_error(exc):
     return 'Battle log collection failed (' + type(exc).__name__ + ')'
 
 
-def capture(raw, player, cookie, folder, fetched_at, fetcher=fetch_page, delay=time.sleep):
+def capture(raw, player, cookie, folder, fetched_at, fetcher=fetch_page, delay=time.sleep, clock=None):
     """One shared archive supplies all match, session and matchup views."""
     status = read_json(folder / 'status.json', {'last_success': None, 'events': []})
+    clock = clock or (lambda: datetime.now(timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z'))
     event = {'at': fetched_at, 'run_id': os.environ.get('GITHUB_RUN_ID'), 'result': 'failure',
              'pages': 0, 'added': 0, 'duplicates': 0, 'invalid': 0, 'error': None}
     additions = []
@@ -202,11 +203,11 @@ def capture(raw, player, cookie, folder, fetched_at, fetcher=fetch_page, delay=t
         index, by_month, known = load_archive(folder)
         previously_known = set(known)
         # First page was already fetched for MR/LP. Its normalized rows cost no request.
-        def accept(page):
+        def accept(page, page_fetched_at):
             page_keys = []
             for replay in page['replay_list']:
                 try:
-                    row = normalize(replay, player, fetched_at)
+                    row = normalize(replay, player, page_fetched_at)
                 except (ValueError, TypeError, OverflowError):
                     event['invalid'] += 1
                     continue
@@ -216,7 +217,7 @@ def capture(raw, player, cookie, folder, fetched_at, fetcher=fetch_page, delay=t
                 else:
                     known.add(row['key']); additions.append(row)
             return bool(page_keys) and all(key in previously_known for key in page_keys)
-        accept(initial)
+        accept(initial, fetched_at)
         max_pages = max(1, min(10, int(os.environ.get('MATCH_MAX_PAGES', '2'))))
         total = 1
         stop = 'page_limit'
@@ -234,7 +235,7 @@ def capture(raw, player, cookie, folder, fetched_at, fetcher=fetch_page, delay=t
             overlap = overlap or any(match_key(row.get('replay_id')) in previously_known
                                       for row in page['replay_list'] if isinstance(row.get('replay_id'), str)
                                       and re.fullmatch(r'[A-Za-z0-9_-]{4,100}', row['replay_id']))
-            old_page = accept(page)
+            old_page = accept(page, clock())
             if old_page and index.get('source_window_scanned'):
                 stop = 'known_page'; break
             if page_number >= min(total, 10):
@@ -243,19 +244,21 @@ def capture(raw, player, cookie, folder, fetched_at, fetcher=fetch_page, delay=t
         if index.get('count', 0) and stop == 'exposed_end' and not overlap:
             index['possible_gap_detected_at'] = fetched_at
         index['coverage_note'] = 'Only the exposed recent source window is available; gaps and older uncollected matches cannot be reconstructed.'
-        save_archive(folder, index, by_month, additions, fetched_at)
+        completed_at = clock()
+        save_archive(folder, index, by_month, additions, completed_at)
         event.update(result='success', added=len(additions), stop_reason=stop, source_total_pages=total)
-        status.update(last_success=fetched_at, last_error=None, route='mixed_battlelog', source_total_pages=total)
+        status.update(last_success=completed_at, last_error=None, route='mixed_battlelog', source_total_pages=total)
     except Exception as exc:
         event['error'] = safe_error(exc)
         status['last_error'] = {'at': fetched_at, 'message': event['error']}
         # Persist valid pages already obtained, even if a later page failed.
         if additions and index is not None and by_month is not None:
             try:
-                save_archive(folder, index, by_month, additions, fetched_at)
+                save_archive(folder, index, by_month, additions, clock())
                 event.update(result='partial', added=len(additions))
             except Exception:
                 event['error'] = 'Match archive write failed'
+    event['finished_at'] = clock()
     status['events'] = (status.get('events') or [])[-199:] + [event]
     status['last_attempt'] = fetched_at
     write_json(folder / 'status.json', status)

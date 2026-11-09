@@ -11,7 +11,8 @@
       (ownControl === 'all' || r.own_control === ownControl) && (opponentControl === 'all' || r.opponent_control === opponentControl));
   }
   function exactDelta(rows, key) {
-    return rows.length && rows.every(r => r.delta_basis === 'verified_post_match_rating' && Number.isFinite(r[key]))
+    return rows.length && rows[0].phase !== 'unknown' && rows.every(r => r.phase === rows[0].phase &&
+      r.character === rows[0].character && r.delta_basis === 'verified_post_match_rating' && Number.isFinite(r[key]))
       ? rows.reduce((sum, r) => sum + r[key], 0) : null;
   }
   function stats(rows) {

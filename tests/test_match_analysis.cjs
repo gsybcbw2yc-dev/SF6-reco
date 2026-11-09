@@ -18,7 +18,8 @@ assert.equal(A.filter(rows,{opponentControl:'classic',now:start+86400000}).lengt
 let m=A.matchups(rows);assert.equal(m.length,1);assert.equal(m[0].wins,3);assert.equal(m[0].losses,1);assert.equal(m[0].draws,1);assert.equal(m[0].unknown,1);assert.equal(m[0].winRate,60);
 m=A.matchups([row(0,'draw',{opponent_character:'AKUMA'})]);assert.equal(m[0].winRate,0);assert.equal(m[0].smallSample,true);
 assert.equal(A.stats([row(0,'unknown')]).winRate,null);
-assert.equal(A.stats([row(0,'win',{mr_delta:8,lp_delta:20,delta_basis:'verified_post_match_rating'})]).mrDelta,8);
+assert.equal(A.stats([row(0,'win',{phase:'1',mr_delta:8,lp_delta:20,delta_basis:'verified_post_match_rating'})]).mrDelta,8);
+assert.equal(A.stats([row(0,'win',{phase:'1',mr_delta:8,delta_basis:'verified_post_match_rating'}),row(1,'win',{phase:'2',mr_delta:5,delta_basis:'verified_post_match_rating'})]).mrDelta,null);
 assert.equal(A.compare(null,null),null);
 assert.deepEqual(A.compare({games:10,winRate:60,elapsedMinutes:30},{games:5,winRate:50,elapsedMinutes:20}),{games:5,winRate:10,elapsedMinutes:10});
 console.log('Match/session/matchup analysis scenarios passed (synthetic)');
