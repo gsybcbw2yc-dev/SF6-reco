@@ -1,5 +1,5 @@
 {
-  "last_success": "2026-11-09T15:30:46Z",
+  "last_success": "2026-11-09T16:30:44Z",
   "events": [
     {
       "at": "2026-11-09T08:08:59Z",
@@ -230,13 +230,23 @@
       "invalid": 0,
       "error": "Battle log HTTP 502",
       "finished_at": "2026-11-09T16:00:52Z"
+    },
+    {
+      "at": "2026-11-09T16:30:37Z",
+      "run_id": "42655462070",
+      "result": "success",
+      "pages": 3,
+      "added": 11,
+      "duplicates": 29,
+      "invalid": 0,
+      "error": null,
+      "stop_reason": "known_page",
+      "source_total_pages": 10,
+      "finished_at": "2026-11-09T16:30:44Z"
     }
   ],
-  "last_error": {
-    "at": "2026-11-09T16:00:45Z",
-    "message": "Battle log HTTP 502"
-  },
+  "last_error": null,
   "route": "mixed_battlelog",
   "source_total_pages": 10,
-  "last_attempt": "2026-11-09T16:00:45Z"
+  "last_attempt": "2026-11-09T16:30:37Z"
 }
