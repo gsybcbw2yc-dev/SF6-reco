@@ -1656,6 +1656,21 @@
         "AKUMA"
       ],
       "error": null
+    },
+    {
+      "started_at": "2026-11-09T18:43:12Z",
+      "finished_at": "2026-11-09T18:43:12Z",
+      "trigger": "schedule",
+      "external_trigger_at": null,
+      "scheduled_for_estimate": null,
+      "estimated_delay_seconds": null,
+      "run_id": "42676468745",
+      "attempt": "1",
+      "result": "skipped_recent_success",
+      "character_count": 0,
+      "observations_added": 0,
+      "changed_characters": [],
+      "error": null
     }
   ]
 }
