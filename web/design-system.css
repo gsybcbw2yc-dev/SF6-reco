@@ -225,3 +225,46 @@ footer{border-top:1px solid var(--app-border);color:var(--app-faint);font-size:1
   html{scroll-behavior:auto}
   .primary-nav button,.chart svg circle{transition:none}
 }
+
+/* Mobile refinement based on actual Safari screenshots (Nov 10).
+   Shorten charts without squeezing SVG axes; make supplementary copy opt-in. */
+#view-matches .battles>h2{display:none}
+#view-matches .battle-tabs{margin-top:0}
+#view-matches .battles{padding-top:19px}
+#view-matches .battle-list{gap:9px}
+#view-matches .battle-card{padding:14px 16px}
+#view-matches .battle-card p{margin-top:6px}
+#match-summary{margin:6px 0 11px;font-weight:720;font-size:clamp(14px,2vw,17px);border-bottom:0;padding:6px 0 2px}
+#match-status{margin-bottom:3px}
+.analysis-guide{margin:10px 0 15px;border:1px solid var(--app-border);border-radius:10px;background:#121824;color:var(--app-muted)}
+.analysis-guide summary{cursor:pointer;list-style:none;padding:11px 13px;color:#b8c2d5;font-size:11px;line-height:1.5;display:flex;align-items:center;gap:8px;min-height:42px}
+.analysis-guide summary:after{content:'⌄';margin-left:auto;font-size:17px;color:var(--app-faint)}
+.analysis-guide[open] summary:after{content:'⌃'}
+.analysis-guide summary::-webkit-details-marker{display:none}
+.analysis-guide p{margin:0;padding:0 13px 13px;color:var(--app-muted);font-size:11px;line-height:1.75}
+.deep-panel .deep-list,.deep-panel .deep-recent-grid{margin-top:10px}
+.deep-panel h4{margin:15px 0 10px}
+.deep-panel .analysis-guide{margin:8px 0 13px}
+#view-analysis .deep-title>p{max-width:580px}
+#view-overview .chart-grid .panel{min-width:0}
+#view-overview .chart-grid .chart{height:205px}
+#view-overview .chart-grid svg{width:100%;height:100%;display:block}
+#view-overview .chart-grid .panel .legend{font-size:10px}
+#view-overview .chart-grid .chart-foot{line-height:1.6}
+@media(max-width:700px){
+  #view-overview .chart-grid .panel{padding:16px 17px}
+  #view-overview .chart-grid .chart{height:176px;margin:12px 0 6px}
+  #view-overview .chart-grid .chart-foot{padding-top:8px;font-size:11px}
+  #view-overview .chart-grid .panel-head{align-items:baseline}
+  #view-overview .chart-grid .panel h2{font-size:16px}
+  #view-overview .chart-grid .panel .kicker{font-size:9px}
+  .section-heading{margin:23px 0 12px}
+  #view-matches .battles{padding:16px 15px}
+  #view-matches .battle-tabs{margin-bottom:12px}
+  #view-matches .battle-card{padding:13px 14px}
+  #view-analysis .deep-title h3{font-size:18px}
+  #view-analysis .deep-title p{font-size:11px}
+  #view-analysis .deep-tabs{margin-bottom:13px}
+  #view-analysis .deep-row{padding:12px}
+  #view-analysis .deep-row-detail{margin-top:5px}
+}
