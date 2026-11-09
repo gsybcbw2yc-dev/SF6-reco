@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
-class Element{constructor(){this.value='';this.textContent='';this.options=[];this.children=[];this.dataset={};this.classList={toggle(){},add(){},remove(){}};}append(...nodes){this.children.push(...nodes);}replaceChildren(...nodes){this.children=nodes;}add(o){this.options.push(o);}setAttribute(){}}
+class Element{constructor(){this.value='';this.textContent='';this.options=[];this.children=[];this.dataset={};this.style={};this.classList={toggle(){},add(){},remove(){}};}append(...nodes){this.children.push(...nodes);}replaceChildren(...nodes){this.children=nodes;}add(o){this.options.push(o);}setAttribute(){}}
 async function run(){
  const nodes=new Map(),get=id=>nodes.get(id)||(nodes.set(id,new Element()),nodes.get(id));
  for(const [id,value] of Object.entries({'match-period':'7','match-mode':'ranked','match-character':'all','match-own-control':'all','match-opponent-control':'all','session-gap':'45','matchup-order':'games'}))get(id).value=value;
@@ -15,6 +15,15 @@ async function run(){
  await app.refresh();assert.equal(calls.length,5); // unchanged monthly archive is not downloaded again
  rows.push({...first,key:'second-synthetic-hash',occurred_at:'2026-11-09T00:02:00Z',outcome:'loss'});hash='b'.repeat(64);
  await app.refresh();assert.equal(calls.length,8);assert.equal(get('match-list').children.length,2);assert.match(get('match-summary').textContent,/1勝 1敗/);
+ const matchupCards=get('matchup-list').children;
+ assert.equal(matchupCards.length,1);
+ const bar=matchupCards[0].children.find(n=>n.className==='matchup-bar');
+ assert.ok(bar,'stacked matchup bar exists');
+ assert.equal(bar.children.length,2);
+ assert.equal(bar.children[0].className,'matchup-bar-segment win');
+ assert.equal(bar.children[1].className,'matchup-bar-segment loss');
+ assert.equal(bar.children[0].style.width,'50%');
+ assert.equal(bar.children[1].style.width,'50%');
  offline=true;await app.refresh();assert.equal(get('match-list').children.length,2);assert.match(get('match-refresh').textContent,/前回の表示を保持/);
  offline=false;await app.refresh();assert.match(get('match-refresh').textContent,/最終画面確認/);
  let release;hold=new Promise(r=>release=r);const pending=app.refresh();const before=calls.length;app.refresh();assert.equal(calls.length,before);hold=null;release();await pending;await new Promise(r=>setImmediate(r));assert.equal(app.busy,false);
