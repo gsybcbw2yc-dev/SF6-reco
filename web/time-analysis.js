@@ -10,18 +10,20 @@
   function analyze(observations, { character, phase = 'all', range = '7', minutes = 60, now = Date.now() }) {
     if (!ALLOWED.includes(minutes)) throw new RangeError('Invalid fixed window');
     const cutoff = range === 'all' ? -Infinity : now - Number(range) * 86400000;
-    const selected = observations.filter(p => p.character === character && p.mr != null && Number.isFinite(Date.parse(p.observed_at)))
+    const candidates = observations.filter(p => p.character === character && p.mr != null && Number.isFinite(Date.parse(p.observed_at)))
       .map(p => ({ ...p, time: Date.parse(p.observed_at) }))
-      .filter(p => p.time >= cutoff && p.time <= now && (phase === 'all' || p.phase === phase))
+      .filter(p => p.time >= cutoff && p.time <= now)
       .sort((a, b) => a.time - b.time);
-    // For 'all', only the latest contiguous same-phase segment is comparable.
-    const lastPhase = selected.at(-1)?.phase;
-    let segment = selected;
-    if (phase === 'all' && selected.length) {
-      let i = selected.length - 1;
-      while (i > 0 && selected[i - 1].phase === lastPhase) i--;
-      segment = selected.slice(i);
+    const selected = phase === 'all' ? candidates : candidates.filter(p => p.phase === phase);
+    // Even if a phase label reappears, never connect across an intervening phase.
+    const endIndex = phase === 'all' ? candidates.length - 1 : candidates.findLastIndex(p => p.phase === phase);
+    let segment = [];
+    if (endIndex >= 0) {
+      let i = endIndex;
+      while (i > 0 && candidates[i - 1].phase === candidates[endIndex].phase) i--;
+      segment = candidates.slice(i, endIndex + 1);
     }
+    const lastPhase = segment.at(-1)?.phase;
     const width = minutes * 60000;
     const bars = [];
     if (segment.length) {

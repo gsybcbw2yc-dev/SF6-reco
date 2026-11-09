@@ -20,6 +20,8 @@ a = analyze([p('05:00:40', 100), p('06:00:35', 90, '2')], opts);
 assert.equal(a.bars.length, 0); // phase boundary removes incompatible segment
 a = analyze([p('05:00:40', 100), p('06:00:35', 90, '2')], { ...opts, phase: '1' });
 assert.equal(a.bars.length, 0);
+a = analyze([p('05:00:40', 100), p('06:00:35', 90, '2'), p('07:00:30', 80, '1')], { ...opts, phase: '1' });
+assert.equal(a.segment.length, 1); // same label after a different phase is a new segment
 a = analyze([p('05:00:40', 100), p('07:00:35', 80)], opts);
 assert.equal(a.bars[0].delta, null); // no artificial 06:00 observation
 a = analyze([p('05:10:00', 100), p('06:00:35', 90)], opts);
