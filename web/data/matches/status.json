@@ -1,5 +1,5 @@
 {
-  "last_success": "2026-11-09T19:55:38Z",
+  "last_success": "2026-11-09T20:30:37Z",
   "events": [
     {
       "at": "2026-11-09T08:08:59Z",
@@ -438,10 +438,23 @@
       "stop_reason": "known_page",
       "source_total_pages": 10,
       "finished_at": "2026-11-09T19:55:38Z"
+    },
+    {
+      "at": "2026-11-09T20:30:36Z",
+      "run_id": "42693603813",
+      "result": "success",
+      "pages": 1,
+      "added": 0,
+      "duplicates": 20,
+      "invalid": 0,
+      "error": null,
+      "stop_reason": "known_page",
+      "source_total_pages": 10,
+      "finished_at": "2026-11-09T20:30:37Z"
     }
   ],
   "last_error": null,
   "route": "mixed_battlelog",
   "source_total_pages": 10,
-  "last_attempt": "2026-11-09T19:55:37Z"
+  "last_attempt": "2026-11-09T20:30:36Z"
 }
