@@ -1,5 +1,4 @@
 """Synthetic fixtures only. No cookies or upstream response snapshots."""
-import copy
 import json
 import os
 import tempfile
@@ -90,6 +89,18 @@ class BattleLogTests(unittest.TestCase):
         with self.assertRaises(ValueError): b.decode_page('<html>Sign in</html>')
         with self.assertRaises(ValueError): b.decode_page(raw([]).replace('"replay_list": []', '"__N_REDIRECT": "auth/login"'))
         self.assertNotIn('cookie', b.safe_error(RuntimeError('cookie=secret')))
+
+    def test_valid_first_page_survives_later_access_rejection(self):
+        def fetch(build, locale, player, page, cookie):
+            if page == 2:
+                raise RuntimeError('Battle log HTTP 429')
+            return {'current_page': 1, 'total_page': 3, 'replay_list': [replay('SYNTHETIC02')]}
+        with tempfile.TemporaryDirectory() as folder, patch.dict(os.environ, {'MATCH_MAX_PAGES': '3'}):
+            event = b.capture(raw([replay()]), PLAYER, 'SYNTHETIC_NOT_A_COOKIE', Path(folder), AT, fetch, lambda _: None)
+            self.assertEqual(event['result'], 'partial')
+            self.assertEqual(event['added'], 2)
+            self.assertEqual(event['pages'], 1)
+            self.assertEqual(json.loads((Path(folder) / 'index.json').read_text())['count'], 2)
 
 
 if __name__ == '__main__':

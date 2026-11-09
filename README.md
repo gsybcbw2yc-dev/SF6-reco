@@ -65,3 +65,7 @@ Cookie が HttpOnly で表示できない場合は、対応を明示する独立
 ## 外部起動トークンの更新（期限 2026-12-08）
 
 GitHub の fine-grained token は 2026年12月8日に期限切れとなる。期限の約14日前からダッシュボードに更新案内を表示するが、**トークン自体の残存有効性を読み取る仕組みではない**。期限前に GitHub Settings → Developer settings → Personal access tokens → Fine-grained tokens で、対象を SF6-reco、権限を Actions: Read and write のみにした新トークンを作る。iPad の cron-job.org 管理画面で対象ジョブの Authorization ヘッダー値だけを差し替え、Test run 後に `external_dispatch` の Actions 実行結果を確認する。旧トークンは不要になれば GitHub で失効させる。トークンはチャット・リポジトリ・報告書に貼らない。
+
+## 試合・セッション・キャラ相性
+
+共通の月別試合アーカイブによる3画面を追加しました。取得方式・日時とMRの意味・欠測・公開範囲・停止方法は [運用説明](docs/matches.md) を参照してください。バトルログの失敗はMR/LP定期観測から分離します。

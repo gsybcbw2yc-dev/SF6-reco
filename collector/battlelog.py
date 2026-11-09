@@ -195,11 +195,12 @@ def capture(raw, player, cookie, folder, fetched_at, fetcher=fetch_page, delay=t
     status = read_json(folder / 'status.json', {'last_success': None, 'events': []})
     event = {'at': fetched_at, 'run_id': os.environ.get('GITHUB_RUN_ID'), 'result': 'failure',
              'pages': 0, 'added': 0, 'duplicates': 0, 'invalid': 0, 'error': None}
+    additions = []
+    index = by_month = None
     try:
         root, initial = decode_page(raw)
         index, by_month, known = load_archive(folder)
         previously_known = set(known)
-        additions = []
         # First page was already fetched for MR/LP. Its normalized rows cost no request.
         def accept(page):
             page_keys = []
@@ -219,6 +220,7 @@ def capture(raw, player, cookie, folder, fetched_at, fetcher=fetch_page, delay=t
         max_pages = max(1, min(10, int(os.environ.get('MATCH_MAX_PAGES', '2'))))
         total = 1
         stop = 'page_limit'
+        overlap = False
         for page_number in range(1, max_pages + 1):
             if page_number > 1:
                 delay(2)
@@ -227,12 +229,19 @@ def capture(raw, player, cookie, folder, fetched_at, fetcher=fetch_page, delay=t
             total = page.get('total_page')
             if type(total) is not int or not 1 <= total <= 100:
                 raise ValueError('Battle log schema unavailable')
+            if page.get('current_page', page_number) != page_number:
+                raise ValueError('Battle log schema unavailable')
+            overlap = overlap or any(match_key(row.get('replay_id')) in previously_known
+                                      for row in page['replay_list'] if isinstance(row.get('replay_id'), str)
+                                      and re.fullmatch(r'[A-Za-z0-9_-]{4,100}', row['replay_id']))
             old_page = accept(page)
             if old_page and index.get('source_window_scanned'):
                 stop = 'known_page'; break
             if page_number >= min(total, 10):
                 stop = 'exposed_end'; break
         index['source_window_scanned'] = bool(index.get('source_window_scanned') or stop == 'exposed_end')
+        if index.get('count', 0) and stop == 'exposed_end' and not overlap:
+            index['possible_gap_detected_at'] = fetched_at
         index['coverage_note'] = 'Only the exposed recent source window is available; gaps and older uncollected matches cannot be reconstructed.'
         save_archive(folder, index, by_month, additions, fetched_at)
         event.update(result='success', added=len(additions), stop_reason=stop, source_total_pages=total)
@@ -240,6 +249,13 @@ def capture(raw, player, cookie, folder, fetched_at, fetcher=fetch_page, delay=t
     except Exception as exc:
         event['error'] = safe_error(exc)
         status['last_error'] = {'at': fetched_at, 'message': event['error']}
+        # Persist valid pages already obtained, even if a later page failed.
+        if additions and index is not None and by_month is not None:
+            try:
+                save_archive(folder, index, by_month, additions, fetched_at)
+                event.update(result='partial', added=len(additions))
+            except Exception:
+                event['error'] = 'Match archive write failed'
     status['events'] = (status.get('events') or [])[-199:] + [event]
     status['last_attempt'] = fetched_at
     write_json(folder / 'status.json', status)

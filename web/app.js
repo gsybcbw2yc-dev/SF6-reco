@@ -59,7 +59,7 @@ async function refresh(force=false){
     $('health').textContent='画面確認エラー';document.querySelector('.dot').classList.remove('ok');
     $('freshness').textContent='最新データを確認できません。表示中のMR・LPは古い可能性があります。';
     $('error').textContent='画面のデータ再取得に失敗しました。通信が戻ると再試行します。';
-  }finally{refreshing=false;$('refresh').disabled=false}
+  }finally{refreshing=false;$('refresh').disabled=false;window.matchDashboard?.refresh()}
 }
 document.querySelectorAll('[data-window]').forEach(b=>b.onclick=()=>{timeWindow=Number(b.dataset.window);document.querySelector('.time-windows .active')?.classList.remove('active');b.classList.add('active');renderTimeAnalysis(history,range,timeWindow)});
 $('refresh').onclick=()=>refresh(true);

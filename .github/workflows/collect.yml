@@ -44,12 +44,14 @@ jobs:
         run: |
           node tests/test_dashboard.cjs
           node tests/test_time_analysis.cjs
+          node tests/test_match_analysis.cjs
+          node tests/test_matches_ui.cjs
       - name: Collect
         env:
           CFN_PLAYER_ID: "1866568348"
           BUCKLER_ID: ${{ secrets.BUCKLER_ID }}
           MATCH_LOG_MODE: ingest
-          MATCH_MAX_PAGES: '2'
+          MATCH_MAX_PAGES: '10'
           GITHUB_EVENT_SCHEDULE: ${{ github.event.schedule }}
           COLLECTION_ORIGIN: ${{ inputs.origin }}
           EXTERNAL_TRIGGER_UNIX: ${{ inputs.external_trigger_unix }}
