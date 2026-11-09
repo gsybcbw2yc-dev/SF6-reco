@@ -67,7 +67,7 @@
 .deep-fill{display:block;height:100%;background:#6ee7b7;border-radius:5px;min-width:0}
 .deep-fill.low{background:#f493a8}
 .deep-row-detail{display:block;color:#a4afc4;font-size:11px;margin-top:8px;line-height:1.5}
-.deep-row.empty{opacity:.7}
+.deep-row.deep-no-data{opacity:.7}
 .deep-recent-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .deep-recent-card{padding:16px;border:1px solid #33405b;background:#171e2f;border-radius:9px;min-width:0}
 .deep-recent-card strong{font-size:15px}
