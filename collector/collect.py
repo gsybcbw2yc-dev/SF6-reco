@@ -81,7 +81,7 @@ def load(name, default):
 
 
 def save(name, value):
-    DATA.mkdir(parents=True, exist_ok=True)
+    (DATA / name).parent.mkdir(parents=True, exist_ok=True)
     temp = DATA / (name + '.tmp')
     temp.write_text(json.dumps(value, ensure_ascii=False, indent=2) + '\n')
     temp.replace(DATA / name)
@@ -191,6 +191,19 @@ def collect():
                 raw = response.read(3_000_001)
             if len(raw) > 3_000_000:
                 raise ValueError('Profile page exceeded size limit')
+            if os.environ.get('MATCH_LOG_MODE') == 'probe':
+                try:
+                    if __package__:
+                        from . import battlelog
+                    else:
+                        import battlelog
+                    probe = battlelog.inspect_page(raw.decode('utf-8'), player)
+                    probe['checked_at'] = now()
+                    save('matches/probe.json', probe)
+                    print(f'Battle log probe: {probe["entry_count"]} entries; {probe["identified_count"]} identified')
+                except Exception:
+                    save('matches/probe.json', {'result': 'probe_failure', 'checked_at': now(),
+                                               'error': 'Battle log schema or authentication unavailable'})
             return parse_page(raw.decode('utf-8'), diagnostic=True)
         except urllib.error.HTTPError as exc:
             # Classify metadata only; never persist headers, body or cookie.

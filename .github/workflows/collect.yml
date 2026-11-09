@@ -48,6 +48,7 @@ jobs:
         env:
           CFN_PLAYER_ID: "1866568348"
           BUCKLER_ID: ${{ secrets.BUCKLER_ID }}
+          MATCH_LOG_MODE: probe
           GITHUB_EVENT_SCHEDULE: ${{ github.event.schedule }}
           COLLECTION_ORIGIN: ${{ inputs.origin }}
           EXTERNAL_TRIGGER_UNIX: ${{ inputs.external_trigger_unix }}
@@ -57,7 +58,7 @@ jobs:
         run: |
           git config user.name 'sf6-tracker-bot'
           git config user.email 'sf6-tracker-bot@users.noreply.github.com'
-          git add web/data/history.json web/data/status.json web/data/runs.json
+          git add web/data
           if ! git diff --cached --quiet; then
             git commit -m 'Record SF6 ratings observation'
             for attempt in 1 2 3; do
