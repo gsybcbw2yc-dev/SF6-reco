@@ -10,7 +10,7 @@ async function run(){
  const fetch=async url=>{calls.push(url);if(hold)await hold;if(offline)throw Error('offline');return {ok:true,json:async()=>url.includes('index.json')?{schema:1,count:rows.length,months:[{path:'2026-11.json',sha256:hash,count:rows.length,last_at:rows.at(-1).occurred_at}]}:url.includes('status.json')?{last_success:'2026-11-09T01:00:00Z',events:[{added:1,duplicates:0}]}:{schema:1,matches:structuredClone(rows)}};};
  class Clock extends Date{static now(){return Date.parse('2026-11-09T02:00:00Z');}}
  const window={},context=vm.createContext({window,document,fetch,Date:Clock,Option:class{constructor(label,value){this.value=value;}}});
- vm.runInContext(fs.readFileSync('web/match-analysis.js','utf8'),context);vm.runInContext(fs.readFileSync('web/time-performance.js','utf8'),context);vm.runInContext(fs.readFileSync('web/matches-ui.js','utf8'),context);
+ vm.runInContext(fs.readFileSync('web/match-analysis.js','utf8'),context);vm.runInContext(fs.readFileSync('web/time-performance.js','utf8'),context);vm.runInContext(fs.readFileSync('web/deep-analysis.js','utf8'),context);vm.runInContext(fs.readFileSync('web/matches-ui.js','utf8'),context);
  const app=window.matchDashboard;await app.refresh();assert.equal(calls.length,3);assert.equal(get('match-list').children.length,1);assert.equal(get('match-character').value,'AKUMA');
  await app.refresh();assert.equal(calls.length,5); // unchanged monthly archive is not downloaded again
  rows.push({...first,key:'second-synthetic-hash',occurred_at:'2026-11-09T00:02:00Z',outcome:'loss'});hash='b'.repeat(64);
@@ -26,6 +26,12 @@ async function run(){
  assert.equal(bar.children[1].style.width,'50%');
  assert.equal(get('time-performance-hours').children.length,6);
  assert.equal(get('time-performance-weekdays').children.length,7);
+ assert.equal(get('deep-streak-list').children.length,4);
+ assert.equal(get('deep-rating-list').children.length,5);
+ assert.equal(get('deep-position-list').children.length,4);
+ assert.equal(get('deep-recent-list').children.length,3);
+ assert.match(get('deep-recent-note').textContent,/ランクマッチ/);
+
  assert.match(get('time-performance-status').textContent,/2試合/);
  get('time-bucket').value='1';get('time-bucket').onchange();
  assert.equal(get('time-performance-hours').children.length,24);
