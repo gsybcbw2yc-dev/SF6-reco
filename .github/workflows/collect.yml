@@ -48,6 +48,7 @@ jobs:
           node tests/test_matches_ui.cjs
           node tests/test_time_performance.cjs
           node tests/test_deep_analysis.cjs
+          node tests/test_view_navigation.cjs
       - name: Collect
         env:
           CFN_PLAYER_ID: "1866568348"
