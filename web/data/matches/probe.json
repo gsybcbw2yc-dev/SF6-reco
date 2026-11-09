@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "result": "probe_success",
+  "build_id_present": true,
+  "locale": "en",
+  "current_page": 1,
+  "total_page": 10,
+  "entry_count": 10,
+  "identified_count": 10,
+  "replay_id_count": 10,
+  "replay_fields": [
+    "battle_version",
+    "is_registered",
+    "player1_info",
+    "player2_info",
+    "replay_battle_sub_type",
+    "replay_battle_sub_type_name",
+    "replay_battle_type",
+    "replay_battle_type_name",
+    "replay_id",
+    "uploaded_at",
+    "views"
+  ],
+  "participant_fields": [
+    "allow_cross_play",
+    "battle_input_type",
+    "battle_input_type_name",
+    "character_id",
+    "character_name",
+    "character_tool_name",
+    "home_id",
+    "league_point",
+    "league_rank",
+    "main_circle",
+    "master_league",
+    "master_rating",
+    "master_rating_ranking",
+    "player",
+    "playing_character_id",
+    "playing_character_name",
+    "playing_character_tool_name",
+    "round_results",
+    "title_data",
+    "title_plate"
+  ],
+  "round_codes": [
+    0,
+    1,
+    5,
+    6,
+    8
+  ],
+  "mode_codes": [
+    1
+  ],
+  "client_assets": [
+    "/6/buckler/_next/static/chunks/pages/profile/%5Bsid%5D/battlelog/rank-c20012a4c98cae3f.js"
+  ],
+  "checked_at": "2026-11-09T08:05:22Z"
+}
