@@ -21,6 +21,7 @@
   const analysisButtons=[...document.querySelectorAll('[data-analysis-view]')];
   function activateView(name,scroll=false){
     toggle(name,views,'[data-nav-view]','view-');
+    window.onSf6ViewChange?.(name);
     if(scroll&&typeof window.scrollTo==='function')window.scrollTo(0,0);
   }
   function activateAnalysis(name){
