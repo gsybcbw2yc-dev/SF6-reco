@@ -1,5 +1,5 @@
 {
-  "last_success": "2026-11-09T08:08:59Z",
+  "last_success": "2026-11-09T08:15:45Z",
   "events": [
     {
       "at": "2026-11-09T08:08:59Z",
@@ -12,10 +12,22 @@
       "error": null,
       "stop_reason": "page_limit",
       "source_total_pages": 10
+    },
+    {
+      "at": "2026-11-09T08:15:45Z",
+      "run_id": "42584638473",
+      "result": "success",
+      "pages": 10,
+      "added": 80,
+      "duplicates": 30,
+      "invalid": 0,
+      "error": null,
+      "stop_reason": "exposed_end",
+      "source_total_pages": 10
     }
   ],
   "last_error": null,
   "route": "mixed_battlelog",
   "source_total_pages": 10,
-  "last_attempt": "2026-11-09T08:08:59Z"
+  "last_attempt": "2026-11-09T08:15:45Z"
 }
