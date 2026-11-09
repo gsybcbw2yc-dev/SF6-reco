@@ -1,0 +1,21 @@
+{
+  "last_success": "2026-11-09T08:08:59Z",
+  "events": [
+    {
+      "at": "2026-11-09T08:08:59Z",
+      "run_id": "42583845348",
+      "result": "success",
+      "pages": 2,
+      "added": 20,
+      "duplicates": 10,
+      "invalid": 0,
+      "error": null,
+      "stop_reason": "page_limit",
+      "source_total_pages": 10
+    }
+  ],
+  "last_error": null,
+  "route": "mixed_battlelog",
+  "source_total_pages": 10,
+  "last_attempt": "2026-11-09T08:08:59Z"
+}
