@@ -191,7 +191,7 @@ def collect():
                 raw = response.read(3_000_001)
             if len(raw) > 3_000_000:
                 raise ValueError('Profile page exceeded size limit')
-            if os.environ.get('MATCH_LOG_MODE') == 'probe':
+            if os.environ.get('MATCH_LOG_MODE') in ('probe', 'ingest'):
                 try:
                     if __package__:
                         from . import battlelog
@@ -201,6 +201,8 @@ def collect():
                     probe['checked_at'] = now()
                     save('matches/probe.json', probe)
                     print(f'Battle log probe: {probe["entry_count"]} entries; {probe["identified_count"]} identified')
+                    if os.environ.get('MATCH_LOG_MODE') == 'ingest':
+                        battlelog.capture(raw.decode('utf-8'), player, cookie, DATA / 'matches', now())
                 except Exception:
                     save('matches/probe.json', {'result': 'probe_failure', 'checked_at': now(),
                                                'error': 'Battle log schema or authentication unavailable'})
