@@ -18,7 +18,7 @@
     constructor() {
       this.cache = new Map(); this.rows = []; this.index = null; this.status = null;
       this.busy = false; this.pending = false; this.page = 0; this.sessionLimit = 20; this.initial = true;
-      for (const id of ['match-period','match-mode','match-character','match-own-control','match-opponent-control','session-gap','matchup-order']) {
+      for (const id of ['match-period','match-mode','match-character','match-own-control','match-opponent-control','session-gap','matchup-order','time-bucket']) {
         $(id).onchange = () => { this.page = 0; this.sessionLimit = 20; id === 'match-period' ? this.refresh() : this.render(); };
       }
       document.querySelectorAll('[data-match-tab]').forEach(button => button.onclick = () => {
@@ -42,7 +42,7 @@
         const version=Date.now();
         const [index,status] = await Promise.all([this.json(`data/matches/index.json?v=${version}`),this.json(`data/matches/status.json?v=${version}`)]);
         if (index.schema!==1 || !Array.isArray(index.months)) throw Error('Match index unavailable');
-        const cutoff=this.options().days==='all'?-Infinity:Date.now()-Number(this.options().days)*86400000;
+        const cutoff=this.options().days==='all'?-Infinity:Date.now()-Number(this.options().days)*2*86400000; // include preceding comparison window
         const months=index.months.filter(m=>!m.last_at||Date.parse(m.last_at)>=cutoff);
         const loaded = await Promise.all(months.map(async m=>{
           if (!/^(\d{4}-\d{2}|undated)\.json$/.test(m.path)||! /^[0-9a-f]{64}$/.test(m.sha256)) throw Error('Invalid archive path');
@@ -67,6 +67,48 @@
         this.busy=false;
         if(this.pending){this.pending=false;this.refresh();}
       }
+    }
+    renderTimePerformance(rows) {
+      const bucket=[1,2,4].includes(Number($('time-bucket').value))?Number($('time-bucket').value):4;
+      const data=SF6TimePerformance.analyze(rows,bucket);
+      const comparison=SF6TimePerformance.previousPeriod(this.rows,this.options(),bucket);
+      const total=data.total;
+      $('time-performance-status').textContent=`この条件で ${total.games}試合（勝利${total.wins}・敗北${total.losses}・引き分け${total.draws}・不明${total.unknown}）、プレイ記録${total.playDays}日、時刻欠損${data.undated}件。すべて日本時間で集計。`;
+      $('time-performance-compare').textContent=!comparison?'全期間表示では直前期間との比較を行いません。'
+        :!comparison.prior.total.games?'直前の同じ長さの期間には試合記録がないため、比較できません。'
+        :comparison.recent.total.winRate===null||comparison.prior.total.winRate===null?'比較できる勝敗結果が不足しています。'
+        :`直近${comparison.days}日 ${percent(comparison.recent.total.winRate)}（${comparison.recent.total.games}試合）／その前の${comparison.days}日 ${percent(comparison.prior.total.winRate)}（${comparison.prior.total.games}試合）。勝率差 ${signed(comparison.recent.total.winRate-comparison.prior.total.winRate)}ポイント。試合数とプレイ日数が異なる場合の単純比較には注意。`;
+      const hourly=$('time-performance-hours');hourly.replaceChildren();
+      for(let i=0;i<data.slots.length;i++) {
+        const s=data.slots[i],prev=comparison?.prior.slots[i],row=element('div',undefined,'tod-row');
+        const label=element('span',s.label,'tod-label');
+        const track=element('div',undefined,'tod-track');
+        const rate=s.winRate;
+        track.setAttribute('role','img');
+        track.setAttribute('aria-label',`${s.label}：${s.games}試合、勝率${percent(rate)}、記録日数${s.playDays}日`);
+        if(rate!==null){
+          const fill=element('span',undefined,'tod-fill '+(rate>=50?'positive':'negative'));
+          fill.style.width=`${rate}%`;track.append(fill);
+        }
+        const value=element('span',percent(rate),'tod-value');
+        const note=element('small',s.games?`${s.games}試合／${s.playDays}日${s.enough?'':' · 参考'}`:'試合なし','tod-detail');
+        row.append(label,track,value,note);
+        if(prev?.winRate!==null&&prev?.winRate!==undefined&&rate!==null){
+          const delta=element('small',`前期間 ${signed(rate-prev.winRate)}pt`,'tod-compare');
+          row.append(delta);
+        }
+        hourly.append(row);
+      }
+      const grid=$('time-performance-weekdays');grid.replaceChildren();
+      for(const s of data.weekdays){
+        const card=element('div',undefined,'tod-weekday');
+        card.append(element('strong',s.label));
+        card.append(element('span',percent(s.winRate),'tod-weekday-rate'));
+        card.append(element('small',`${s.games}試合／${s.playDays}日${s.enough?'':' · 参考'}`));
+        card.className+=' '+(s.winRate===null?'empty':s.winRate>=50?'positive':'negative');
+        grid.append(card);
+      }
+      $('time-performance-note').textContent='時刻はBucklerのアップロード時刻をJSTに換算。実際の対戦開始時刻とは異なる場合があります。勝率は勝利÷（勝利＋敗北＋引き分け）、不明は分母から除外。30試合・5日以上でも有利不利を証明するものではありません。試合のない時間帯を0%として扱いません。';
     }
     render() {
       const rows=SF6Matches.filter(this.rows,this.options());
@@ -129,6 +171,7 @@
         matchupList.append(card);
       }
       if(!matchups.length)line(matchupList,'この条件の組合せはありません。');
+      this.renderTimePerformance(rows);
     }
   }
   window.matchDashboard=new Dashboard();
