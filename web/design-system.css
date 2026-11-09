@@ -1,0 +1,227 @@
+/* SF6-reco Design System v2 — calm, focused, mobile-first application shell.
+   Loaded after legacy component CSS to preserve every existing chart and data feature. */
+:root{
+  color-scheme:dark;
+  --app-bg:#0b0e16;
+  --app-surface:#141925;
+  --app-surface-raised:#1b2130;
+  --app-border:rgba(177,189,216,.14);
+  --app-text:#eef0f7;
+  --app-muted:#9aa6bc;
+  --app-faint:#77849b;
+  --app-accent:#b39cf7;
+  --app-accent-soft:rgba(179,156,247,.12);
+  --app-cyan:#73cdd9;
+  --app-positive:#76ddba;
+  --app-negative:#ee9aaa;
+  --app-radius:16px;
+}
+html{scroll-behavior:smooth}
+body{min-height:100vh;color:var(--app-text);background:radial-gradient(ellipse 75% 26% at 50% -7%,rgba(96,73,157,.20),transparent 76%),var(--app-bg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;-webkit-font-smoothing:antialiased}
+button,select{font-family:inherit}
+button{touch-action:manipulation}
+button:focus-visible,select:focus-visible,summary:focus-visible,a:focus-visible{outline:2px solid var(--app-accent);outline-offset:3px}
+.shell{max-width:1160px;padding:0 32px}
+.app-header{height:76px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--app-border)}
+.brand{gap:12px;min-width:0}
+.brand .mark{width:35px;height:35px;border-radius:10px;transform:none;background:#c3aff9;color:#1b1633;font-size:23px;box-shadow:0 4px 20px rgba(154,116,231,.14)}
+.brand strong{font-size:14px;letter-spacing:.13em;font-weight:750}
+.brand small{font-size:9px;margin-top:4px;letter-spacing:.11em;color:var(--app-faint)}
+.app-header .live{flex-shrink:0;background:rgba(30,37,51,.75);border:1px solid var(--app-border);color:#aeb9cc;border-radius:999px;font-size:11px;padding:9px 12px}
+.dot{width:7px;height:7px;background:#d9b471;box-shadow:none}
+.dot.ok{background:var(--app-positive);box-shadow:0 0 0 3px rgba(118,221,186,.10)}
+/* One clear navigation hierarchy, rather than an endless page of panels. */
+.primary-nav{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:5px;padding:12px 0 10px;background:rgba(11,14,22,.93);border-bottom:1px solid var(--app-border);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.primary-nav button{flex:0 0 auto;min-width:112px;padding:12px 19px;min-height:44px;border:0;background:transparent;color:var(--app-muted);border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;letter-spacing:.015em;transition:background .17s,color .17s}
+.primary-nav button:hover{color:var(--app-text);background:rgba(185,194,217,.07)}
+.primary-nav button.active{color:#e9dfff;background:var(--app-accent-soft);box-shadow:inset 0 0 0 1px rgba(179,156,247,.20)}
+.app-view{padding:29px 0 45px;min-height:55vh}
+.view-heading{padding:10px 0 20px}
+.view-heading .kicker,.hero .eyebrow{color:var(--app-accent);font-size:10px;letter-spacing:.17em}
+.view-heading h1{font-size:clamp(30px,4.4vw,42px);font-weight:760;letter-spacing:-.055em;margin:10px 0 8px;line-height:1.2}
+.view-heading p,.hero p{color:var(--app-muted);font-size:13px;line-height:1.7;margin:0;max-width:680px}
+.hero{padding:10px 0 25px}
+.hero h1{margin:8px 0 7px;font-size:clamp(32px,4.5vw,45px);letter-spacing:-.055em;font-weight:770}
+.hero .hero-accent{color:var(--app-accent)}
+.eyebrow,.kicker{letter-spacing:.14em;color:var(--app-accent);font-weight:650}
+.toolbar{gap:12px;align-items:end;padding-bottom:18px;flex-wrap:wrap}
+.toolbar label{font-size:10px;letter-spacing:.10em;font-weight:650;color:var(--app-muted);gap:7px}
+.toolbar select{min-height:43px;min-width:168px;padding:10px 32px 10px 13px;border:1px solid var(--app-border);border-radius:10px;background:var(--app-surface);color:var(--app-text)}
+.toolbar .segmented{min-height:44px;padding:4px;background:var(--app-surface);border:1px solid var(--app-border);border-radius:11px}
+.segmented button{min-height:36px;border-radius:8px;color:var(--app-muted);font-size:12px}
+.segmented button.active{background:rgba(174,151,247,.15);color:#e4d6ff}
+.cards{grid-template-columns:1.35fr 1fr .92fr;gap:14px}
+.metric,.panel{border:1px solid var(--app-border);border-radius:var(--app-radius);background:var(--app-surface);box-shadow:none}
+.metric{padding:24px 25px;min-height:165px}
+.metric:before{display:none}
+.metric span{font-size:10px;letter-spacing:.12em;font-weight:670;color:var(--app-muted)}
+.metric span b{color:var(--app-accent);font-size:10px}
+.metric.lp span b{color:var(--app-cyan)}
+.metric .value{font-size:clamp(39px,4.4vw,61px);font-weight:770;line-height:1.13;letter-spacing:-.055em;margin:15px 0 10px;color:var(--app-text);font-variant-numeric:tabular-nums}
+.metric.mr{background:linear-gradient(125deg,rgba(96,73,151,.19),transparent 63%),var(--app-surface);border-color:rgba(179,156,247,.28)}
+.metric.mr .value{font-size:clamp(49px,5.6vw,70px)}
+.metric.compact{background:#111722}
+.metric .sync{font-size:clamp(18px,2.1vw,26px);font-weight:710;margin:20px 0 14px;letter-spacing:-.035em}
+.metric .sub{font-size:11px;line-height:1.65;color:var(--app-muted)}
+.section-heading{display:flex;justify-content:space-between;align-items:end;gap:16px;margin:32px 0 14px}
+.section-heading.section-heading-later{margin-top:27px}
+.section-heading h2{font-size:19px;letter-spacing:-.035em;margin:4px 0 0;font-weight:690}
+.section-hint{font-size:11px;color:var(--app-faint)}
+.chart-grid{grid-template-columns:1.14fr 1fr;gap:14px;margin-top:0}
+.panel{padding:22px}
+.panel-head{gap:14px;flex-wrap:wrap}
+.panel h2{font-size:17px;font-weight:685;letter-spacing:-.032em;margin:4px 0}
+.panel .legend{font-size:10px;color:var(--app-faint)}
+.panel .chart{height:230px;margin:16px 0 12px}
+.panel .chart-foot{border-top:1px solid var(--app-border);color:var(--app-muted);font-size:11px;padding-top:11px}
+.chart svg circle{transition:r .14s}
+.insight{padding:19px 23px}
+.insight>.kicker,.insight>h2{display:none}
+.insight .insight-grid{margin:0;gap:0;grid-template-columns:repeat(3,minmax(0,1fr))}
+.insight-grid div{background:transparent;border:0;border-radius:0;padding:6px 21px;border-right:1px solid var(--app-border)}
+.insight-grid div:first-child{padding-left:0}
+.insight-grid div:last-child{border:0}
+.insight-grid small{color:var(--app-muted);font-size:11px;margin-bottom:7px}
+.insight-grid strong{font-size:clamp(16px,2vw,21px);font-weight:730;font-variant-numeric:tabular-nums}
+.insight>p{margin:12px 0 0;font-size:11px;color:var(--app-faint)}
+/* Match archive — reveal filters only when needed. */
+#view-matches .battles{margin-top:0}
+#view-matches .battles>.kicker{display:none}
+#view-matches .battles>h2{font-size:17px;font-weight:690;margin:0}
+.battle-tabs{max-width:650px;gap:5px;background:#101520;border:1px solid var(--app-border);border-radius:12px;padding:4px;margin:18px 0}
+.battle-tabs button{border:0;background:transparent;min-height:45px;border-radius:9px;color:var(--app-muted);font-weight:650;letter-spacing:.015em;font-size:12px}
+.battle-tabs .active{background:#302b46;color:#e8ddff}
+.filter-drawer{border:1px solid var(--app-border);background:#171d2a;border-radius:12px;margin:16px 0;padding:0 16px}
+.filter-drawer summary{display:flex;gap:12px;align-items:center;cursor:pointer;list-style:none;min-height:49px;font-size:13px;font-weight:640;color:#e0e5f2}
+.filter-drawer summary::-webkit-details-marker{display:none}
+.filter-drawer summary:after{content:'⌄';font-size:22px;margin-left:auto;color:var(--app-muted);line-height:1}
+.filter-drawer[open] summary:after{content:'⌃'}
+.filter-drawer summary span{font-size:11px;font-weight:400;color:var(--app-faint)}
+.filter-drawer .battle-filters{margin:0 0 17px;gap:10px}
+.battle-filters label,.battle-option{font-size:11px;color:var(--app-muted)}
+.battle-filters select,.battle-option select{border:1px solid var(--app-border);background:#121824;border-radius:10px;min-height:44px;padding:9px 10px;color:var(--app-text)}
+#match-status,#match-refresh{font-size:11px;line-height:1.65;color:var(--app-faint)}
+#match-summary{font-size:13px;line-height:1.6;font-weight:570;color:var(--app-text);padding:14px 0;border-bottom:1px solid var(--app-border)}
+.data-notice{margin:9px 0;color:var(--app-muted);font-size:11px}
+.data-notice summary{cursor:pointer}
+#match-warning{margin:9px 0;color:#c8b891;font-size:11px}
+.battle-list{gap:10px;max-height:755px}
+.battle-card{background:#171d29;border:1px solid var(--app-border);border-radius:12px;padding:15px 16px}
+.battle-card.win{border-left:2px solid var(--app-positive)}
+.battle-card.loss{border-left:2px solid var(--app-negative)}
+.battle-heading{align-items:center;gap:10px;font-size:13px}
+.battle-heading strong{font-weight:660}
+.battle-result{color:var(--app-accent)}
+.battle-card p{margin:7px 0 0;font-size:11px;line-height:1.65;color:var(--app-muted)}
+.matchup-bar{height:13px;margin-top:11px;border-radius:6px;background:#222a39}
+.battle-card details{margin-top:8px;color:var(--app-faint)}
+.battle-card summary{cursor:pointer}
+.matchup-legend{gap:8px 14px;font-size:11px;color:var(--app-muted)}
+.battle-pagination button{min-height:44px}
+.actions button{min-height:42px;border-radius:10px;border:1px solid var(--app-border);background:#242032;color:#e2d7ff;padding:10px 14px}
+.actions button:hover{background:#342a4d}
+/* Analysis hub: one focused analytic theme visible at once. */
+.analysis-nav{display:flex;gap:6px;background:#111722;padding:5px;border:1px solid var(--app-border);border-radius:12px;max-width:650px;margin:12px 0 18px}
+.analysis-nav button{flex:1;min-height:45px;padding:10px 12px;border:0;background:transparent;border-radius:9px;color:var(--app-muted);font-size:12px;font-weight:650;cursor:pointer}
+.analysis-nav button.active{background:#342b4b;color:#eadfff}
+.analysis-page>.deep-panel,.analysis-page>.tod-panel,.analysis-page>.time-analysis{border:1px solid var(--app-border);border-radius:var(--app-radius);background:var(--app-surface);padding:22px;margin:0}
+.analysis-page .deep-panel,.analysis-page .tod-panel{border:1px solid var(--app-border);margin:0}
+.analysis-page .time-analysis>.panel-head{align-items:start}
+.deep-title .kicker,.tod-header .kicker{color:var(--app-accent)}
+.deep-title h3,.tod-header h3{font-size:19px;letter-spacing:-.025em}
+.deep-tabs{max-width:670px;gap:6px;padding:4px;margin:15px 0 23px;border:1px solid var(--app-border);background:#101520;border-radius:11px}
+.deep-tabs button{border:0;background:transparent;border-radius:8px;min-height:42px;padding:8px 6px;color:var(--app-muted);font-weight:590}
+.deep-tabs button.active{background:#302b46;color:#eadfff}
+.deep-row,.deep-recent-card{border-radius:11px;background:#171d29;border:1px solid var(--app-border)}
+.deep-row-head .deep-row-rate{color:var(--app-text)}
+.deep-track,.tod-track,.time-track{background:#252e40}
+.deep-fill{background:var(--app-positive)}
+.deep-fill.low{background:var(--app-negative)}
+.deep-row-detail,.deep-recent-card small,.tod-detail,.tod-compare{color:var(--app-muted)}
+.tod-weekday{border:1px solid var(--app-border);background:#171d29;border-radius:11px}
+.tod-weekday.positive{border-top:2px solid var(--app-positive)}
+.tod-weekday.negative{border-top:2px solid var(--app-negative)}
+.tod-weekday.empty{height:auto;display:flex;place-items:unset;border-style:solid;opacity:.6}
+.time-metrics>div{background:#171d29;border:1px solid var(--app-border);border-radius:10px}
+#view-system>.activity{max-width:860px}
+.activity p{font-size:12px;color:var(--app-muted)}
+#view-system .actions{margin:21px 0}
+#view-system .actions button{min-height:46px}
+#view-system details{border-top:1px solid var(--app-border);padding-top:14px}
+footer{border-top:1px solid var(--app-border);color:var(--app-faint);font-size:10px;letter-spacing:.06em;margin-top:12px}
+.tooltip{background:#232a3a;border:1px solid #4d5873}
+[hidden]{display:none!important}
+@media(max-width:930px){
+  .cards{grid-template-columns:1fr 1fr}
+  .metric.mr{grid-column:span 2}
+  .metric.compact{grid-column:auto}
+  .chart-grid{grid-template-columns:1fr 1fr}
+  .battle-filters{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:700px){
+  .shell{padding:0 20px}
+  .chart-grid{grid-template-columns:1fr}
+  .battle-list{grid-template-columns:1fr}
+  .primary-nav button{flex:1;min-width:0;padding:11px 6px;font-size:12px}
+  .app-view{padding-top:21px}
+  .analysis-nav{max-width:none}
+  .analysis-page>.deep-panel,.analysis-page>.tod-panel,.analysis-page>.time-analysis{padding:19px}
+  .toolbar{gap:10px}
+}
+@media(max-width:520px){
+  .shell{padding:0 16px}
+  .app-header{height:68px}
+  .brand .mark{width:31px;height:31px;font-size:21px}
+  .brand strong{font-size:12px;letter-spacing:.11em}
+  .brand small{font-size:7px;letter-spacing:.06em}
+  .app-header .live{max-width:115px;padding:7px 9px;gap:7px;font-size:9px}
+  .primary-nav{padding:8px 0;gap:3px}
+  .primary-nav button{font-size:11px;min-height:43px;padding:9px 4px}
+  .hero{padding:8px 0 21px}
+  .hero h1{font-size:34px}
+  .hero p,.view-heading p{font-size:12px}
+  .toolbar{padding-bottom:15px;gap:8px}
+  .toolbar label{flex:1 1 130px}
+  .toolbar select{min-width:0;width:100%}
+  .toolbar .spacer{display:none}
+  .toolbar .segmented{width:100%;margin-top:1px}
+  .cards{grid-template-columns:1fr 1fr;gap:9px}
+  .metric{min-height:124px;padding:17px}
+  .metric.mr{grid-column:span 2;min-height:148px}
+  .metric.mr .value{font-size:56px;margin-top:12px}
+  .metric.lp .value{font-size:clamp(25px,7.6vw,37px);margin:12px 0 9px}
+  .metric.compact{grid-column:auto;min-height:124px}
+  .metric.compact .sync{font-size:clamp(14px,4.4vw,19px);margin:15px 0 10px}
+  .metric span{font-size:9px;letter-spacing:.045em}
+  .metric .sub{font-size:10px}
+  .section-heading{margin-top:26px}
+  .section-heading h2{font-size:17px}
+  .section-hint{display:none}
+  .panel{padding:18px}
+  .insight{padding:18px}
+  .insight-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .insight-grid div{padding:6px 8px;min-width:0}
+  .insight-grid div:first-child{padding-left:0}
+  .insight-grid strong{font-size:clamp(13px,4vw,17px);overflow-wrap:anywhere}
+  .insight-grid small{font-size:9px}
+  .view-heading h1{font-size:32px}
+  .view-heading{padding-bottom:16px}
+  .battle-tabs{margin:14px 0}
+  .battle-tabs button{font-size:10px;padding:9px 4px}
+  .filter-drawer summary{font-size:12px}
+  .filter-drawer summary span{font-size:9px}
+  .battle-filters{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .battle-list{max-height:none}
+  .analysis-nav button{font-size:11px;padding:8px 4px;min-height:43px}
+  .deep-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .time-metrics{gap:8px}
+  .time-metrics>div{padding:12px}
+  .tod-header .battle-option{max-width:none}
+  .tod-row{grid-template-columns:89px minmax(32px,1fr) 53px}
+  .tod-weekdays{grid-template-columns:repeat(4,minmax(0,1fr))}
+  footer{gap:12px;letter-spacing:0}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .primary-nav button,.chart svg circle{transition:none}
+}
