@@ -10,11 +10,13 @@ class Element {
     this.classList = { add() {}, remove() {}, toggle() {} };
     this.dataset = {};
     this.style = {};
+    this.children = [];
+    this.attributes = {};
   }
   add(option) { this.options.push(option); }
-  append() {}
-  replaceChildren() {}
-  setAttribute() {}
+  append(...nodes) { this.children.push(...nodes); }
+  replaceChildren(...nodes) { this.children = nodes; }
+  setAttribute(key,value) { this.attributes[key] = value; }
   addEventListener() {}
   getBoundingClientRect() { return { left: 0, top: 0 }; }
 }
@@ -27,6 +29,8 @@ async function run() {
   element('phase').value = 'all';
   element('phase').add({ value: 'all' });
   const listeners = {}, windows = {}, timers = [];
+  element('mr-chart').clientWidth = 340;
+  element('mr-chart').clientHeight = 176;
   const document = {
     hidden: false,
     getElementById: element,
@@ -55,6 +59,8 @@ async function run() {
   await flush();
   assert.equal(calls, 3);
   assert.equal(element('mr').textContent, '1,411');
+  assert.equal(element('mr-chart').children[0].attributes.viewBox, '0 0 340 176'); // portrait chart fills actual available space
+  assert.equal(typeof window.onSf6ViewChange, 'function');
   assert.match(element('last-check').textContent, /11\/8/);
   assert.match(element('last-sync').textContent, /12:00/);
   assert.match(element('cadence').textContent, /成功間隔平均/);
