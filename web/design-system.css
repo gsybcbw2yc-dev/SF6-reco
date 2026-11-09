@@ -268,3 +268,21 @@ footer{border-top:1px solid var(--app-border);color:var(--app-faint);font-size:1
   #view-analysis .deep-row{padding:12px}
   #view-analysis .deep-row-detail{margin-top:5px}
 }
+
+/* Point inspection belongs to each chart card, never to a fixed page overlay. */
+.chart-point-detail{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:10px 12px;margin:0 0 12px;border:1px solid rgba(179,156,247,.18);border-radius:10px;
+  background:rgba(179,156,247,.075);color:var(--app-text);min-height:42px}
+.chart-point-reading{font-size:12px;font-weight:550;line-height:1.5;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.chart-point-detail button{border:0;background:transparent;color:#b7b0cb;min-height:34px;
+  min-width:60px;padding:5px 7px;font-size:11px;cursor:pointer;flex-shrink:0}
+.chart-point-detail button span{font-size:17px;vertical-align:middle;margin-left:3px}
+.chart-point-detail button:hover{color:var(--app-text)}
+.chart svg circle[role="button"]{cursor:pointer;touch-action:manipulation}
+.chart svg circle[role="button"]:focus-visible{outline:2px solid #d4bfff;outline-offset:5px}
+[hidden].chart-point-detail{display:none!important}
+@media(max-width:700px){
+  .chart-point-detail{padding:8px 10px;gap:8px;margin-bottom:8px}
+  .chart-point-reading{font-size:11px}
+  .chart-point-detail button{min-width:52px;font-size:10px}
+}
