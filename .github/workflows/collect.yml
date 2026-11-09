@@ -41,7 +41,9 @@ jobs:
       - name: Test collection logic
         run: python -m unittest discover -s tests -v
       - name: Test dashboard refresh
-        run: node tests/test_dashboard.cjs
+        run: |
+          node tests/test_dashboard.cjs
+          node tests/test_time_analysis.cjs
       - name: Collect
         env:
           CFN_PLAYER_ID: "1866568348"

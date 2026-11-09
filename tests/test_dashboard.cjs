@@ -9,6 +9,7 @@ class Element {
     this.options = [];
     this.classList = { add() {}, remove() {}, toggle() {} };
     this.dataset = {};
+    this.style = {};
   }
   add(option) { this.options.push(option); }
   append() {}
@@ -47,6 +48,8 @@ async function run() {
     return { ok: true, json: async () => structuredClone(snapshot[name]) };
   };
   const context = vm.createContext({ document, window, fetch, Date: Clock, Option: class { constructor(label, value) { this.value = value; } }, setInterval: cb => timers.push(cb), setTimeout() {}, URL: {}, Blob, innerWidth: 1024 });
+  vm.runInContext(fs.readFileSync('web/time-analysis.js', 'utf8'), context);
+  vm.runInContext(fs.readFileSync('web/time-analysis-ui.js', 'utf8'), context);
   vm.runInContext(fs.readFileSync('web/app.js', 'utf8'), context);
   const flush = () => new Promise(resolve => setImmediate(resolve));
   await flush();
