@@ -82,7 +82,7 @@
       function bars(id,items,note) {
         const holder=$(id);holder.replaceChildren();
         for (const s of items) {
-          const card=element('div',undefined,'deep-row'+(s.winRate===null?' empty':''));
+          const card=element('div',undefined,'deep-row'+(s.winRate===null?' deep-no-data':''));
           const head=element('div',undefined,'deep-row-head');
           head.append(element('span',s.label,'deep-row-label'),element('strong',percent(s.winRate),'deep-row-rate'));
           card.append(head);
