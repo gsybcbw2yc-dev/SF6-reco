@@ -2,7 +2,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
 class Element{constructor(){this.value='';this.textContent='';this.options=[];this.children=[];this.dataset={};this.style={};this.classList={toggle(){},add(){},remove(){}};}append(...nodes){this.children.push(...nodes);}replaceChildren(...nodes){this.children=nodes;}add(o){this.options.push(o);}setAttribute(){}}
 async function run(){
  const nodes=new Map(),get=id=>nodes.get(id)||(nodes.set(id,new Element()),nodes.get(id));
- for(const [id,value] of Object.entries({'match-period':'7','match-mode':'ranked','match-character':'all','match-own-control':'all','match-opponent-control':'all','session-gap':'45','matchup-order':'games'}))get(id).value=value;
+ for(const [id,value] of Object.entries({'match-period':'7','match-mode':'ranked','match-character':'all','match-own-control':'all','match-opponent-control':'all','session-gap':'45','matchup-order':'games','time-bucket':'4'}))get(id).value=value;
  get('match-character').add({value:'all'});
  const document={getElementById:get,createElement:()=>new Element(),querySelectorAll:()=>[]};
  const first={key:'synthetic-hash',occurred_at:'2026-11-09T00:00:00Z',fetched_at:'2026-11-09T01:00:00Z',character:'AKUMA',opponent_character:'RYU',own_side:1,mode:'ranked',own_control:'classic',opponent_control:'modern',phase:'unknown',outcome:'win',missing:[],mr_before:1500,lp_before:50000,mr_delta:null,lp_delta:null};
@@ -10,7 +10,7 @@ async function run(){
  const fetch=async url=>{calls.push(url);if(hold)await hold;if(offline)throw Error('offline');return {ok:true,json:async()=>url.includes('index.json')?{schema:1,count:rows.length,months:[{path:'2026-11.json',sha256:hash,count:rows.length,last_at:rows.at(-1).occurred_at}]}:url.includes('status.json')?{last_success:'2026-11-09T01:00:00Z',events:[{added:1,duplicates:0}]}:{schema:1,matches:structuredClone(rows)}};};
  class Clock extends Date{static now(){return Date.parse('2026-11-09T02:00:00Z');}}
  const window={},context=vm.createContext({window,document,fetch,Date:Clock,Option:class{constructor(label,value){this.value=value;}}});
- vm.runInContext(fs.readFileSync('web/match-analysis.js','utf8'),context);vm.runInContext(fs.readFileSync('web/matches-ui.js','utf8'),context);
+ vm.runInContext(fs.readFileSync('web/match-analysis.js','utf8'),context);vm.runInContext(fs.readFileSync('web/time-performance.js','utf8'),context);vm.runInContext(fs.readFileSync('web/matches-ui.js','utf8'),context);
  const app=window.matchDashboard;await app.refresh();assert.equal(calls.length,3);assert.equal(get('match-list').children.length,1);assert.equal(get('match-character').value,'AKUMA');
  await app.refresh();assert.equal(calls.length,5); // unchanged monthly archive is not downloaded again
  rows.push({...first,key:'second-synthetic-hash',occurred_at:'2026-11-09T00:02:00Z',outcome:'loss'});hash='b'.repeat(64);
@@ -24,6 +24,13 @@ async function run(){
  assert.equal(bar.children[1].className,'matchup-bar-segment loss');
  assert.equal(bar.children[0].style.width,'50%');
  assert.equal(bar.children[1].style.width,'50%');
+ assert.equal(get('time-performance-hours').children.length,6);
+ assert.equal(get('time-performance-weekdays').children.length,7);
+ assert.match(get('time-performance-status').textContent,/2試合/);
+ get('time-bucket').value='1';get('time-bucket').onchange();
+ assert.equal(get('time-performance-hours').children.length,24);
+ get('time-bucket').value='4';get('time-bucket').onchange();
+ assert.equal(get('time-performance-hours').children.length,6);
  offline=true;await app.refresh();assert.equal(get('match-list').children.length,2);assert.match(get('match-refresh').textContent,/前回の表示を保持/);
  offline=false;await app.refresh();assert.match(get('match-refresh').textContent,/最終画面確認/);
  let release;hold=new Promise(r=>release=r);const pending=app.refresh();const before=calls.length;app.refresh();assert.equal(calls.length,before);hold=null;release();await pending;await new Promise(r=>setImmediate(r));assert.equal(app.busy,false);
