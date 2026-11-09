@@ -179,7 +179,7 @@
       $('match-status').textContent=`保存済み ${this.index?.count??0} 試合／選択条件 ${rows.length} 試合。取得成功：${date(this.status?.last_success)} JST。${this.status?.last_error?'取得エラー：'+this.status.last_error.message:collection?'直近追加 '+collection.added+' 件・重複除外 '+collection.duplicates+' 件':''}`;
       const age=this.status?.last_success?(Date.now()-Date.parse(this.status.last_success))/60000:Infinity;
       $('match-warning').textContent=(age>90?'試合取得が90分以上更新されていません。表示が古い可能性があります。 ':'')+'Bucklerが公開する最近の履歴だけを取得しています。取り込み以前・上限超過・取得失敗による欠落があり得ます。';
-      $('match-summary').textContent=`${allStats.wins}勝 ${allStats.losses}敗 ${allStats.draws}分 不明${allStats.unknown}／勝率 ${percent(allStats.winRate)}。勝率＝勝利÷（勝利＋敗北＋引き分け）。不明な結果は分母から除外。`;
+      $('match-summary').textContent=`${allStats.wins}勝 ${allStats.losses}敗${allStats.draws?` ${allStats.draws}分`:''}${allStats.unknown?` · 不明${allStats.unknown}`:''}　｜　勝率 ${percent(allStats.winRate)}`;
       const sorted=rows.slice().sort((a,b)=>(b.occurred_at||'').localeCompare(a.occurred_at||'')||a.key.localeCompare(b.key));
       this.page=Math.min(this.page,Math.max(0,Math.ceil(rows.length/20)-1));
       const list=$('match-list');list.replaceChildren();
@@ -217,7 +217,7 @@
         const heading=element('div',undefined,'battle-heading');
         heading.append(element('strong',`${m.character} vs ${m.opponent}`),element('b',percent(m.winRate)));
         card.append(heading);
-        line(card,`${m.games}試合 · ${m.wins}勝 ${m.losses}敗 ${m.draws}分 不明${m.unknown} · MR収支 ${m.mrDelta===null?'算定不可':signed(m.mrDelta)}`);
+        line(card,`${m.games}試合 · ${m.wins}勝 ${m.losses}敗${m.draws?` ${m.draws}分`:''}${m.unknown?` 不明${m.unknown}`:''}${m.mrDelta!==null?` · 確定MR ${signed(m.mrDelta)}`:''}`);
         const bar=element('div',undefined,'matchup-bar');
         bar.setAttribute('role','img');
         bar.setAttribute('aria-label',`勝利 ${m.wins}試合、敗北 ${m.losses}試合、引き分け ${m.draws}試合、結果不明 ${m.unknown}試合`);
