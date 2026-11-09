@@ -80,8 +80,10 @@ class CollectorTests(unittest.TestCase):
                 patch.dict('os.environ', {'GITHUB_EVENT_NAME': 'workflow_dispatch',
                                           'COLLECTION_ORIGIN': 'manual', 'EXTERNAL_TRIGGER_UNIX': ''}):
             with patch.object(collect, 'collect', return_value=([self.item], [])):
-                self.assertEqual(collect.main(), 0)
-                self.assertEqual(collect.main(), 0)
+                with patch.dict('os.environ', {'GITHUB_RUN_ID': 'test-100', 'GITHUB_RUN_ATTEMPT': '1'}):
+                    self.assertEqual(collect.main(), 0)
+                with patch.dict('os.environ', {'GITHUB_RUN_ID': 'test-101', 'GITHUB_RUN_ATTEMPT': '1'}):
+                    self.assertEqual(collect.main(), 0)
             with patch.object(collect, 'collect', side_effect=RuntimeError('HTTP 403 (cloudfront)')):
                 self.assertEqual(collect.main(), 1)
             runs = collect.load('runs.json', {})['events']
