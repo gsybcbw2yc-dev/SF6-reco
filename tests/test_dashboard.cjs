@@ -63,6 +63,7 @@ async function run() {
   vm.runInContext(fs.readFileSync('web/time-analysis.js', 'utf8'), context);
   vm.runInContext(fs.readFileSync('web/time-analysis-ui.js', 'utf8'), context);
   vm.runInContext(fs.readFileSync('web/chart-trends.js', 'utf8'), context);
+  vm.runInContext(fs.readFileSync('web/goal-forecast.js', 'utf8'), context);
   vm.runInContext(fs.readFileSync('web/app.js', 'utf8'), context);
   const flush = () => new Promise(resolve => setImmediate(resolve));
   await flush();
@@ -94,6 +95,8 @@ async function run() {
   assert.match(element('last-sync').textContent, /12:00/);
   assert.match(element('cadence').textContent, /成功間隔平均/);
   assert.match(element('time-summary').textContent, /有効窓.*算定不可/);
+  assert.equal(element('goal-1500-short').textContent,'算定不可'); // no complete 24h window yet
+  assert.equal(element('goal-1600-long').textContent,'算定不可');
 
   element('character').value = 'AKUMA';
   vm.runInContext("range='30'", context);
