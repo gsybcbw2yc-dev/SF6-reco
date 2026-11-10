@@ -59,16 +59,18 @@ async function run() {
     const name = url.match(/data\/(history|status|runs)\.json/)[1];
     return { ok: true, json: async () => structuredClone(snapshot[name]) };
   };
-  const context = vm.createContext({ document, window, fetch, Date: Clock, Option: class { constructor(label, value) { this.value = value; } }, setInterval: cb => timers.push(cb), setTimeout() {}, URL: {}, Blob, innerWidth: 1024 });
+  const context = vm.createContext({ document, window, fetch, Date: Clock, Option: class { constructor(label, value) { this.value = value;this.label=label; } }, setInterval: cb => timers.push(cb), setTimeout() {}, URL: {}, Blob, innerWidth: 1024 });
   vm.runInContext(fs.readFileSync('web/time-analysis.js', 'utf8'), context);
   vm.runInContext(fs.readFileSync('web/time-analysis-ui.js', 'utf8'), context);
   vm.runInContext(fs.readFileSync('web/chart-trends.js', 'utf8'), context);
   vm.runInContext(fs.readFileSync('web/goal-forecast.js', 'utf8'), context);
+  vm.runInContext(fs.readFileSync('web/phase-config.js', 'utf8'), context);
   vm.runInContext(fs.readFileSync('web/app.js', 'utf8'), context);
   const flush = () => new Promise(resolve => setImmediate(resolve));
   await flush();
   assert.equal(calls, 3);
   assert.equal(element('mr').textContent, '1,411');
+  assert.equal(element('phase').options.find(p=>p.value==='unknown')?.label,'Act 14（暫定）');
   assert.equal(element('mr-chart').children[0].attributes.viewBox, '0 0 340 176'); // portrait chart fills actual available space
   assert.equal(typeof window.onSf6ViewChange, 'function');
   // iOS regression: points open an inline card readout, never a fixed tooltip.
