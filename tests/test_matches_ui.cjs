@@ -10,8 +10,10 @@ async function run(){
  const fetch=async url=>{calls.push(url);if(hold)await hold;if(offline)throw Error('offline');return {ok:true,json:async()=>url.includes('index.json')?{schema:1,count:rows.length,months:[{path:'2026-11.json',sha256:hash,count:rows.length,last_at:rows.at(-1).occurred_at}]}:url.includes('status.json')?{last_success:'2026-11-09T01:00:00Z',events:[{added:1,duplicates:0}]}:url.includes('data/history.json')?{observations:structuredClone(observations)}:{schema:1,matches:structuredClone(rows)}};};
  class Clock extends Date{static now(){return Date.parse('2026-11-09T02:00:00Z');}}
  const window={},context=vm.createContext({window,document,fetch,Date:Clock,Option:class{constructor(label,value){this.value=value;}}});
- vm.runInContext(fs.readFileSync('web/match-analysis.js','utf8'),context);vm.runInContext(fs.readFileSync('web/time-performance.js','utf8'),context);vm.runInContext(fs.readFileSync('web/deep-analysis.js','utf8'),context);vm.runInContext(fs.readFileSync('web/matches-ui.js','utf8'),context);
+ vm.runInContext(fs.readFileSync('web/match-analysis.js','utf8'),context);vm.runInContext(fs.readFileSync('web/time-performance.js','utf8'),context);vm.runInContext(fs.readFileSync('web/deep-analysis.js','utf8'),context);vm.runInContext(fs.readFileSync('web/phase-config.js','utf8'),context);vm.runInContext(fs.readFileSync('web/match-deltas.js','utf8'),context);vm.runInContext(fs.readFileSync('web/matches-ui.js','utf8'),context);
  const app=window.matchDashboard;await app.refresh();assert.equal(calls.length,4);assert.equal(get('match-list').children.length,1);assert.equal(get('match-character').value,'AKUMA');
+ assert.equal(get('match-list').children[0].children.length,3); // header plus only date and pre-match values
+ assert.equal(get('match-list').children[0].children[0].children[1].children[0].textContent,'— MR');
  await app.refresh();assert.equal(calls.length,7); // unchanged monthly archive is not downloaded again
  rows.push({...first,key:'second-synthetic-hash',occurred_at:'2026-11-09T00:02:00Z',outcome:'loss'});hash='b'.repeat(64);
  await app.refresh();assert.equal(calls.length,11);assert.equal(get('match-list').children.length,2);assert.match(get('match-summary').textContent,/1勝 1敗/);
@@ -55,6 +57,23 @@ async function run(){
  assert.match(deltaText.textContent,/定期観測と一致/);
  const newestSession=get('session-list').children[0];
  assert.match(newestSession.children.map(e=>e.textContent).join(' '),/算定不可/);
+
+ // A real adjacent match supports only an inferred reference delta, and the
+ // compact card no longer shows the old outcome/control/phase line or expander.
+ rows.push({...first,key:'following-ranked',occurred_at:'2026-11-09T00:53:00Z',
+   mr_before:1518,lp_before:50330,outcome:'loss'});
+ hash='d'.repeat(64);
+ await app.refresh();
+ const latestCard=get('match-list').children[0];
+ const previousCard=get('match-list').children[1];
+ const prevHead=previousCard.children[0];
+ assert.equal(prevHead.children[1].children[0].textContent,'+8 MR');
+ assert.equal(prevHead.children[1].children[1].textContent,'推定');
+ assert.equal(prevHead.children[1].className,'battle-mr-indicator positive');
+ assert.equal(previousCard.children.length,3); // no metadata row, no expanded details
+ assert.equal(latestCard.children[0].children[1].children[0].textContent,'— MR');
+ assert.ok(get('match-warning').textContent.includes('Act 14'));
+
  console.log('Monthly match UI refresh/cache/recovery and session reconciliation scenarios passed (synthetic)');
 }
 run().catch(e=>{console.error(e);process.exitCode=1;});
