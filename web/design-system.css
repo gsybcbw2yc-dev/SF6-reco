@@ -395,3 +395,52 @@ footer{border-top:1px solid var(--app-border);color:var(--app-faint);font-size:1
   .battle-mr-indicator small{font-size:9px}
   .battle-heading>strong{font-size:12px}
 }
+
+/* Match-based goal forecast (time estimates removed from this dashboard module). */
+.goal-forecast{margin:0 0 10px;padding:20px}
+.goal-forecast-heading h3{font-size:20px}
+.goal-forecast-intro{max-width:650px;line-height:1.65!important}
+.goal-forecast-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.goal-forecast-item{background:#171e2b;border-color:rgba(171,185,212,.17);padding:16px}
+.goal-target-head{padding-bottom:11px;border-bottom:1px solid var(--app-border)}
+.goal-target-head strong{font-size:16px;letter-spacing:-.025em}
+.goal-target-head span{font-size:11px;color:#c4bbdf}
+.goal-match-methods{display:grid;gap:0}
+.goal-match-row{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:56px;
+  padding:10px 0;border-bottom:1px solid rgba(177,189,216,.1)}
+.goal-match-row:last-child{border-bottom:0}
+.goal-match-row>span{font-size:11px;color:#aab6cb}
+.goal-match-estimate{font-size:18px;font-weight:750;letter-spacing:-.025em;
+  font-variant-numeric:tabular-nums;text-align:right;color:#a0acc1}
+.goal-match-estimate.available{color:#c1a8f9}
+.goal-window-evidence{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:12px}
+.goal-evidence-item{padding:12px 13px;border:1px solid var(--app-border);background:rgba(24,31,45,.75);border-radius:11px;min-width:0}
+.goal-evidence-item strong{font-size:11px;color:#e1e6f2}
+.goal-evidence-item p{font-size:10px!important;color:#9eabc0;margin:6px 0 0!important;line-height:1.6;overflow-wrap:anywhere}
+.goal-forecast-quality,.goal-forecast-audit,.goal-forecast-act{font-size:11px!important;line-height:1.7;color:#9eaac0;margin:12px 0 0!important}
+.goal-forecast-audit{padding:10px 12px;background:rgba(106,203,181,.05);border-radius:10px}
+.goal-forecast-act{color:#a997c4}
+.goal-audit-list{margin:12px 0 0}
+.goal-audit-list p{border-top:1px solid var(--app-border);padding:8px 0;font-size:10px!important;color:#9daac0}
+.goal-legacy-speed{margin:16px 0 0;border-top:1px solid var(--app-border);padding-top:12px}
+.goal-legacy-speed>summary{cursor:pointer;list-style:none;display:flex;align-items:center;min-height:44px;
+  color:#c3b1f2;font-size:12px;font-weight:600}
+.goal-legacy-speed>summary::-webkit-details-marker{display:none}
+.goal-legacy-speed>summary:after{content:'⌄';margin-left:auto;font-size:18px}
+.goal-legacy-speed[open]>summary:after{content:'⌃'}
+.goal-legacy-speed .panel-head{margin:14px 0 10px}
+.goal-legacy-speed .time-metrics{margin-top:14px}
+@media(max-width:900px){.goal-window-evidence{grid-template-columns:1fr}}
+@media(max-width:700px){
+  .goal-forecast{padding:15px 13px;margin:0}
+  .goal-forecast-grid{grid-template-columns:1fr;gap:10px}
+  .goal-forecast-item{padding:13px 14px}
+  .goal-match-row{min-height:49px}
+  .goal-match-estimate{font-size:18px}
+  .goal-window-evidence{gap:7px}
+  .goal-evidence-item{padding:10px 12px}
+}
+@media(max-width:370px){
+  .goal-match-row>span{font-size:10px}
+  .goal-match-estimate{font-size:16px}
+}
