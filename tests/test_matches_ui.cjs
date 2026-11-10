@@ -6,15 +6,15 @@ async function run(){
  get('match-character').add({value:'all'});
  const document={getElementById:get,createElement:()=>new Element(),querySelectorAll:()=>[]};
  const first={key:'synthetic-hash',occurred_at:'2026-11-09T00:00:00Z',fetched_at:'2026-11-09T01:00:00Z',character:'AKUMA',opponent_character:'RYU',own_side:1,mode:'ranked',own_control:'classic',opponent_control:'modern',phase:'unknown',outcome:'win',missing:[],mr_before:1500,lp_before:50000,mr_delta:null,lp_delta:null};
- let rows=[first],hash='a'.repeat(64),offline=false,calls=[],hold;
- const fetch=async url=>{calls.push(url);if(hold)await hold;if(offline)throw Error('offline');return {ok:true,json:async()=>url.includes('index.json')?{schema:1,count:rows.length,months:[{path:'2026-11.json',sha256:hash,count:rows.length,last_at:rows.at(-1).occurred_at}]}:url.includes('status.json')?{last_success:'2026-11-09T01:00:00Z',events:[{added:1,duplicates:0}]}:{schema:1,matches:structuredClone(rows)}};};
+ let rows=[first],observations=[],hash='a'.repeat(64),offline=false,calls=[],hold;
+ const fetch=async url=>{calls.push(url);if(hold)await hold;if(offline)throw Error('offline');return {ok:true,json:async()=>url.includes('index.json')?{schema:1,count:rows.length,months:[{path:'2026-11.json',sha256:hash,count:rows.length,last_at:rows.at(-1).occurred_at}]}:url.includes('status.json')?{last_success:'2026-11-09T01:00:00Z',events:[{added:1,duplicates:0}]}:url.includes('data/history.json')?{observations:structuredClone(observations)}:{schema:1,matches:structuredClone(rows)}};};
  class Clock extends Date{static now(){return Date.parse('2026-11-09T02:00:00Z');}}
  const window={},context=vm.createContext({window,document,fetch,Date:Clock,Option:class{constructor(label,value){this.value=value;}}});
  vm.runInContext(fs.readFileSync('web/match-analysis.js','utf8'),context);vm.runInContext(fs.readFileSync('web/time-performance.js','utf8'),context);vm.runInContext(fs.readFileSync('web/deep-analysis.js','utf8'),context);vm.runInContext(fs.readFileSync('web/matches-ui.js','utf8'),context);
- const app=window.matchDashboard;await app.refresh();assert.equal(calls.length,3);assert.equal(get('match-list').children.length,1);assert.equal(get('match-character').value,'AKUMA');
- await app.refresh();assert.equal(calls.length,5); // unchanged monthly archive is not downloaded again
+ const app=window.matchDashboard;await app.refresh();assert.equal(calls.length,4);assert.equal(get('match-list').children.length,1);assert.equal(get('match-character').value,'AKUMA');
+ await app.refresh();assert.equal(calls.length,7); // unchanged monthly archive is not downloaded again
  rows.push({...first,key:'second-synthetic-hash',occurred_at:'2026-11-09T00:02:00Z',outcome:'loss'});hash='b'.repeat(64);
- await app.refresh();assert.equal(calls.length,8);assert.equal(get('match-list').children.length,2);assert.match(get('match-summary').textContent,/1勝 1敗/);
+ await app.refresh();assert.equal(calls.length,11);assert.equal(get('match-list').children.length,2);assert.match(get('match-summary').textContent,/1勝 1敗/);
  const matchupCards=get('matchup-list').children;
  assert.equal(matchupCards.length,1);
  const bar=matchupCards[0].children.find(n=>n.className==='matchup-bar');
@@ -40,6 +40,21 @@ async function run(){
  offline=true;await app.refresh();assert.equal(get('match-list').children.length,2);assert.match(get('match-refresh').textContent,/前回の表示を保持/);
  offline=false;await app.refresh();assert.match(get('match-refresh').textContent,/最終画面確認/);
  let release;hold=new Promise(r=>release=r);const pending=app.refresh();const before=calls.length;app.refresh();assert.equal(calls.length,before);hold=null;release();await pending;await new Promise(r=>setImmediate(r));assert.equal(app.busy,false);
- console.log('Monthly match UI refresh/cache/recovery scenarios passed (synthetic)');
+ // A subsequent ranked session plus periodic rating snapshots corroborate the earlier closing balance.
+ rows.push({...first,key:'next-session-hash',occurred_at:'2026-11-09T00:50:00Z',
+   mr_before:1510,lp_before:50080,outcome:'win'});
+ observations=[{character:'AKUMA',phase:'unknown',mr:1510,lp:50080,
+   observed_at:'2026-11-09T00:18:00Z'}];
+ hash='c'.repeat(64);
+ await app.refresh();
+ assert.equal(get('session-list').children.length,2);
+ const oldSession=get('session-list').children.at(-1);
+ const deltaText=oldSession.children.find(e=>String(e.textContent).includes('記録上のMR/LP収支'));
+ assert.ok(deltaText,'session reference delta is shown');
+ assert.match(deltaText.textContent,/\\+10 \\/ \\+80/);
+ assert.match(deltaText.textContent,/定期観測と一致/);
+ const newestSession=get('session-list').children[0];
+ assert.match(newestSession.children.map(e=>e.textContent).join(' '),/算定不可/);
+ console.log('Monthly match UI refresh/cache/recovery and session reconciliation scenarios passed (synthetic)');
 }
 run().catch(e=>{console.error(e);process.exitCode=1;});
