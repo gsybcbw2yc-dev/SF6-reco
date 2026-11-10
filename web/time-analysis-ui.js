@@ -1,47 +1,3 @@
-function renderMRForecast(observations, character, phase) {
-  const byId=id=>document.getElementById(id);
-  if(character==='すべて'){
-    byId('goal-forecast-current').textContent='キャラを選択';
-    for(const target of [1500,1600]){
-      byId('goal-'+target+'-remaining').textContent='—';
-      byId('goal-'+target+'-short').textContent='算定不可';
-      byId('goal-'+target+'-long').textContent='算定不可';
-    }
-    byId('goal-forecast-quality').textContent='キャラクターを選ぶと到達時間の目安を計算します。';
-    return;
-  }
-  const now=Date.now();
-  const fixed=SF6Analysis.analyze(observations,{character,phase,range:'7',minutes:1440,now});
-  const last=fixed.segment.at(-1);
-  const regression=SF6ChartTrends.regression(fixed.segment,'mr');
-  const projection=SF6GoalForecast.analyze({
-    latest:last,lastBar:SF6GoalForecast.rolling24h(fixed.segment),regression,now,targets:[1500,1600]
-  });
-  byId('goal-forecast-current').textContent=projection.current===null?
-    '現在MR：データ不足':`現在 MR ${projection.current.toLocaleString('ja-JP')}`;
-  for(const row of projection.targets){
-    const prefix='goal-'+row.target;
-    byId(prefix+'-remaining').textContent=row.remaining===null?'データ不足':
-      row.remaining===0?'達成済み':`あと ${row.remaining} MR`;
-    byId(prefix+'-short').textContent=row.shortLabel;
-    byId(prefix+'-long').textContent=row.longLabel;
-  }
-  const formatRate=n=>`${n>0?'+':''}${n.toFixed(2)} MR/時`;
-  if(projection.stale){
-    byId('goal-forecast-quality').textContent='MR観測が3時間以上更新されていないため、到達時間の算定を停止しています。';
-  }else if(projection.current===null){
-    byId('goal-forecast-quality').textContent='MRの実測値が不足しています。';
-  }else{
-    const a=projection.shortRawRate===null?'約24時間前の比較可能な実測値がありません':
-      `直近24時間の実測ペース ${formatRate(projection.shortRawRate)}`;
-    const b=projection.longRawRate===null?'回帰：データ不足（12件・48時間以上必要）':
-      `最大7日間の回帰 ${formatRate(projection.longRawRate)}（${projection.regressionCount}件／約${projection.regressionHours.toFixed(1)}時間）`;
-    byId('goal-forecast-quality').textContent=
-      `${a}。 ${b}。予測はプレイ時間ではなく経過時間換算です。`+
-      (fixed.lastPhase==='unknown'?' フェーズ番号は未判定です。':'');
-  }
-}
-
 function renderTimeAnalysis(observations, range, minutes) {
   const byId = id => document.getElementById(id);
   const character = byId('character').value;
@@ -49,7 +5,6 @@ function renderTimeAnalysis(observations, range, minutes) {
   const value = n => n === null ? 'データ不足' : (n > 0 ? '+' : '') + Number(n).toLocaleString('ja-JP');
   const signedRate = n => n === null ? 'データ不足' : `${n > 0 ? '+' : ''}${Number(n.toFixed(1)).toLocaleString('ja-JP')} MR/h`;
   const local = t => new Date(t).toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-  renderMRForecast(observations,character,phase);
   if (character === 'すべて') {
     byId('time-summary').textContent = '時間別分析にはキャラクターを選択してください。';
     byId('time-bars').replaceChildren();
