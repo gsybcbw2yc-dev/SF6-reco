@@ -10,7 +10,7 @@ async function run(){
  const fetch=async url=>{calls.push(url);if(hold)await hold;if(offline)throw Error('offline');return {ok:true,json:async()=>url.includes('index.json')?{schema:1,count:rows.length,months:[{path:'2026-11.json',sha256:hash,count:rows.length,last_at:rows.at(-1).occurred_at}]}:url.includes('status.json')?{last_success:'2026-11-09T01:00:00Z',events:[{added:1,duplicates:0}]}:url.includes('data/history.json')?{observations:structuredClone(observations)}:{schema:1,matches:structuredClone(rows)}};};
  class Clock extends Date{static now(){return Date.parse('2026-11-09T02:00:00Z');}}
  const window={},context=vm.createContext({window,document,fetch,Date:Clock,Option:class{constructor(label,value){this.value=value;}}});
- vm.runInContext(fs.readFileSync('web/match-analysis.js','utf8'),context);vm.runInContext(fs.readFileSync('web/time-performance.js','utf8'),context);vm.runInContext(fs.readFileSync('web/deep-analysis.js','utf8'),context);vm.runInContext(fs.readFileSync('web/phase-config.js','utf8'),context);vm.runInContext(fs.readFileSync('web/match-deltas.js','utf8'),context);vm.runInContext(fs.readFileSync('web/matches-ui.js','utf8'),context);
+ vm.runInContext(fs.readFileSync('web/match-analysis.js','utf8'),context);vm.runInContext(fs.readFileSync('web/time-performance.js','utf8'),context);vm.runInContext(fs.readFileSync('web/deep-analysis.js','utf8'),context);vm.runInContext(fs.readFileSync('web/phase-config.js','utf8'),context);vm.runInContext(fs.readFileSync('web/match-deltas.js','utf8'),context);vm.runInContext(fs.readFileSync('web/match-goal-forecast.js','utf8'),context);vm.runInContext(fs.readFileSync('web/match-goal-ui.js','utf8'),context);vm.runInContext(fs.readFileSync('web/matches-ui.js','utf8'),context);
  const app=window.matchDashboard;await app.refresh();assert.equal(calls.length,4);assert.equal(get('match-list').children.length,1);assert.equal(get('match-character').value,'AKUMA');
  assert.equal(get('match-list').children[0].children.length,3); // header plus only date and pre-match values
  assert.equal(get('match-list').children[0].children[0].children[1].children[0].textContent,'— MR');
@@ -73,6 +73,10 @@ async function run(){
  assert.equal(previousCard.children.length,3); // no metadata row, no expanded details
  assert.equal(latestCard.children[0].children[1].children[0].textContent,'— MR');
  assert.ok(get('match-warning').textContent.includes('Act 14'));
+ assert.match(get('goal-forecast-quality').textContent,/予測|ランクマッチ|更新/);
+ assert.match(get('goal-window-20-evidence').textContent,/試合/);
+ assert.equal(get('goal-1500-20-games').textContent,'データ不足');
+ assert.ok(get('goal-forecast-audit').textContent.includes('セッション境界'));
 
  console.log('Monthly match UI refresh/cache/recovery and session reconciliation scenarios passed (synthetic)');
 }
