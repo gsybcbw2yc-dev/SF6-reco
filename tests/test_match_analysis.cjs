@@ -22,4 +22,31 @@ assert.equal(A.stats([row(0,'win',{phase:'1',mr_delta:8,lp_delta:20,delta_basis:
 assert.equal(A.stats([row(0,'win',{phase:'1',mr_delta:8,delta_basis:'verified_post_match_rating'}),row(1,'win',{phase:'2',mr_delta:5,delta_basis:'verified_post_match_rating'})]).mrDelta,null);
 assert.equal(A.compare(null,null),null);
 assert.deepEqual(A.compare({games:10,winRate:60,elapsedMinutes:30},{games:5,winRate:50,elapsedMinutes:20}),{games:5,winRate:10,elapsedMinutes:10});
+// Session boundary reconciliation: next-session opening pre-match rating and snapshots.
+const groupRows=[row(0),row(1,'loss'),row(46,'win',{mr_before:1520,lp_before:50100})];
+const snap={character:'AKUMA',phase:'unknown',observed_at:new Date(start+16*60000).toISOString(),mr:1520,lp:50100};
+let recon=A.reconcileSessionDeltas(groupRows,[snap]);
+const older=A.sessions(groupRows).at(-1);
+let value=recon.get(older.key);
+assert.equal(value.status,'snapshot_matched');
+assert.equal(value.mr,20);
+assert.equal(value.lp,100);
+assert.equal(value.snapshots,1);
+assert.equal(value.games,2);
+assert.equal(value.endKey,groupRows[1].key);
+assert.equal(A.reconcileSessionDeltas(groupRows,[]).get(older.key).status,'next_session_only');
+recon=A.reconcileSessionDeltas(groupRows,[{...snap,mr:1521}]);
+assert.equal(recon.get(older.key).status,'conflict');
+assert.equal(recon.get(older.key).mr,null); // contradictory snapshots never claim an amount
+const lastSession=A.sessions(groupRows)[0];
+recon=A.reconcileSessionDeltas(groupRows,[{...snap,observed_at:new Date(start+60*60000).toISOString()}]);
+assert.equal(recon.get(lastSession.key).status,'unavailable'); // snapshot's value is pre-match 0-min baseline, not a closing observation
+recon=A.reconcileSessionDeltas(groupRows,[
+ {character:'AKUMA',phase:'unknown',observed_at:new Date(start+58*60000).toISOString(),mr:1529,lp:50140},
+ {character:'AKUMA',phase:'unknown',observed_at:new Date(start+65*60000).toISOString(),mr:1529,lp:50140}
+]);
+assert.equal(recon.get(lastSession.key).status,'snapshot_provisional');
+assert.equal(recon.get(lastSession.key).mr,9);
+assert.equal(recon.get(lastSession.key).lp,40);
+assert.equal(A.reconcileSessionDeltas([groupRows[0],{...groupRows[2],character:'KEN'}],[]).get(groupRows[0].key).status,'unavailable');
 console.log('Match/session/matchup analysis scenarios passed (synthetic)');
