@@ -286,3 +286,53 @@ footer{border-top:1px solid var(--app-border);color:var(--app-faint);font-size:1
   .chart-point-reading{font-size:11px}
   .chart-point-detail button{min-width:52px;font-size:10px}
 }
+
+/* Visual spec: MR/LP observed traces + five-observation smoother + linear regression. */
+#view-overview .chart-grid .panel-head{align-items:start;gap:10px}
+.chart-controls{display:flex;gap:5px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.chart-layer-toggle{min-height:38px;white-space:nowrap;padding:7px 11px;border-radius:999px;
+  background:#151b28;border:1px solid rgba(171,185,212,.19);color:#b6c0d4;cursor:pointer;font-size:11px;
+  font-weight:600;line-height:1.15;transition:background .15s,border-color .15s}
+.chart-layer-toggle.active{background:rgba(161,131,239,.17);color:#e9dfff;border-color:rgba(165,138,244,.42)}
+.chart-layer-toggle[data-layer="observed"].active{background:rgba(114,122,152,.18)}
+.chart-layer-toggle:focus-visible{outline:2px solid #bba3ff;outline-offset:2px}
+.chart-key{display:flex;align-items:center;flex-wrap:wrap;column-gap:16px;row-gap:7px;margin:13px 0 7px;
+  font-size:10px;line-height:1.25;color:#abb5c9}
+.chart-key span{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.chart-key-dot{display:block;width:8px;height:8px;border-radius:100%;background:#b48aff}
+.chart-key-dot.lp{background:#5bd7e8}
+.chart-key-line{display:block;width:22px;height:2px;background:#c8a4ff;border-radius:3px}
+.chart-key-line.lp{background:#9eeef3}
+.chart-key-dash{display:block;width:24px;border-top:2px dashed #e0e4f4}
+.chart-bottom{display:flex;align-items:stretch;gap:13px;padding-top:12px;margin-top:9px;border-top:1px solid var(--app-border)}
+#view-overview .chart-bottom .chart-foot{border:0;margin:0;padding:8px 0;flex:1;
+  font-variant-numeric:tabular-nums;line-height:1.8;font-size:11px;color:var(--app-muted)}
+.chart-slope{display:flex;flex-direction:column;justify-content:center;gap:4px;min-width:148px;
+  padding:9px 12px;border-radius:10px;background:rgba(182,195,228,.065);font-variant-numeric:tabular-nums}
+.chart-slope span{color:#b2bdd4;font-size:10px}
+.chart-slope strong{color:var(--app-positive);font-size:17px;white-space:nowrap;letter-spacing:-.025em}
+.chart-slope strong.negative{color:var(--app-negative)}
+.chart-slope strong.unavailable{color:var(--app-muted);white-space:normal;font-size:11px;font-weight:500}
+.chart-slope small{color:var(--app-faint);font-size:9px;line-height:1.4}
+#view-overview .chart-grid .panel .chart{margin-top:4px}
+@media(max-width:1100px){
+  #view-overview .chart-grid .panel-head{flex-direction:column;align-items:stretch}
+  .chart-controls{justify-content:flex-start}
+}
+@media(max-width:700px){
+  #view-overview .chart-grid .panel-head{gap:10px}
+  .chart-controls{width:100%;justify-content:flex-start}
+  .chart-layer-toggle{padding:8px 13px;font-size:11px;min-height:40px}
+  .chart-key{gap:6px 11px;margin:11px 0 5px;font-size:9px}
+  .chart-bottom{gap:8px;margin-top:9px}
+  .chart-slope{min-width:132px;padding:8px}
+  .chart-slope strong{font-size:15px}
+  #view-overview .chart-grid .chart{height:192px}
+}
+@media(max-width:370px){
+  .chart-layer-toggle{font-size:10px;padding:8px 9px}
+  .chart-key span{white-space:normal}
+  .chart-slope{min-width:105px}
+  .chart-slope strong{font-size:13px}
+}
+@media(prefers-reduced-motion:reduce){.chart-layer-toggle{transition:none}}
