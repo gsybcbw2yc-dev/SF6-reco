@@ -39,8 +39,8 @@ recon=A.reconcileSessionDeltas(groupRows,[{...snap,mr:1521}]);
 assert.equal(recon.get(older.key).status,'conflict');
 assert.equal(recon.get(older.key).mr,null); // contradictory snapshots never claim an amount
 const lastSession=A.sessions(groupRows)[0];
-recon=A.reconcileSessionDeltas(groupRows,[{...snap,observed_at:new Date(start+60*60000).toISOString()}]);
-assert.equal(recon.get(lastSession.key).status,'unavailable'); // snapshot's value is pre-match 0-min baseline, not a closing observation
+recon=A.reconcileSessionDeltas(groupRows,[{...snap,observed_at:new Date(start+50*60000).toISOString()}]);
+assert.equal(recon.get(lastSession.key).status,'unavailable'); // only four minutes after last upload, below the guard
 recon=A.reconcileSessionDeltas(groupRows,[
  {character:'AKUMA',phase:'unknown',observed_at:new Date(start+58*60000).toISOString(),mr:1529,lp:50140},
  {character:'AKUMA',phase:'unknown',observed_at:new Date(start+65*60000).toISOString(),mr:1529,lp:50140}
