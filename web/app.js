@@ -1,49 +1,85 @@
 const $=id=>document.getElementById(id); let history=[],runs=[],status={},range='7';const fmt=n=>n==null?'—':Number(n).toLocaleString('ja-JP');const date=s=>new Date(s).toLocaleString('ja-JP',{timeZone:'Asia/Tokyo',month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});const signed=n=>n==null?'—':(n>0?'+':'')+fmt(n);
 function download(name,contents,type){const a=document.createElement('a'),url=URL.createObjectURL(new Blob([contents],{type}));a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+// Per-chart visibility state persists across data refreshes and time-range changes.
+const chartLayers={
+  mr:{observed:true,average:true,regression:true},
+  lp:{observed:true,average:true,regression:true}
+};
 function chart(id,points,key,color) {
-  const node=$(id),detail=$(key+'-point-detail'),reading=$(key+'-point-reading'),closeButton=$(key+'-point-close');
+  const node=$(id),detail=$(key+'-point-detail'),
+        reading=$(key+'-point-reading'),closeButton=$(key+'-point-close'),
+        slopeEl=$(key+'-slope'),layers=chartLayers[key];
   node.replaceChildren();
-  // Clear selections whenever filters, data or the visible chart dimensions change.
   detail.hidden=true;
   reading.textContent='';
   closeButton.onclick=null;
-  points=points.filter(p=>p[key]!=null);
-  if(!points.length){
+  const rows=SF6ChartTrends.normalized(points,key);
+  const reg=SF6ChartTrends.regression(rows,key);
+  slopeEl.className=reg.available?(reg.slope<0?'negative':''):'unavailable';
+  if(reg.available){
+    const perHour=Math.abs(reg.slope)<0.05?0:reg.slope;
+    slopeEl.textContent=`${perHour>0?'+':''}${perHour.toFixed(1)} ${key.toUpperCase()}/時`;
+    slopeEl.title=`${reg.count}件の観測値、${reg.spanHours.toFixed(1)}時間の期間で計算。実プレイ時間ではありません。`;
+  }else{
+    slopeEl.textContent='算定不可';
+    slopeEl.title=reg.reason;
+  }
+  if(!rows.length){
     node.innerHTML='<div class="empty">この期間の観測データはありません。初回取得後にグラフが表示されます。</div>';
     return;
   }
   const W=Math.max(300,Math.round(node.clientWidth||600)),
         H=Math.max(170,Math.round(node.clientHeight||210)),
         L=52,R=12,T=16,B=30;
-  let min=Math.min(...points.map(p=>p[key])),max=Math.max(...points.map(p=>p[key]));
+  const maSegments=SF6ChartTrends.movingAverage(rows,key,5);
+  const projected=reg.available&&layers.regression?[reg.startValue,reg.endValue]:[];
+  const displayValues=[...rows.map(row=>row[key]),...projected,
+    ...(layers.average?maSegments.flat().map(item=>item.value):[])];
+  let min=Math.min(...displayValues),max=Math.max(...displayValues);
   const pad=Math.max(1,(max-min)*.13);
   min-=pad;max+=pad;
-  const times=points.map(p=>new Date(p.observed_at).getTime()),
-        start=Math.min(...times),end=Math.max(...times);
-  const X=x=>start===end?W/2:L+(x-start)/(end-start)*(W-L-R);
-  const Y=y=>T+(max-y)/(max-min)*(H-T-B);
+  const start=rows[0].stamp,end=rows.at(-1).stamp;
+  const X=time=>start===end?W/2:L+(time-start)/(end-start)*(W-L-R);
+  const Y=value=>T+(max-value)/(max-min)*(H-T-B);
   const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
   svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
   svg.setAttribute('role','img');
-  svg.setAttribute('aria-label',`${key.toUpperCase()} の時系列グラフ。観測点を選択すると、このカード内に詳細を表示します。`);
-  function line(tag,attrs,parent=svg){
+  svg.setAttribute('aria-label',`${key.toUpperCase()}観測値の推移。傾向線は直近5観測の移動平均、近似線は期間全体の線形回帰です。`);
+  const draw=(tag,attrs,parent=svg)=>{
     const el=document.createElementNS(svg.namespaceURI,tag);
     Object.entries(attrs).forEach(([name,value])=>el.setAttribute(name,value));
     parent.append(el);
     return el;
-  }
+  };
   for(let i=0;i<4;i++){
     const y=T+i*(H-T-B)/3;
-    line('line',{x1:L,x2:W-R,y1:y,y2:y,stroke:'#2c354a','stroke-dasharray':'3 5'});
-    const label=line('text',{x:0,y:y+4,fill:'#79869e','font-size':11});
+    draw('line',{x1:L,x2:W-R,y1:y,y2:y,stroke:'#2c354a','stroke-dasharray':'3 5'});
+    const label=draw('text',{x:0,y:y+4,fill:'#79869e','font-size':11});
     label.textContent=fmt(Math.round(max-i*(max-min)/3));
   }
-  const coords=points.map((p,i)=>[X(times[i]),Y(p[key])]);
-  for(let i=1;i<coords.length;i++){
-    if(points[i].character!==points[i-1].character||points[i].phase!==points[i-1].phase)continue;
-    line('line',{x1:coords[i-1][0],y1:coords[i-1][1],x2:coords[i][0],y2:coords[i][1],
-      stroke:color,'stroke-width':2.6,'stroke-linecap':'round',
-      'stroke-dasharray':times[i]-times[i-1]>90*60000?'5 5':''});
+  const coords=rows.map(row=>[X(row.stamp),Y(row[key])]);
+  if(layers.observed){
+    for(let i=1;i<coords.length;i++){
+      if(rows[i].character!==rows[i-1].character||rows[i].phase!==rows[i-1].phase)continue;
+      draw('line',{x1:coords[i-1][0],y1:coords[i-1][1],x2:coords[i][0],y2:coords[i][1],
+        stroke:color,'stroke-width':2.3,'stroke-linecap':'round',
+        'stroke-dasharray':rows[i].stamp-rows[i-1].stamp>90*60000?'5 5':''});
+    }
+  }
+  if(layers.average){
+    for(const segment of maSegments){
+      if(segment.length<2)continue;
+      draw('polyline',{points:segment.map(point=>`${X(point.stamp)},${Y(point.value)}`).join(' '),
+        fill:'none',stroke:key==='mr'?'#d7a4ff':'#a1eff4',
+        'stroke-width':3,'stroke-linecap':'round','stroke-linejoin':'round',
+        'data-chart-line':'average'});
+    }
+  }
+  if(layers.regression&&reg.available){
+    draw('line',{x1:X(reg.startStamp),x2:X(reg.endStamp),
+      y1:Y(reg.startValue),y2:Y(reg.endValue),
+      stroke:'#e6e7f0','stroke-width':1.8,'stroke-linecap':'round',
+      'stroke-dasharray':'6 6','data-chart-line':'regression'});
   }
   let selected=-1,selectedCircle=null;
   function dismiss(){
@@ -51,44 +87,46 @@ function chart(id,points,key,color) {
     reading.textContent='';
     if(selectedCircle){
       selectedCircle.setAttribute('aria-pressed','false');
-      selectedCircle.setAttribute('r',points.length>100?2:4);
+      selectedCircle.setAttribute('r',rows.length>100?2:4);
     }
     selected=-1;selectedCircle=null;
   }
   closeButton.onclick=dismiss;
-  coords.forEach(([x,y],i)=>{
-    if(points.length>25&&i>0&&i<points.length-1&&
-       points[i][key]===points[i-1][key]&&points[i][key]===points[i+1][key])return;
-    const circle=line('circle',{cx:x,cy:y,r:points.length>100?2:4,fill:color,
-      stroke:'transparent','stroke-width':18,'pointer-events':'all',
-      role:'button',tabindex:0,'aria-pressed':'false',
-      'aria-label':`${date(points[i].observed_at)}、${key.toUpperCase()} ${fmt(points[i][key])}。詳細を表示`});
-    const toggle=()=>{
-      if(selected===i){dismiss();return;}
-      if(selectedCircle){
-        selectedCircle.setAttribute('aria-pressed','false');
-        selectedCircle.setAttribute('r',points.length>100?2:4);
-      }
-      selected=i;selectedCircle=circle;
-      circle.setAttribute('aria-pressed','true');
-      circle.setAttribute('r',points.length>100?4:5);
-      reading.textContent=`${date(points[i].observed_at)} JST · ${key.toUpperCase()} ${fmt(points[i][key])} · ${points[i].character}`;
-      detail.hidden=false;
-    };
-    // A tap/click is deliberate; merely focusing a point on iOS must not leave a floating overlay.
-    circle.addEventListener('click',toggle);
-    circle.addEventListener('keydown',event=>{
-      if(event.key==='Enter'||event.key===' '){event.preventDefault();toggle();}
-      else if(event.key==='Escape'){event.preventDefault();dismiss();}
+  if(layers.observed){
+    coords.forEach(([x,y],i)=>{
+      if(rows.length>25&&i>0&&i<rows.length-1&&
+         rows[i][key]===rows[i-1][key]&&rows[i][key]===rows[i+1][key])return;
+      const circle=draw('circle',{cx:x,cy:y,r:rows.length>100?2:4,fill:color,
+        stroke:'transparent','stroke-width':18,'pointer-events':'all',
+        role:'button',tabindex:0,'aria-pressed':'false',
+        'aria-label':`${date(rows[i].observed_at)}、${key.toUpperCase()} ${fmt(rows[i][key])}。詳細を表示`});
+      const toggle=()=>{
+        if(selected===i){dismiss();return;}
+        if(selectedCircle){
+          selectedCircle.setAttribute('aria-pressed','false');
+          selectedCircle.setAttribute('r',rows.length>100?2:4);
+        }
+        selected=i;selectedCircle=circle;
+        circle.setAttribute('aria-pressed','true');
+        circle.setAttribute('r',rows.length>100?4:5);
+        reading.textContent=`${date(rows[i].observed_at)} JST · ${key.toUpperCase()} ${fmt(rows[i][key])} · ${rows[i].character}`;
+        detail.hidden=false;
+      };
+      circle.addEventListener('click',toggle);
+      circle.addEventListener('keydown',event=>{
+        if(event.key==='Enter'||event.key===' '){event.preventDefault();toggle();}
+        else if(event.key==='Escape'){event.preventDefault();dismiss();}
+      });
     });
-  });
-  for(const i of [0,points.length-1]){
-    const label=line('text',{x:i?W-R:L,y:H-4,'text-anchor':i?'end':'start',
+  }
+  for(const i of new Set([0,rows.length-1])){
+    const label=draw('text',{x:i?W-R:L,y:H-4,'text-anchor':i?'end':'start',
       fill:'#78859d','font-size':11});
-    label.textContent=date(points[i].observed_at);
+    label.textContent=date(rows[i].observed_at);
   }
   node.append(svg);
 }
+
 function render(){let character=$('character').value,phase=$('phase').value,all=history.filter(p=>(character==='すべて'||p.character===character)&&(phase==='all'||p.phase===phase));let cutoff=range==='all'?0:Date.now()-Number(range)*864e5,points=all.filter(p=>new Date(p.observed_at).getTime()>=cutoff);let latest=all.at(-1);for(let key of ['mr','lp']){let valid=points.filter(p=>p[key]!=null),last=valid.at(-1),previous=valid.at(-2);$(key).textContent=fmt(latest?.[key]);$(key+'-delta').textContent=last&&previous&&last.phase===previous.phase&&last.character===previous.character?`前回観測比 ${signed(last[key]-previous[key])}`:'比較可能な同フェーズの観測値がありません';$(key+'-stats').textContent=`期間内最高 ${fmt(valid.length?Math.max(...valid.map(p=>p[key])):null)}　最低 ${fmt(valid.length?Math.min(...valid.map(p=>p[key])):null)}`;chart(key+'-chart',valid,key,key==='mr'?'#b48aff':'#5bd7e8')}let mr=all.filter(p=>p.mr!=null);function delta(days){let recent=mr.at(-1),before=mr.filter(p=>new Date(p.observed_at)<=new Date(recent?.observed_at).getTime()-days*864e5).at(-1);return recent&&before?signed(recent.mr-before.mr):'—'}$('day').textContent=delta(1);$('week').textContent=delta(7);let first=points.find(p=>p.mr!=null),last=points.filter(p=>p.mr!=null).at(-1);$('trend').textContent=!first||!last||first===last?'—':last.mr>first.mr?'上昇傾向':last.mr<first.mr?'下降傾向':'横ばい';$('samples').textContent=`${all.length} 件の観測値`;let changes=all.filter(p=>p.observation_type==='change');$('last-change').textContent='最終変動：'+(changes.length?date(changes.at(-1).observed_at)+' JST':'比較用の変動は未検出');renderTimeAnalysis(history,range,timeWindow)}
 let timeWindow=60;
 let refreshing=false,hasData=false,lastFetchAt=0,historyVersion='';
@@ -149,6 +187,22 @@ async function refresh(force=false){
     $('error').textContent='画面のデータ再取得に失敗しました。通信が戻ると再試行します。';
   }finally{refreshing=false;$('refresh').disabled=false;window.matchDashboard?.refresh()}
 }
+document.querySelectorAll('[data-chart][data-layer]').forEach(button=>{
+  const key=button.dataset.chart,layer=button.dataset.layer;
+  if(!chartLayers[key]||!(layer in chartLayers[key]))return;
+  button.onclick=()=>{
+    chartLayers[key][layer]=!chartLayers[key][layer];
+    const active=chartLayers[key][layer];
+    button.classList.toggle('active',active);
+    button.setAttribute('aria-pressed',String(active));
+    // Redraw only the selected graph; the other graph and filters are untouched.
+    const character=$('character').value,phase=$('phase').value;
+    const cutoff=range==='all'?0:Date.now()-Number(range)*864e5;
+    const selected=history.filter(p=>(character==='すべて'||p.character===character)&&
+      (phase==='all'||p.phase===phase)&&new Date(p.observed_at).getTime()>=cutoff);
+    chart(key+'-chart',selected,key,key==='mr'?'#b48aff':'#5bd7e8');
+  };
+});
 document.querySelectorAll('[data-window]').forEach(b=>b.onclick=()=>{timeWindow=Number(b.dataset.window);document.querySelector('.time-windows .active')?.classList.remove('active');b.classList.add('active');renderTimeAnalysis(history,range,timeWindow)});
 $('refresh').onclick=()=>refresh(true);
 $('character').onchange=render;$('phase').onchange=render;document.querySelectorAll('[data-range]').forEach(b=>b.onclick=()=>{range=b.dataset.range;document.querySelector('.segmented .active')?.classList.remove('active');b.classList.add('active');render()});$('json').onclick=()=>download('sf6-history.json',JSON.stringify({schema:2,observations:history},null,2),'application/json');$('csv').onclick=()=>download('sf6-history.csv','observed_at,character,phase,mr,lp,delta_mr,delta_lp,observation_type,source\n'+history.map(p=>['observed_at','character','phase','mr','lp','delta_mr','delta_lp','observation_type','source'].map(k=>'"'+String(p[k]??'').replaceAll('"','""')+'"').join(',')).join('\n'),'text/csv');refresh(true);
