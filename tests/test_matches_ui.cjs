@@ -75,7 +75,8 @@ async function run(){
  assert.ok(get('match-warning').textContent.includes('Act 14'));
  assert.match(get('goal-forecast-quality').textContent,/予測|ランクマッチ|更新/);
  assert.match(get('goal-window-20-evidence').textContent,/試合/);
- assert.equal(get('goal-1500-20-games').textContent,'データ不足');
+ assert.equal(get('goal-1500-20-games').textContent,'達成済み');
+ assert.equal(get('goal-1600-20-games').textContent,'データ不足');
  assert.ok(get('goal-forecast-audit').textContent.includes('セッション境界'));
 
  console.log('Monthly match UI refresh/cache/recovery and session reconciliation scenarios passed (synthetic)');
