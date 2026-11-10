@@ -31,6 +31,12 @@ async function run() {
   element('phase').value = 'all';
   element('phase').add({ value: 'all' });
   const listeners = {}, windows = {}, timers = [];
+  const layerButtons=[];
+  for(const key of ['mr','lp'])for(const layer of ['observed','average','regression']){
+    const button=new Element();
+    button.dataset={chart:key,layer};
+    layerButtons.push(button);
+  }
   element('mr-chart').clientWidth = 340;
   element('mr-chart').clientHeight = 176;
   const document = {
@@ -39,7 +45,7 @@ async function run() {
     createElement: () => new Element(),
     createElementNS: (namespaceURI,tagName) => Object.assign(new Element(), { namespaceURI,tagName }),
     querySelector: () => new Element(),
-    querySelectorAll: () => [],
+    querySelectorAll: selector => selector==='[data-chart][data-layer]'?layerButtons:[],
     addEventListener: (name, cb) => { listeners[name] = cb; },
   };
   const window = { addEventListener: (name, cb) => { windows[name] = cb; } };
@@ -56,6 +62,7 @@ async function run() {
   const context = vm.createContext({ document, window, fetch, Date: Clock, Option: class { constructor(label, value) { this.value = value; } }, setInterval: cb => timers.push(cb), setTimeout() {}, URL: {}, Blob, innerWidth: 1024 });
   vm.runInContext(fs.readFileSync('web/time-analysis.js', 'utf8'), context);
   vm.runInContext(fs.readFileSync('web/time-analysis-ui.js', 'utf8'), context);
+  vm.runInContext(fs.readFileSync('web/chart-trends.js', 'utf8'), context);
   vm.runInContext(fs.readFileSync('web/app.js', 'utf8'), context);
   const flush = () => new Promise(resolve => setImmediate(resolve));
   await flush();
@@ -99,6 +106,26 @@ async function run() {
   assert.equal(element('lp').textContent, '100,843');
   assert.equal(element('mr-point-detail').hidden, true); // data redraw clears stale selection
   assert.equal(element('mr-chart').children[0].children.filter(x=>x.tagName==='circle').length, 2);
+  // Both charts have their own independent layer toggles. No network access on switching.
+  const observedMr=layerButtons.find(b=>b.dataset.chart==='mr'&&b.dataset.layer==='observed');
+  const averageMr=layerButtons.find(b=>b.dataset.chart==='mr'&&b.dataset.layer==='average');
+  const observedLp=layerButtons.find(b=>b.dataset.chart==='lp'&&b.dataset.layer==='observed');
+  const initialCalls=calls;
+  observedMr.onclick();
+  assert.equal(observedMr.attributes['aria-pressed'],'false');
+  assert.equal(element('mr-chart').children[0].children.some(x=>x.tagName==='circle'),false);
+  assert.equal(element('lp-chart').children[0].children.some(x=>x.tagName==='circle'),true);
+  assert.equal(calls,initialCalls);
+  observedMr.onclick();
+  assert.equal(observedMr.attributes['aria-pressed'],'true');
+  averageMr.onclick();
+  assert.equal(averageMr.attributes['aria-pressed'],'false');
+  observedLp.onclick();
+  assert.equal(observedLp.attributes['aria-pressed'],'false');
+  observedLp.onclick();
+  assert.equal(observedLp.attributes['aria-pressed'],'true');
+  averageMr.onclick();
+  assert.equal(averageMr.attributes['aria-pressed'],'true');
   assert.equal(element('character').value, 'AKUMA');
   assert.equal(vm.runInContext('range', context), '30');
 
@@ -120,6 +147,23 @@ async function run() {
   assert.equal(calls, 18); // only one three-file request is in flight
   context.releaseFetch(); await flush();
   assert.equal(element('refresh').disabled, false);
-  console.log('Dashboard refresh scenarios passed');
+  snapshot.history.observations.push(
+    {character:'AKUMA',mr:1382,lp:100923,phase:'unknown',observed_at:'2026-11-08T04:30:00Z'},
+    {character:'AKUMA',mr:1392,lp:101023,phase:'unknown',observed_at:'2026-11-08T05:00:00Z'}
+  );
+  snapshot.status.last_success='2026-11-08T05:00:00Z';
+  nowMs+=60_000; timers[0](); await flush();
+  assert.match(element('mr-slope').textContent,/MR\/時/);
+  const svg=element('mr-chart').children[0];
+  assert.ok(svg.children.some(x=>x.tagName==='polyline'&&x.attributes['data-chart-line']==='average'));
+  assert.ok(svg.children.some(x=>x.tagName==='line'&&x.attributes['data-chart-line']==='regression'));
+  // Regression toggle removes only regression line, not the observed SVG circles.
+  const regressionMr=layerButtons.find(b=>b.dataset.chart==='mr'&&b.dataset.layer==='regression');
+  regressionMr.onclick();
+  assert.equal(element('mr-chart').children[0].children.some(x=>x.attributes['data-chart-line']==='regression'),false);
+  assert.equal(element('mr-chart').children[0].children.filter(x=>x.tagName==='circle').length,4);
+  regressionMr.onclick();
+  assert.equal(element('mr-chart').children[0].children.some(x=>x.attributes['data-chart-line']==='regression'),true);
+  console.log('Dashboard refresh, chart MA5/OLS layers and point selection scenarios passed');
 }
 run().catch(e => { console.error(e); process.exitCode = 1; });
