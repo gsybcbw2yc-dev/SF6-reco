@@ -43,7 +43,9 @@
       const orderUncertain = new Set(matches.map(r => r.occurred_at)).size !== matches.length;
       const comparable = first.phase !== 'unknown' && matches.every(r => r.phase === first.phase && r.character === first.character && r.mode === 'ranked');
       const reference = key => comparable && Number.isFinite(first[key]) && Number.isFinite(last[key]) ? last[key] - first[key] : null;
-      return { ...stats(matches), key: first.key, start: first.occurred_at, end: last.occurred_at,
+      return { ...stats(matches), key: first.key, endKey: last.key,
+        startMr: first.mr_before, startLp: first.lp_before,
+        start: first.occurred_at, end: last.occurred_at,
         elapsedMinutes: (Date.parse(last.occurred_at) - Date.parse(first.occurred_at)) / 60000,
         maxWins: orderUncertain ? null : maxWins, maxLosses: orderUncertain ? null : maxLosses,
         orderUncertain, characters: [...new Set(matches.map(r => r.character))],
@@ -75,5 +77,74 @@
       winRate: current.winRate !== null && previous.winRate !== null ? current.winRate - previous.winRate : null,
       elapsedMinutes: current.elapsedMinutes - previous.elapsedMinutes };
   }
-  return { filter, stats, sessions, matchups, compare };
+
+  /**
+   * Reconstruct session-level *reference* deltas from next session's verified pre-match
+   * values (and independent periodic snapshots). They are NOT exact per-match deltas.
+   * Return values must not overwrite mrDelta/lpDelta or imply full battlelog coverage.
+   */
+  function reconcileSessionDeltas(rows, observations = [], gapMinutes = 45) {
+    const ranked=rows.filter(r=>r.mode==='ranked');
+    const chronological=sessions(ranked,gapMinutes).reverse();
+    const snapRows=Array.isArray(observations)?observations:[];
+    const byStart=new Map();
+    for(let i=0;i<chronological.length;i++){
+      const current=chronological[i],next=chronological[i+1];
+      const base={key:current.key,endKey:current.endKey,games:current.games,
+        startMr:current.startMr,startLp:current.startLp,
+        mr:null,lp:null,status:'unavailable',snapshots:0,
+        endObservationAt:null,nextStart:next?.start??null,reason:'',
+        gapMinutes:next?(Date.parse(next.start)-Date.parse(current.end))/60000:null};
+      const output=(changes)=>byStart.set(current.key,{...base,...changes});
+      if(current.orderUncertain||current.characters.length!==1){
+        output({reason:'同時刻の試合・キャラ混在があるため比較不可'});continue;
+      }
+      if(!Number.isFinite(current.startMr)||!Number.isFinite(current.startLp)){
+        output({reason:'セッション開始時のMR/LPが不明'});continue;
+      }
+      const startTime=Date.parse(current.end);
+      const finishTime=next?Date.parse(next.start):startTime+3*3600000;
+      const post=snapRows.filter(o=>o.character===current.characters[0]&&
+        o.phase===current.phase&&Number.isFinite(o.mr)&&Number.isFinite(o.lp)&&
+        Number.isFinite(Date.parse(o.observed_at))&&
+        Date.parse(o.observed_at)>startTime&&Date.parse(o.observed_at)<finishTime)
+        .sort((a,b)=>Date.parse(a.observed_at)-Date.parse(b.observed_at));
+      if(next){
+        if(next.orderUncertain||next.characters.length!==1||
+           next.characters[0]!==current.characters[0]||next.phase!==current.phase){
+          output({reason:'次セッションとキャラ・フェーズ・時系列が比較不可'});continue;
+        }
+        if(!Number.isFinite(next.startMr)||!Number.isFinite(next.startLp)){
+          output({reason:'次セッション初戦の対戦前MR/LPが不明'});continue;
+        }
+        const conflict=post.some(o=>o.mr!==next.startMr||o.lp!==next.startLp);
+        if(conflict){
+          output({status:'conflict',snapshots:post.length,
+            reason:'セッション間の定期観測値が次セッション開始値と一致せず、未取得試合などの可能性あり'});continue;
+        }
+        output({status:post.length?'snapshot_matched':'next_session_only',
+          mr:next.startMr-current.startMr,lp:next.startLp-current.startLp,
+          snapshots:post.length,
+          endObservationAt:post.at(-1)?.observed_at??next.start,
+          reason:post.length?'次セッション初戦前値と途中の定期観測値が一致':'次セッション初戦前値のみ（定期観測の裏付けなし）'});
+        continue;
+      }
+      // Latest session: use only stable near-term *post-session* snapshots, never
+      // extrapolate from the final match's pre-match rating.
+      const stable=post.filter(o=>Date.parse(o.observed_at)-startTime>=10*60000);
+      if(!stable.length){
+        output({reason:'次セッションの開始値、または終了10分後以降の定期観測が未取得'});continue;
+      }
+      const last=stable.at(-1);
+      if(stable.some(o=>o.mr!==last.mr||o.lp!==last.lp)){
+        output({status:'conflict',snapshots:stable.length,reason:'終了後3時間の観測値に変動があり、収支を特定できない'});continue;
+      }
+      output({status:'snapshot_provisional',mr:last.mr-current.startMr,
+        lp:last.lp-current.startLp,snapshots:stable.length,
+        endObservationAt:last.observed_at,
+        reason:'終了後の安定した定期観測値。次セッション開始時点では未照合'});
+    }
+    return byStart;
+  }
+  return { filter, stats, sessions, matchups, compare, reconcileSessionDeltas };
 });
