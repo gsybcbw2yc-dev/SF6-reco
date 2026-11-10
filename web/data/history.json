@@ -1337,6 +1337,19 @@
       "delta_lp": 0,
       "observation_type": "heartbeat",
       "observation_id": "42869922505:1:AKUMA"
+    },
+    {
+      "character": "AKUMA",
+      "mr": 1450,
+      "lp": 109059,
+      "phase": "unknown",
+      "phase_source": null,
+      "observed_at": "2026-11-10T18:30:41Z",
+      "source": "periodic_buckler_snapshot",
+      "delta_mr": 0,
+      "delta_lp": 0,
+      "observation_type": "heartbeat",
+      "observation_id": "42875880983:1:AKUMA"
     }
   ]
 }
