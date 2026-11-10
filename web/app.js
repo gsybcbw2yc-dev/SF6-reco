@@ -137,7 +137,7 @@ function updateSelectors(){
   if(!hasData){let preferred=chars.find(c=>/akuma|gouki|豪鬼/i.test(c));if(preferred)$('character').value=preferred}
   else $('character').value=selected;
   const phase=$('phase').value;
-  [...new Set(history.map(x=>x.phase))].sort().forEach(p=>{if(![...$('phase').options].some(o=>o.value===p))$('phase').add(new Option(p,p))});
+  [...new Set(history.map(x=>x.phase))].sort().forEach(p=>{if(![...$('phase').options].some(o=>o.value===p))$('phase').add(new Option(typeof SF6PhaseConfig!=='undefined'?SF6PhaseConfig.label(p):p,p))});
   if(hasData)$('phase').value=phase;
 }
 function updateStatus(){
@@ -157,7 +157,9 @@ function updateStatus(){
   $('longest-gap').textContent=gaps.length?`記録済み成功間の最長空白：${Math.round(Math.max(...gaps))}分（runs.json導入後のみ）。`:'成功間の空白はまだ計算できません。';
   let daysLeft=Math.ceil((new Date('2026-12-08T00:00:00+09:00')-Date.now())/864e5);
   $('token-expiry').textContent=daysLeft<=14?daysLeft<=0?'外部起動用トークンの有効期限（12月8日）を確認し、必要なら更新してください。':`外部起動用トークンの期限まで約${daysLeft}日。期限前に更新してください。`:'';
-  $('phase-note').textContent=status.phase_diagnostic?.reason?`フェーズ：判定不能（${status.phase_diagnostic.reason}）`:'';
+  const assumed=typeof SF6PhaseConfig!=='undefined'?SF6PhaseConfig.label('unknown'):'未判定';
+  $('phase-note').textContent=`現在の暫定表示：${assumed}（ユーザー指定・Buckler上は未判定）。`+
+    (status.phase_diagnostic?.reason?` 取得元フェーズ：判定不能（${status.phase_diagnostic.reason}）`:'');
   $('error').textContent=status.last_error?`${date(status.last_error.at)} · ${status.last_error.message}`:'取得エラーはありません。';
   $('errors').replaceChildren(...(status.errors||[]).map(e=>{let li=document.createElement('li');li.textContent=`${date(e.at)} · ${e.message}`;return li}));
   $('last-check').textContent=lastFetchAt?date(new Date(lastFetchAt).toISOString())+' JST':'未確認';
