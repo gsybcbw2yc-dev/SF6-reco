@@ -16,7 +16,7 @@
   function line(parent, content, className) { parent.append(element('p', content, className)); }
   class Dashboard {
     constructor() {
-      this.cache = new Map(); this.rows = []; this.index = null; this.status = null;
+      this.cache = new Map(); this.rows = []; this.observations = []; this.index = null; this.status = null;
       this.busy = false; this.pending = false; this.page = 0; this.sessionLimit = 20; this.initial = true;
       for (const id of ['match-period','match-mode','match-character','match-own-control','match-opponent-control','session-gap','matchup-order','time-bucket']) {
         $(id).onchange = () => { this.page = 0; this.sessionLimit = 20; id === 'match-period' ? this.refresh() : this.render(); };
@@ -48,7 +48,11 @@
       this.busy = true; $('match-refresh').textContent = '試合データを確認中…';
       try {
         const version=Date.now();
-        const [index,status] = await Promise.all([this.json(`data/matches/index.json?v=${version}`),this.json(`data/matches/status.json?v=${version}`)]);
+        const [index,status,history] = await Promise.all([
+          this.json(`data/matches/index.json?v=${version}`),
+          this.json(`data/matches/status.json?v=${version}`),
+          this.json(`data/history.json?v=${version}`).catch(()=>null)
+        ]);
         if (index.schema!==1 || !Array.isArray(index.months)) throw Error('Match index unavailable');
         const cutoff=this.options().days==='all'?-Infinity:Date.now()-Number(this.options().days)*2*86400000; // include preceding comparison window
         const months=index.months.filter(m=>!m.last_at||Date.parse(m.last_at)>=cutoff);
@@ -64,6 +68,7 @@
         }));
         this.rows=[...new Map(loaded.flat().map(r=>[r.key,r])).values()];
         this.index=index;this.status=status;
+        this.observations=Array.isArray(history?.observations)?history.observations:[];
         const chars=[...new Set(this.rows.map(r=>r.character))].sort();
         chars.forEach(c=>{if (![...$('match-character').options].some(o=>o.value===c)) $('match-character').add(new Option(c,c));});
         if (this.initial&&chars.includes('AKUMA')) $('match-character').value='AKUMA';
@@ -196,7 +201,11 @@
       if(!rows.length)line(list,'この条件の記録はありません。');
       $('match-page').textContent=`${this.page+1} / ${Math.max(1,Math.ceil(rows.length/20))}`;
       $('match-prev').disabled=this.page===0;$('match-next').disabled=(this.page+1)*20>=rows.length;
-      const sessions=SF6Matches.sessions(rows,Number($('session-gap').value));
+      const sessionGap=Number($('session-gap').value);
+      const sessions=SF6Matches.sessions(rows,sessionGap);
+      // Use the complete collected ranked archive, never a filtered subset, to
+      // obtain boundary values from the *next session*.
+      const boundary=SF6Matches.reconcileSessionDeltas(this.rows,this.observations,sessionGap);
       const comparison=SF6Matches.compare(sessions[0],sessions[1]);
       $('session-comparison').textContent=comparison?`直前セッション比：試合数 ${signed(comparison.games)}、勝率 ${signed(comparison.winRate)}ポイント、経過時間 ${signed(comparison.elapsedMinutes)}分。`:'比較できるセッションはまだ2件ありません。';
       const sessionList=$('session-list');sessionList.replaceChildren();
@@ -204,8 +213,27 @@
         const card=element('article',undefined,'battle-card');card.append(element('strong',`${date(s.start)} 〜 ${date(s.end)} JST`));
         line(card,`${s.characters.join(' / ')} · 記録${s.games}試合 · ${s.wins}勝 ${s.losses}敗 ${s.draws}分 不明${s.unknown} · 勝率 ${percent(s.winRate)}`);
         line(card,`経過 ${s.elapsedMinutes.toFixed(1)}分 · 最大連勝 ${metric(s.maxWins)}／連敗 ${metric(s.maxLosses)}`);
-        line(card,`確定MR/LP収支：${s.mrDelta===null?'算定不可':signed(s.mrDelta)} / ${s.lpDelta===null?'算定不可':signed(s.lpDelta)}`);
-        if(s.referenceMr!==null||s.referenceLp!==null)line(card,`先頭→末尾の対戦前観測差（参考、最終試合の結果を含まない）：MR ${signed(s.referenceMr)} / LP ${signed(s.referenceLp)}`);
+        if(s.mrDelta!==null&&s.lpDelta!==null) {
+          line(card,`確定MR/LP収支：${signed(s.mrDelta)} / ${signed(s.lpDelta)}`,'session-delta');
+        } else {
+          const ref=boundary.get(s.key);
+          const valid=ref&&ref.endKey===s.endKey&&ref.games===s.games&&s.characters.length===1&&s.startMr===ref.startMr&&s.startLp===ref.startLp;
+          if(valid&&ref.mr!==null&&ref.lp!==null){
+            const method=ref.status==='snapshot_matched'?'次セッション開始値・定期観測と一致':
+              ref.status==='next_session_only'?'次セッション開始値のみ（参考）':
+              '終了後の定期観測（暫定）';
+            line(card,`記録上のMR/LP収支：${signed(ref.mr)} / ${signed(ref.lp)}　· ${method}`,'session-delta');
+            const detail=element('details',undefined,'session-delta-method');
+            detail.append(element('summary','収支の算定根拠'));
+            line(detail,`セッション開始の対戦前値 MR ${metric(ref.startMr)}／LP ${metric(ref.startLp)} から、${method}による後続値との差分。次セッション ${ref.nextStart?date(ref.nextStart)+' JST':'未開始'}。定期観測の照合 ${ref.snapshots}件。フェーズ ${s.phase}。`);
+            line(detail,'間に未取得のランクマッチやフェーズ変更がある可能性を排除できません。対戦ごとの確定増減と区別するため、記録上の参考収支として表示します。');
+            card.append(detail);
+          } else {
+            const reason=valid?ref.reason:'現在の表示フィルタではセッションの全ランクマッチを再構成できません';
+            line(card,`MR/LP収支：算定不可（${reason}）`,'session-delta-warning');
+          }
+        }
+        if(s.referenceMr!==null||s.referenceLp!==null)line(card,`先頭→末尾の対戦前観測差（最終試合の結果を含まない）：MR ${signed(s.referenceMr)} / LP ${signed(s.referenceLp)}`);
         if(s.orderUncertain)line(card,'同一秒の試合があり順序不明のため連勝・連敗は算定不可。');
         sessionList.append(card);
       }
