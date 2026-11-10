@@ -47,4 +47,22 @@ const missing=F.analyze({latest:null,lastBar:null,regression:null,now});
 assert.equal(missing.targets[0].shortLabel,'算定不可');
 assert.equal(missing.current,null);
 assert.equal(missing.stale,true);
+// Rolling 24h reference uses actual captured points, not an interpolated missing value.
+const at=Date.parse(latest.observed_at);
+const sample=[
+  {mr:1377,phase:'unknown',character:'AKUMA',observed_at:new Date(at-24*H+3*60000).toISOString()},
+  {mr:1380,phase:'unknown',character:'AKUMA',observed_at:new Date(at-24*H+26*60000).toISOString()},
+  {mr:1450,phase:'unknown',character:'AKUMA',observed_at:latest.observed_at}
+];
+const rolling=F.rolling24h(sample);
+assert.equal(rolling.delta,73);
+assert.equal(rolling.observedStart,sample[0].observed_at);
+assert.ok(rolling.rate>3&&rolling.rate<3.1);
+assert.equal(rolling.end,at);
+assert.equal(F.rolling24h([sample[0]]),null);
+assert.equal(F.rolling24h([sample[0],sample[2]],1),null);
+assert.equal(F.rolling24h([sample[0],{...sample[2],phase:'2'}]),null);
+assert.equal(F.rolling24h([{...sample[0],mr:null},sample[2]]),null);
+const outOfDate=F.analyze({latest,lastBar:rolling,regression:long,now});
+assert.ok(outOfDate.targets[0].shortHours>16);
 console.log('Goal MR forecasts: conditional ETA, negative or missing rate, stale and achieved tests passed');
