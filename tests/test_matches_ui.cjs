@@ -51,7 +51,7 @@ async function run(){
  const oldSession=get('session-list').children.at(-1);
  const deltaText=oldSession.children.find(e=>String(e.textContent).includes('記録上のMR/LP収支'));
  assert.ok(deltaText,'session reference delta is shown');
- assert.match(deltaText.textContent,/\\+10 \\/ \\+80/);
+ assert.ok(deltaText.textContent.includes('+10 / +80'));
  assert.match(deltaText.textContent,/定期観測と一致/);
  const newestSession=get('session-list').children[0];
  assert.match(newestSession.children.map(e=>e.textContent).join(' '),/算定不可/);
