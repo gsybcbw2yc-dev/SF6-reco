@@ -43,6 +43,7 @@ jobs:
       - name: Test dashboard refresh
         run: |
           node tests/test_dashboard.cjs
+          node tests/test_chart_trends.cjs
           node tests/test_time_analysis.cjs
           node tests/test_match_analysis.cjs
           node tests/test_matches_ui.cjs
