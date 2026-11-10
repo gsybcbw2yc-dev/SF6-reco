@@ -166,6 +166,13 @@ async function run() {
   assert.equal(element('mr-chart').children[0].children.filter(x=>x.tagName==='circle').length,4);
   regressionMr.onclick();
   assert.equal(element('mr-chart').children[0].children.some(x=>x.attributes['data-chart-line']==='regression'),true);
+  // Recompute match-based target forecasts immediately on character/phase changes.
+  let matchForecastRenders=0;
+  window.matchDashboard={render(){matchForecastRenders++;}};
+  element('character').onchange();
+  element('phase').onchange();
+  assert.equal(matchForecastRenders,2);
+  delete window.matchDashboard;
   console.log('Dashboard refresh, chart MA5/OLS layers and point selection scenarios passed');
 }
 run().catch(e => { console.error(e); process.exitCode = 1; });
