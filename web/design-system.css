@@ -377,3 +377,21 @@ footer{border-top:1px solid var(--app-border);color:var(--app-faint);font-size:1
 .battle-card .session-delta-method summary{cursor:pointer;min-height:35px;color:#aab8ce;font-size:11px;display:flex;align-items:center}
 .battle-card .session-delta-method p{color:#94a2bc;font-size:11px;line-height:1.75;margin:6px 0}
 @media(max-width:600px){.battle-card .session-delta{font-size:11px;padding:10px 11px}}
+
+/* Compact match card with inferred MR profit displayed in the former result location. */
+.battle-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.battle-heading>strong{padding-top:3px;flex:1;min-width:0;font-size:13px}
+.battle-mr-indicator{display:flex;flex-direction:column;align-items:flex-end;text-align:right;
+  flex-shrink:0;gap:2px;min-width:75px;font-variant-numeric:tabular-nums}
+.battle-mr-indicator b{font-size:17px;line-height:1.15;font-weight:760;letter-spacing:-.025em}
+.battle-mr-indicator small{font-size:10px;line-height:1.3;color:#99a7bb;font-weight:520}
+.battle-mr-indicator.positive b{color:#77dfb8}
+.battle-mr-indicator.negative b{color:#ee9aaa}
+.battle-mr-indicator.unavailable b{color:#95a3b9}
+#view-matches .battle-card{padding-bottom:14px}
+#view-matches .battle-card p{margin-top:7px}
+@media(max-width:520px){
+  .battle-mr-indicator b{font-size:16px}
+  .battle-mr-indicator small{font-size:9px}
+  .battle-heading>strong{font-size:12px}
+}
