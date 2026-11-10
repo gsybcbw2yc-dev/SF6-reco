@@ -54,8 +54,9 @@
           this.json(`data/history.json?v=${version}`).catch(()=>null)
         ]);
         if (index.schema!==1 || !Array.isArray(index.months)) throw Error('Match index unavailable');
-        const cutoff=this.options().days==='all'?-Infinity:Date.now()-Number(this.options().days)*2*86400000; // include preceding comparison window
-        const months=index.months.filter(m=>!m.last_at||Date.parse(m.last_at)>=cutoff);
+        // Forecast uses latest 100 ranked matches independent of visible match-list range.
+        // SHA-based month cache avoids re-downloading unchanged historical months.
+        const months=index.months;
         const loaded = await Promise.all(months.map(async m=>{
           if (!/^(\d{4}-\d{2}|undated)\.json$/.test(m.path)||! /^[0-9a-f]{64}$/.test(m.sha256)) throw Error('Invalid archive path');
           const cached=this.cache.get(m.path);
@@ -273,6 +274,7 @@
       if(!matchups.length)line(matchupList,'この条件の組合せはありません。');
       this.renderTimePerformance(rows);
       this.renderDeep(rows);
+      SF6MatchGoalUI.render(this.rows,this.observations);
     }
   }
   window.matchDashboard=new Dashboard();
