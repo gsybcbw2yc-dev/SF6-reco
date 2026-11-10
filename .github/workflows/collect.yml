@@ -48,6 +48,7 @@ jobs:
           node tests/test_time_analysis.cjs
           node tests/test_match_analysis.cjs
           node tests/test_match_deltas.cjs
+          node tests/test_match_goal_forecast.cjs
           node tests/test_matches_ui.cjs
           node tests/test_time_performance.cjs
           node tests/test_deep_analysis.cjs
