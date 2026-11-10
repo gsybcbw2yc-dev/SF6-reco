@@ -183,20 +183,30 @@
       const collection=this.status?.events?.at(-1);
       $('match-status').textContent=`保存済み ${this.index?.count??0} 試合／選択条件 ${rows.length} 試合。取得成功：${date(this.status?.last_success)} JST。${this.status?.last_error?'取得エラー：'+this.status.last_error.message:collection?'直近追加 '+collection.added+' 件・重複除外 '+collection.duplicates+' 件':''}`;
       const age=this.status?.last_success?(Date.now()-Date.parse(this.status.last_success))/60000:Infinity;
-      $('match-warning').textContent=(age>90?'試合取得が90分以上更新されていません。表示が古い可能性があります。 ':'')+'Bucklerが公開する最近の履歴だけを取得しています。取り込み以前・上限超過・取得失敗による欠落があり得ます。';
+      $('match-warning').textContent=(age>90?'試合取得が90分以上更新されていません。表示が古い可能性があります。 ':'')+'Bucklerが公開する最近の履歴だけを取得しています。取り込み以前・上限超過・取得失敗による欠落があり得ます。試合右上のMR差は原則として次の試合の対戦前値との差による参考推定です。フェーズが未取得の記録はAct 14（ユーザー申告・暫定）として表示します。';
       $('match-summary').textContent=`${allStats.wins}勝 ${allStats.losses}敗${allStats.draws?` ${allStats.draws}分`:''}${allStats.unknown?` · 不明${allStats.unknown}`:''}　｜　勝率 ${percent(allStats.winRate)}`;
+      // Always infer from the full downloaded archive, never just the filtered page.
+      const mrDeltas=SF6MatchDeltas.infer(this.rows);
       const sorted=rows.slice().sort((a,b)=>(b.occurred_at||'').localeCompare(a.occurred_at||'')||a.key.localeCompare(b.key));
       this.page=Math.min(this.page,Math.max(0,Math.ceil(rows.length/20)-1));
       const list=$('match-list');list.replaceChildren();
       for(const r of sorted.slice(this.page*20,this.page*20+20)) {
         const card=element('article',undefined,'battle-card '+r.outcome);
-        const head=element('div',undefined,'battle-heading');head.append(element('strong',`${r.character} vs ${r.opponent_character}`),element('b',text(r.outcome),'battle-result'));card.append(head);
+        const head=element('div',undefined,'battle-heading');
+        const outcome=element('strong',`${r.character} vs ${r.opponent_character}`);
+        const change=mrDeltas.get(r.key)??{delta:null,basis:'unavailable',reason:'前後の対戦MRを比較できません'};
+        const indicator=element('div',undefined,'battle-mr-indicator '+(change.delta===null?'unavailable':change.delta>=0?'positive':'negative'));
+        const signedMr=change.delta===null?'— MR':`${signed(change.delta)} MR`;
+        indicator.append(element('b',signedMr));
+        indicator.append(element('small',change.basis==='verified'?'確定':change.basis==='inferred'?'推定':'算定不可'));
+        indicator.setAttribute('title',change.reason);
+        indicator.setAttribute('aria-label',`${text(r.outcome)}、${signedMr}、${change.basis==='inferred'?'推定値':'検証状況 '+change.reason}`);
+        head.append(outcome,indicator);card.append(head);
         line(card,`${date(r.occurred_at)} JST · ${text(r.mode)} · ${r.own_side}P`);
         line(card,`対戦前 MR ${metric(r.mr_before)} / LP ${metric(r.lp_before)}　相手 MR ${metric(r.opponent_mr_before)} / LP ${metric(r.opponent_lp_before)}`);
-        line(card,`自分 ${text(r.own_control)}／相手 ${text(r.opponent_control)} · フェーズ ${r.phase}`);
-        const details=element('details');details.append(element('summary','データの根拠・欠損'));
-        line(details,`日時＝Buckler uploaded_at（アップロード日時）。正確な試合開始時刻は未検証。取得 ${date(r.fetched_at)} JST。勝敗＝両者のラウンド結果から判定。MR・LPは対戦前値で、試合の確定増減は算定不可。欠損：${r.missing?.length?r.missing.join(', '):'主要項目なし'}。`);
-        card.append(details);list.append(card);
+        // Control type, Act provenance and missingness remain in the saved archive.
+        // They no longer crowd each match card; global data notices explain limitations.
+        list.append(card);
       }
       if(!rows.length)line(list,'この条件の記録はありません。');
       $('match-page').textContent=`${this.page+1} / ${Math.max(1,Math.ceil(rows.length/20))}`;
