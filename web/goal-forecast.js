@@ -19,6 +19,28 @@
     if(!isUsable||!Number.isFinite(rate)||rate<=0)return null;
     return rate;
   }
+  // Rolling observed-value comparison: match a real snapshot about 24h before
+  // the latest snapshot within 35 min, without inventing intermediate values.
+  function rolling24h(rows,toleranceMinutes=35){
+    const clean=rows.filter(p=>Number.isFinite(p?.mr)&&Number.isFinite(Date.parse(p?.observed_at)))
+      .slice().sort((a,b)=>Date.parse(a.observed_at)-Date.parse(b.observed_at));
+    const latest=clean.at(-1);
+    if(!latest)return null;
+    const end=Date.parse(latest.observed_at),target=end-24*HOUR;
+    let best=null,error=Infinity;
+    for(const p of clean.slice(0,-1)){
+      if(p.character!==latest.character||p.phase!==latest.phase)continue;
+      const d=Math.abs(Date.parse(p.observed_at)-target);
+      if(d<=toleranceMinutes*60000&&d<error){error=d;best=p;}
+    }
+    if(!best)return null;
+    const start=Date.parse(best.observed_at),elapsed=(end-start)/HOUR;
+    if(elapsed<23||elapsed>25)return null;
+    const delta=latest.mr-best.mr;
+    return {start,end,delta,rate:delta/elapsed,
+      observedStart:best.observed_at,observedEnd:latest.observed_at,
+      elapsedHours:elapsed};
+  }
   function analyze({latest,lastBar,regression,now=Date.now(),targets=[1500,1600]}){
     const observed=latest?Date.parse(latest.observed_at):NaN;
     const current=Number.isFinite(latest?.mr)?latest.mr:null;
@@ -46,5 +68,5 @@
       regressionCount:longOK?regression.count:0,
       targets:result};
   }
-  return {analyze,timeLabel};
+  return {analyze,timeLabel,rolling24h};
 });
