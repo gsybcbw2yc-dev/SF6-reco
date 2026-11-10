@@ -15,7 +15,7 @@ function renderMRForecast(observations, character, phase) {
   const last=fixed.segment.at(-1);
   const regression=SF6ChartTrends.regression(fixed.segment,'mr');
   const projection=SF6GoalForecast.analyze({
-    latest:last,lastBar:fixed.bars.at(-1),regression,now,targets:[1500,1600]
+    latest:last,lastBar:SF6GoalForecast.rolling24h(fixed.segment),regression,now,targets:[1500,1600]
   });
   byId('goal-forecast-current').textContent=projection.current===null?
     '現在MR：データ不足':`現在 MR ${projection.current.toLocaleString('ja-JP')}`;
@@ -32,8 +32,8 @@ function renderMRForecast(observations, character, phase) {
   }else if(projection.current===null){
     byId('goal-forecast-quality').textContent='MRの実測値が不足しています。';
   }else{
-    const a=projection.shortRawRate===null?'直近の有効な24時間窓がありません':
-      `24時間ペース ${formatRate(projection.shortRawRate)}`;
+    const a=projection.shortRawRate===null?'約24時間前の比較可能な実測値がありません':
+      `直近24時間の実測ペース ${formatRate(projection.shortRawRate)}`;
     const b=projection.longRawRate===null?'回帰：データ不足（12件・48時間以上必要）':
       `最大7日間の回帰 ${formatRate(projection.longRawRate)}（${projection.regressionCount}件／約${projection.regressionHours.toFixed(1)}時間）`;
     byId('goal-forecast-quality').textContent=
