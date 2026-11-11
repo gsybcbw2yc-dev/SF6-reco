@@ -11496,6 +11496,30 @@
       "fetched_at": "2026-11-11T14:00:55Z",
       "source": "buckler_battlelog",
       "missing": []
+    },
+    {
+      "key": "e8a4e18e963f18ca79f0344dc6abb0a7b2cd6f92b6733997451c1f7c6c3f62dc",
+      "occurred_at": "2026-11-11T14:03:28Z",
+      "time_basis": "buckler_uploaded_at",
+      "character": "AKUMA",
+      "opponent_character": "MARISA",
+      "own_side": 1,
+      "outcome": "loss",
+      "outcome_basis": "paired_round_results",
+      "mode": "custom",
+      "own_control": "classic",
+      "opponent_control": "classic",
+      "mr_before": 1373,
+      "lp_before": 113382,
+      "opponent_mr_before": 0,
+      "opponent_lp_before": 21520,
+      "phase": "unknown",
+      "mr_delta": null,
+      "lp_delta": null,
+      "delta_basis": "unavailable_no_verified_post_match_rating",
+      "fetched_at": "2026-11-11T14:30:51Z",
+      "source": "buckler_battlelog",
+      "missing": []
     }
   ]
 }

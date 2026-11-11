@@ -1,5 +1,5 @@
 {
-  "last_success": "2026-11-11T14:01:03Z",
+  "last_success": "2026-11-11T14:30:54Z",
   "last_error": null,
   "errors": [
     {
@@ -21,14 +21,14 @@
   ],
   "latest": [
     {
-      "character": "AKUMA",
-      "mr": 1373,
-      "lp": 113382,
+      "character": "TERRY",
+      "mr": 0,
+      "lp": null,
       "phase": "unknown",
       "phase_source": null
     }
   ],
-  "last_attempt": "2026-11-11T14:00:52Z",
+  "last_attempt": "2026-11-11T14:30:48Z",
   "phase_diagnostic": {
     "candidate_paths": [],
     "reason": "No verified explicit phase value in this profile response"
