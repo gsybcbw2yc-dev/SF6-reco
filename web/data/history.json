@@ -1753,6 +1753,19 @@
       "delta_lp": 236,
       "observation_type": "change",
       "observation_id": "42999948860:1:AKUMA"
+    },
+    {
+      "character": "AKUMA",
+      "mr": 1317,
+      "lp": 112444,
+      "phase": "unknown",
+      "phase_source": null,
+      "observed_at": "2026-11-11T10:30:44Z",
+      "source": "periodic_buckler_snapshot",
+      "delta_mr": -56,
+      "delta_lp": -210,
+      "observation_type": "change",
+      "observation_id": "43004179662:1:AKUMA"
     }
   ]
 }
