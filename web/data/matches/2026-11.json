@@ -7632,6 +7632,30 @@
       "fetched_at": "2026-11-11T05:30:35Z",
       "source": "buckler_battlelog",
       "missing": []
+    },
+    {
+      "key": "0bd0fb1254633a5590555246c94bde8ce3bf4568a7693baf1b1e0067fa8c9229",
+      "occurred_at": "2026-11-11T05:57:25Z",
+      "time_basis": "buckler_uploaded_at",
+      "character": "AKUMA",
+      "opponent_character": "ALEX",
+      "own_side": 1,
+      "outcome": "win",
+      "outcome_basis": "paired_round_results",
+      "mode": "ranked",
+      "own_control": "classic",
+      "opponent_control": "classic",
+      "mr_before": 1424,
+      "lp_before": 109769,
+      "opponent_mr_before": 1440,
+      "opponent_lp_before": 62092,
+      "phase": "unknown",
+      "mr_delta": null,
+      "lp_delta": null,
+      "delta_basis": "unavailable_no_verified_post_match_rating",
+      "fetched_at": "2026-11-11T06:00:45Z",
+      "source": "buckler_battlelog",
+      "missing": []
     }
   ]
 }
