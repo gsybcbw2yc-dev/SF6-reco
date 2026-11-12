@@ -11,6 +11,13 @@ assert.equal(check.rate, -55);
 assert.equal(check.observedStart, '2026-11-08T05:00:44Z');
 assert.equal(check.observedEnd, '2026-11-08T06:00:44Z');
 
+const terryObs=[{character:'TERRY',mr:0,lp:22617,phase:'unknown',
+ observed_at:'2026-11-08T05:00:40Z'},
+ {character:'TERRY',mr:0,lp:22800,phase:'unknown',
+ observed_at:'2026-11-08T06:00:35Z'}];
+const terryMR=analyze(terryObs,{character:'TERRY',minutes:60,range:'all',now});
+assert.equal(terryMR.segment.length,0);
+assert.equal(terryMR.bars.length,0);
 const p = (time, mr, phase = '1') => ({ character: 'AKUMA', mr, phase, observed_at: `2026-11-08T${time}Z` });
 const opts = { character: 'AKUMA', minutes: 60, range: 'all', now };
 let a = analyze([p('05:00:40', 100), p('05:02:00', 10000), p('06:00:35', 90)], opts);
