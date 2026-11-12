@@ -79,6 +79,24 @@ async function run(){
  assert.equal(get('goal-1600-20-games').textContent,'データ不足');
  assert.ok(get('goal-forecast-audit').textContent.includes('セッション境界'));
 
- console.log('Monthly match UI refresh/cache/recovery and session reconciliation scenarios passed (synthetic)');
+ // Terry is collected from the same profile. The rank archive and LP remain
+ // usable even though its pre-match MR (and periodic MR) is zero.
+ rows.push({...first,key:'terry-ranked',character:'TERRY',opponent_character:'AKUMA',
+   occurred_at:'2026-11-09T00:56:00Z',outcome:'win',mr_before:0,lp_before:22617});
+ observations.push({character:'TERRY',phase:'unknown',mr:0,lp:22617,
+   observed_at:'2026-11-09T01:30:00Z'});
+ hash='e'.repeat(64);
+ await app.refresh();
+ assert.ok(get('match-character').options.some(x=>x.value==='TERRY'));
+ let selectedFromMatches=null;
+ window.onSf6MatchCharacterChange=ch=>{selectedFromMatches=ch;};
+ get('match-character').value='TERRY';
+ get('match-character').onchange();
+ assert.equal(selectedFromMatches,'TERRY');
+ assert.equal(get('match-list').children.length,1);
+ assert.match(get('match-list').children[0].children[0].children[0].textContent,/TERRY/);
+ assert.match(get('goal-forecast-quality').textContent,/TERRYは有効なMRが未計測/);
+ assert.equal(get('goal-1500-20-games').textContent,'現在MR不明');
+ console.log('Monthly match UI, Terry character filter, LP-only MR forecast guard passed (synthetic)');
 }
 run().catch(e=>{console.error(e);process.exitCode=1;});
