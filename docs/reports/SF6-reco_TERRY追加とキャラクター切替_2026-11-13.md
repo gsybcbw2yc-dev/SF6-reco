@@ -22,7 +22,7 @@
 
 ## 検証
 - GitHub Actions `Collect SF6 ratings` run **43289097005**：`completed / success`（キャラ別の追加テスト成功）。
-- GitHub Actions `Collect SF6 ratings` run **43289391387**：新しいキャラ別観測時刻のテストは `collect` ジョブで成功。公開ジョブの最終結果は確認して更新。
+- GitHub Actions `Collect SF6 ratings` run **43289391387**：`completed / success`。キャラ別観測時刻のテスト、従来のPython・Node回帰テスト、データ取得、GitHub Pagesの公開および公開データ照合が全工程成功。
 - GitHub Pages `Publish dashboard` run **43289306840**：`completed / success`（TERRY選択時の古いAKUMA観測表示の区別を公開）。
 - 公開：https://gsybcbw2yc-dev.github.io/SF6-reco/
 - iPhone/iPad Safari実機の表示・操作はユーザー側で再読み込みして確認する必要あり。
