@@ -141,13 +141,21 @@ function updateSelectors(){
   if(hasData)$('phase').value=phase;
 }
 function updateStatus(){
-  $('last-sync').textContent=status.last_success?date(status.last_success)+' JST':'未取得';
-  let age=status.last_success?(Date.now()-new Date(status.last_success).getTime())/6e4:Infinity;
-  let failed=status.last_error&&(!status.last_success||new Date(status.last_error.at)>new Date(status.last_success));
-  let state=failed?'取得エラー':age>90?'更新遅延':status.last_success?'取得正常':'初回取得待ち';
+  const chosen=$('character').value;
+  const selectedLast=chosen==='すべて'?null:history.filter(p=>p.character===chosen).at(-1);
+  const lastObserved=chosen==='すべて'?status.last_success:selectedLast?.observed_at;
+  $('last-sync').textContent=lastObserved?date(lastObserved)+' JST':'未取得';
+  const age=lastObserved?(Date.now()-new Date(lastObserved).getTime())/6e4:Infinity;
+  const failed=status.last_error&&(!status.last_success||new Date(status.last_error.at)>new Date(status.last_success));
+  const state=failed?'取得エラー':!lastObserved?'初回取得待ち':
+    age>90?(chosen==='すべて'?'更新遅延':'選択キャラ更新遅延'):'取得正常';
   $('health').textContent=state;
   document.querySelector('.dot').classList.toggle('ok',state==='取得正常');
-  $('freshness').textContent=age>90&&status.last_success?`最終成功から ${Math.floor(age)} 分経過。表示値は古い可能性があります。`:'最終成功：'+(status.last_success?date(status.last_success)+' JST':'未取得');
+  $('freshness').textContent=chosen==='すべて'?
+    (age>90&&lastObserved?`最終成功から ${Math.floor(age)} 分経過。表示値は古い可能性があります。`:
+    '最終成功：'+(lastObserved?date(lastObserved)+' JST':'未取得')):
+    `${chosen} の最終観測：${lastObserved?date(lastObserved)+' JST':'未取得'}。`+
+    (age>90?'このキャラの観測値は古い可能性があります。':'');
   let recent=runs.filter(x=>new Date(x.started_at).getTime()>=Date.now()-864e5),successful=recent.filter(x=>x.result==='success'),failedRuns=recent.filter(x=>x.result==='failure'),skipped=recent.filter(x=>x.result==='skipped_recent_success');
   let attempts=successful.length+failedRuns.length,successRate=attempts?Math.round(successful.length/attempts*100)+'%':'算定不可';
   $('coverage').textContent=`直近24時間：取得成功 ${successful.length} 回、失敗 ${failedRuns.length} 回、省略 ${skipped.length} 回。到達済み取得の成功率 ${successRate}（予定枠への到達率とは別）。`;
@@ -220,10 +228,10 @@ window.onSf6MatchCharacterChange=selected=>{
   const overview=$('character');
   if([...overview.options].some(option=>option.value===target)){
     overview.value=target;
-    if(history.length)render();
+    if(history.length){render();updateStatus();}
   }
 };
-$('character').onchange=()=>{syncOverviewCharacterToMatches();render();window.matchDashboard?.render();};
+$('character').onchange=()=>{syncOverviewCharacterToMatches();render();updateStatus();window.matchDashboard?.render();};
 $('phase').onchange=()=>{render();window.matchDashboard?.render();};document.querySelectorAll('[data-range]').forEach(b=>b.onclick=()=>{range=b.dataset.range;document.querySelector('.segmented .active')?.classList.remove('active');b.classList.add('active');render()});$('json').onclick=()=>download('sf6-history.json',JSON.stringify({schema:2,observations:history},null,2),'application/json');$('csv').onclick=()=>download('sf6-history.csv','observed_at,character,phase,mr,lp,delta_mr,delta_lp,observation_type,source\n'+history.map(p=>['observed_at','character','phase','mr','lp','delta_mr','delta_lp','observation_type','source'].map(k=>'"'+String(p[k]??'').replaceAll('"','""')+'"').join(',')).join('\n'),'text/csv');refresh(true);
 setInterval(()=>{if(!document.hidden)refresh()},60000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});
