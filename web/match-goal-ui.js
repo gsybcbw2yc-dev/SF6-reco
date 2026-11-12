@@ -53,8 +53,9 @@
       return list.length>=2?
         `MR ${num(target)}：${num(Math.min(...list))}〜${num(Math.max(...list))}試合`:null;
     }).filter(Boolean);
-    $('goal-forecast-quality').textContent=report.stale?
-      'MR定期観測が3時間以上更新されていないため、試合数の予測を一時停止しています。':
+    $('goal-forecast-quality').textContent=report.current===null?
+      `${character}は有効なMRが未計測です。LPの推移・対戦戦績は表示できますが、MR1500・1600の予測は開始できません。`:
+      report.stale?'MR定期観測が3時間以上更新されていないため、試合数の予測を一時停止しています。':
       !report.storedGames?'比較できるランクマッチの記録がありません。':
       `直近20・50・100試合の3通りで算定。 ${horizon.join(' ／ ')}。各値は参考外挿であり、統計的な予測区間ではありません。`;
     const audits=report.audit;
