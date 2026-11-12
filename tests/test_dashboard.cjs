@@ -173,6 +173,26 @@ async function run() {
   element('phase').onchange();
   assert.equal(matchForecastRenders,2);
   delete window.matchDashboard;
-  console.log('Dashboard refresh, chart MA5/OLS layers and point selection scenarios passed');
+  // Terry has LP but no measured Master Rating. Character selection must
+  // synchronize with match archive without corrupting Akuma's stored series.
+  snapshot.history.observations.push({
+    character:'TERRY',mr:0,lp:22617,phase:'unknown',
+    observed_at:new Date(nowMs).toISOString()
+  });
+  nowMs+=60_000;
+  element('refresh').onclick(); await flush();
+  assert.ok(element('character').options.some(o=>o.value==='TERRY'));
+  element('match-character').add({value:'TERRY'});
+  element('character').value='TERRY';
+  element('character').onchange();
+  assert.equal(element('match-character').value,'TERRY');
+  assert.equal(element('mr').textContent,'未計測');
+  assert.equal(element('lp').textContent,'22,617');
+  assert.equal(element('mr-chart').children.length,0);
+  assert.equal(element('lp-chart').children.length,1);
+  window.onSf6MatchCharacterChange('AKUMA');
+  assert.equal(element('character').value,'AKUMA');
+  assert.equal(element('mr').textContent,'1,392');
+  console.log('Dashboard refresh, Terry LP-only mode, character sync, chart regression passed');
 }
 run().catch(e => { console.error(e); process.exitCode = 1; });
