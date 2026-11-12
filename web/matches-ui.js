@@ -19,7 +19,7 @@
       this.cache = new Map(); this.rows = []; this.observations = []; this.index = null; this.status = null;
       this.busy = false; this.pending = false; this.page = 0; this.sessionLimit = 20; this.initial = true;
       for (const id of ['match-period','match-mode','match-character','match-own-control','match-opponent-control','session-gap','matchup-order','time-bucket']) {
-        $(id).onchange = () => { this.page = 0; this.sessionLimit = 20; id === 'match-period' ? this.refresh() : this.render(); };
+        $(id).onchange = () => { this.page = 0; this.sessionLimit = 20; if(id==='match-character')window.onSf6MatchCharacterChange?.($('match-character').value); id === 'match-period' ? this.refresh() : this.render(); };
       }
       document.querySelectorAll('[data-match-tab]').forEach(button => button.onclick = () => {
         document.querySelectorAll('[data-match-tab]').forEach(b => {b.classList.toggle('active',b===button);b.setAttribute('aria-selected',String(b===button));});
@@ -72,7 +72,11 @@
         this.observations=Array.isArray(history?.observations)?history.observations:[];
         const chars=[...new Set(this.rows.map(r=>r.character))].sort();
         chars.forEach(c=>{if (![...$('match-character').options].some(o=>o.value===c)) $('match-character').add(new Option(c,c));});
-        if (this.initial&&chars.includes('AKUMA')) $('match-character').value='AKUMA';
+        if(this.initial){
+          const preferred=$('character')?.value;
+          if(preferred&&preferred!=='すべて'&&chars.includes(preferred))$('match-character').value=preferred;
+          else if(chars.includes('AKUMA'))$('match-character').value='AKUMA';
+        }
         this.initial=false;this.render();
         $('match-refresh').textContent='最終画面確認：'+date(new Date().toISOString())+' JST';
       } catch(e) {
