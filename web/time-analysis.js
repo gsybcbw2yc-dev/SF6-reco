@@ -10,7 +10,7 @@
   function analyze(observations, { character, phase = 'all', range = '7', minutes = 60, now = Date.now() }) {
     if (!ALLOWED.includes(minutes)) throw new RangeError('Invalid fixed window');
     const cutoff = range === 'all' ? -Infinity : now - Number(range) * 86400000;
-    const candidates = observations.filter(p => p.character === character && p.mr != null && Number.isFinite(Date.parse(p.observed_at)))
+    const candidates = observations.filter(p => p.character === character && typeof p.mr === 'number' && p.mr > 0 && Number.isFinite(Date.parse(p.observed_at)))
       .map(p => ({ ...p, time: Date.parse(p.observed_at) }))
       .filter(p => p.time >= cutoff && p.time <= now)
       .sort((a, b) => a.time - b.time);
