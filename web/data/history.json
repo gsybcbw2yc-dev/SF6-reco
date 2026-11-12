@@ -2286,6 +2286,19 @@
       "delta_lp": 151,
       "observation_type": "change",
       "observation_id": "43187649068:1:TERRY"
+    },
+    {
+      "character": "TERRY",
+      "mr": 0,
+      "lp": 21874,
+      "phase": "unknown",
+      "phase_source": null,
+      "observed_at": "2026-11-12T09:30:41Z",
+      "source": "periodic_buckler_snapshot",
+      "delta_mr": 0,
+      "delta_lp": 47,
+      "observation_type": "change",
+      "observation_id": "43192057547:1:TERRY"
     }
   ]
 }
