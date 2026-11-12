@@ -14,7 +14,7 @@
   "count": 565,
   "source_window_scanned": true,
   "coverage_note": "Only the exposed recent source window is available; gaps and older uncollected matches cannot be reconstructed.",
-  "last_success": "2026-11-12T16:00:56Z",
+  "last_success": "2026-11-12T16:30:38Z",
   "time_basis": "buckler_uploaded_at",
   "archive_scope": "only_matches_actually_fetched"
 }
