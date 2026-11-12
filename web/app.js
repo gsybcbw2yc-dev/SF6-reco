@@ -207,7 +207,24 @@ document.querySelectorAll('[data-chart][data-layer]').forEach(button=>{
 });
 document.querySelectorAll('[data-window]').forEach(b=>b.onclick=()=>{timeWindow=Number(b.dataset.window);document.querySelector('.time-windows .active')?.classList.remove('active');b.classList.add('active');renderTimeAnalysis(history,range,timeWindow)});
 $('refresh').onclick=()=>refresh(true);
-$('character').onchange=()=>{render();window.matchDashboard?.render();};$('phase').onchange=()=>{render();window.matchDashboard?.render();};document.querySelectorAll('[data-range]').forEach(b=>b.onclick=()=>{range=b.dataset.range;document.querySelector('.segmented .active')?.classList.remove('active');b.classList.add('active');render()});$('json').onclick=()=>download('sf6-history.json',JSON.stringify({schema:2,observations:history},null,2),'application/json');$('csv').onclick=()=>download('sf6-history.csv','observed_at,character,phase,mr,lp,delta_mr,delta_lp,observation_type,source\n'+history.map(p=>['observed_at','character','phase','mr','lp','delta_mr','delta_lp','observation_type','source'].map(k=>'"'+String(p[k]??'').replaceAll('"','""')+'"').join(',')).join('\n'),'text/csv');refresh(true);
+function syncOverviewCharacterToMatches(){
+  const selected=$('character').value;
+  const target=selected==='すべて'?'all':selected;
+  const match=$('match-character');
+  if(match&&[...match.options].some(option=>option.value===target)){
+    match.value=target;
+  }
+}
+window.onSf6MatchCharacterChange=selected=>{
+  const target=selected==='all'?'すべて':selected;
+  const overview=$('character');
+  if([...overview.options].some(option=>option.value===target)){
+    overview.value=target;
+    if(history.length)render();
+  }
+};
+$('character').onchange=()=>{syncOverviewCharacterToMatches();render();window.matchDashboard?.render();};
+$('phase').onchange=()=>{render();window.matchDashboard?.render();};document.querySelectorAll('[data-range]').forEach(b=>b.onclick=()=>{range=b.dataset.range;document.querySelector('.segmented .active')?.classList.remove('active');b.classList.add('active');render()});$('json').onclick=()=>download('sf6-history.json',JSON.stringify({schema:2,observations:history},null,2),'application/json');$('csv').onclick=()=>download('sf6-history.csv','observed_at,character,phase,mr,lp,delta_mr,delta_lp,observation_type,source\n'+history.map(p=>['observed_at','character','phase','mr','lp','delta_mr','delta_lp','observation_type','source'].map(k=>'"'+String(p[k]??'').replaceAll('"','""')+'"').join(',')).join('\n'),'text/csv');refresh(true);
 setInterval(()=>{if(!document.hidden)refresh()},60000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});
 window.addEventListener('pageshow',()=>refresh());
