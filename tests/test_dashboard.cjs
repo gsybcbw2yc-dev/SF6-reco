@@ -188,10 +188,12 @@ async function run() {
   assert.equal(element('match-character').value,'TERRY');
   assert.equal(element('mr').textContent,'未計測');
   assert.equal(element('lp').textContent,'22,617');
+  assert.match(element('freshness').textContent,/TERRY の最終観測/);
   assert.equal(element('mr-chart').children.length,0);
   assert.equal(element('lp-chart').children.length,1);
   window.onSf6MatchCharacterChange('AKUMA');
   assert.equal(element('character').value,'AKUMA');
+  assert.match(element('freshness').textContent,/AKUMA の最終観測/);
   assert.equal(element('mr').textContent,'1,392');
   console.log('Dashboard refresh, Terry LP-only mode, character sync, chart regression passed');
 }
