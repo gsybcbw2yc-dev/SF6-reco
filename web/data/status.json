@@ -1,5 +1,5 @@
 {
-  "last_success": "2026-11-12T02:55:52Z",
+  "last_success": "2026-11-12T03:21:31Z",
   "last_error": null,
   "errors": [
     {
@@ -28,7 +28,7 @@
       "phase_source": null
     }
   ],
-  "last_attempt": "2026-11-12T02:55:51Z",
+  "last_attempt": "2026-11-12T03:21:29Z",
   "phase_diagnostic": {
     "candidate_paths": [],
     "reason": "No verified explicit phase value in this profile response"
