@@ -31,6 +31,8 @@ assert.equal(P.rankLabel(23800),'ダイヤモンド ★5');
 assert.equal(P.rankLabel(25000),'マスター');
 assert.equal(P.rankLabel(13000),'プラチナ ★1');
 assert.equal(P.rankLabel(null),'LP未取得');
+assert.equal(P.rankLabel(0),'ルーキー ★1');
+assert.equal(P.latestStatus([{...snapshot,lp:0}],'TERRY').currentLP,0);
 // Do not assume Master just because a collector uses MR:0; do when MR>0 or LP>=25000.
 assert.equal(P.latestStatus([{...snapshot,lp:25000}], 'TERRY').mode,'mr');
 assert.equal(P.latestStatus([{...snapshot,mr:1350}], 'TERRY').mode,'mr');
@@ -64,6 +66,7 @@ const pair=(outcome,delta,extra={})=>[
  mode:'ranked',outcome:'loss',lp_before:22000+delta,...extra}
 ];
 assert.equal(P.inferLP(pair('win',55)).get('A').delta,55);
+assert.equal(P.inferLP(pair('win',50).map(x=>({...x,lp_before:x.key==='A'?0:50}))).get('A').delta,50);
 assert.equal(P.inferLP(pair('loss',-40)).get('A').delta,-40);
 assert.equal(P.inferLP(pair('loss',0)).get('A').delta,0); // Rookie or rank-protection loss can cost no LP
 assert.equal(P.inferLP(pair('win',-40)).get('A').delta,null);
