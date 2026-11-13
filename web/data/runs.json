@@ -5275,6 +5275,21 @@
         "TERRY"
       ],
       "error": null
+    },
+    {
+      "started_at": "2026-11-13T16:16:04Z",
+      "finished_at": "2026-11-13T16:16:04Z",
+      "trigger": "schedule",
+      "external_trigger_at": null,
+      "scheduled_for_estimate": "2026-11-13T16:11:00Z",
+      "estimated_delay_seconds": 304,
+      "run_id": "43460962831",
+      "attempt": "1",
+      "result": "skipped_recent_success",
+      "character_count": 0,
+      "observations_added": 0,
+      "changed_characters": [],
+      "error": null
     }
   ]
 }
