@@ -1,9 +1,6 @@
 {
-  "last_success": "2026-11-13T01:28:20Z",
-  "last_error": {
-    "at": "2026-11-13T02:00:48Z",
-    "message": "HTTP 502 (cloudfront)"
-  },
+  "last_success": "2026-11-13T02:30:39Z",
+  "last_error": null,
   "errors": [
     {
       "at": "2026-11-07T08:52:46Z",
@@ -35,7 +32,7 @@
       "phase_source": null
     }
   ],
-  "last_attempt": "2026-11-13T02:00:45Z",
+  "last_attempt": "2026-11-13T02:30:36Z",
   "phase_diagnostic": {
     "candidate_paths": [],
     "reason": "No verified explicit phase value in this profile response"
