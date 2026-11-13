@@ -65,6 +65,7 @@ const pair=(outcome,delta,extra={})=>[
 ];
 assert.equal(P.inferLP(pair('win',55)).get('A').delta,55);
 assert.equal(P.inferLP(pair('loss',-40)).get('A').delta,-40);
+assert.equal(P.inferLP(pair('loss',0)).get('A').delta,0); // Rookie or rank-protection loss can cost no LP
 assert.equal(P.inferLP(pair('win',-40)).get('A').delta,null);
 assert.equal(P.inferLP(pair('win',55,{mode:'custom'})).get('A').delta,null);
 assert.equal(P.inferLP(pair('win',55,{character:'AKUMA'})).get('A').delta,null);
