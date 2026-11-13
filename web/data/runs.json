@@ -5258,6 +5258,23 @@
         "TERRY"
       ],
       "error": null
+    },
+    {
+      "started_at": "2026-11-13T16:00:43Z",
+      "finished_at": "2026-11-13T16:00:47Z",
+      "trigger": "external_dispatch",
+      "external_trigger_at": "2026-11-13T15:59:06Z",
+      "scheduled_for_estimate": null,
+      "estimated_delay_seconds": null,
+      "run_id": "43458307386",
+      "attempt": "1",
+      "result": "success",
+      "character_count": 1,
+      "observations_added": 1,
+      "changed_characters": [
+        "TERRY"
+      ],
+      "error": null
     }
   ]
 }
