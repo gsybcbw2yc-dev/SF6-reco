@@ -75,7 +75,7 @@ assert.equal(P.inferLP(pair('win',55,{lp_before:null})).get('A').delta,null);
 assert.equal(P.inferLP(pair('win',55,{occurred_at:at(0)})).get('A').delta,null);
 const changedAct=P.inferLP(pair('win',55),time=>time===at(0)?14:15);
 assert.equal(changedAct.get('A').delta,null);
-const negative=rows.map((r,i)=>({...r,outcome:i%4===0?'win':'loss'}));
+const negative=rows.map((r,i)=>({...r,outcome:'loss',lp_before:24000-i*40}));
 const negativeResults=P.analyze({...opts,rows:negative});
 assert.equal(negativeResults.cohorts[0].label,'増加傾向なし');
 // Session audit stays diagnostic. It never creates missing match results.
