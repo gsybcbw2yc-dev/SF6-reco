@@ -10,13 +10,14 @@
   const TARGET=25000,WINDOWS=[20,50,100],MIN_COVERAGE=.7;
   const MAX_AGE=3*3600000,MAX_GAP=10,MAX_ABS_LP=2000,MAX_GAMES=10000;
   const finite=n=>typeof n==='number'&&Number.isFinite(n);
-  const usable=n=>finite(n)&&n>0;
+  const usable=n=>finite(n)&&n>0; // MR only: MR=0 is not an earned Master Rating
+  const validLP=n=>finite(n)&&n>=0; // 0 LP is valid in Rookie
   const stamp=s=>Date.parse(s||'');
   function latestStatus(observations,character){
     const candidates=observations.filter(x=>x.character===character&&Number.isFinite(stamp(x.observed_at)))
       .slice().sort((a,b)=>stamp(a.observed_at)-stamp(b.observed_at));
     const latest=candidates.at(-1)??null;
-    const lastLP=candidates.filter(x=>usable(x.lp)).at(-1)??null;
+    const lastLP=candidates.filter(x=>validLP(x.lp)).at(-1)??null;
     const master=candidates.some(x=>usable(x.mr)||finite(x.lp)&&x.lp>=TARGET);
     return {mode:master?'mr':'lp',character,latest,
       currentLP:lastLP?.lp??null,lpObservedAt:lastLP?.observed_at??null,
@@ -48,7 +49,7 @@
          a.phase==='unknown'&&actAt(a.occurred_at)!==actAt(b.occurred_at)){
         map.set(a.key,notReady('次試合のモード・キャラ・フェーズが異なる'));continue;
       }
-      if(!usable(a.lp_before)||!usable(b.lp_before)){
+      if(!validLP(a.lp_before)||!validLP(b.lp_before)){
         map.set(a.key,notReady('対戦前LPが不足'));continue;
       }
       const delta=b.lp_before-a.lp_before;
@@ -66,7 +67,7 @@
     return map;
   }
   function rankLabel(lp){
-    if(!usable(lp))return 'LP未取得';
+    if(!validLP(lp))return 'LP未取得';
     if(lp>=TARGET)return 'マスター';
     const bands=[[19000,'ダイヤモンド',1200],[13000,'プラチナ',1200],[9000,'ゴールド',800],
       [5000,'シルバー',800],[3000,'ブロンズ',400],[1000,'アイアン',400],[0,'ルーキー',200]];
