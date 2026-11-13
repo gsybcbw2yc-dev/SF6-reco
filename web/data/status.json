@@ -1,6 +1,9 @@
 {
   "last_success": "2026-11-13T08:00:45Z",
-  "last_error": null,
+  "last_error": {
+    "at": "2026-11-13T08:30:53Z",
+    "message": "HTTP 502 (cloudfront)"
+  },
   "errors": [
     {
       "at": "2026-11-07T08:52:46Z",
@@ -21,6 +24,10 @@
     {
       "at": "2026-11-13T02:00:48Z",
       "message": "HTTP 502 (cloudfront)"
+    },
+    {
+      "at": "2026-11-13T08:30:53Z",
+      "message": "HTTP 502 (cloudfront)"
     }
   ],
   "latest": [
@@ -32,7 +39,7 @@
       "phase_source": null
     }
   ],
-  "last_attempt": "2026-11-13T08:00:39Z",
+  "last_attempt": "2026-11-13T08:30:49Z",
   "phase_diagnostic": {
     "candidate_paths": [],
     "reason": "No verified explicit phase value in this profile response"

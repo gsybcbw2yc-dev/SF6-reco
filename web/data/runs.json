@@ -4961,6 +4961,21 @@
         "TERRY"
       ],
       "error": null
+    },
+    {
+      "started_at": "2026-11-13T08:30:49Z",
+      "finished_at": "2026-11-13T08:30:53Z",
+      "trigger": "external_dispatch",
+      "external_trigger_at": "2026-11-13T08:29:05Z",
+      "scheduled_for_estimate": null,
+      "estimated_delay_seconds": null,
+      "run_id": "43393742481",
+      "attempt": "1",
+      "result": "failure",
+      "character_count": 0,
+      "observations_added": 0,
+      "changed_characters": [],
+      "error": "HTTP 502 (cloudfront)"
     }
   ]
 }
