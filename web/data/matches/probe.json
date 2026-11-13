@@ -46,10 +46,8 @@
   "round_codes": [
     0,
     1,
-    2,
-    5,
     6,
-    8
+    7
   ],
   "mode_codes": [
     1
@@ -57,5 +55,5 @@
   "client_assets": [
     "/6/buckler/_next/static/chunks/pages/profile/%5Bsid%5D/battlelog/rank-c20012a4c98cae3f.js"
   ],
-  "checked_at": "2026-11-13T17:00:47Z"
+  "checked_at": "2026-11-13T17:30:39Z"
 }
