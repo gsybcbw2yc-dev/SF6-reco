@@ -4747,6 +4747,21 @@
       "observations_added": 0,
       "changed_characters": [],
       "error": null
+    },
+    {
+      "started_at": "2026-11-13T02:00:45Z",
+      "finished_at": "2026-11-13T02:00:48Z",
+      "trigger": "external_dispatch",
+      "external_trigger_at": "2026-11-13T01:59:06Z",
+      "scheduled_for_estimate": null,
+      "estimated_delay_seconds": null,
+      "run_id": "43349019809",
+      "attempt": "1",
+      "result": "failure",
+      "character_count": 0,
+      "observations_added": 0,
+      "changed_characters": [],
+      "error": "HTTP 502 (cloudfront)"
     }
   ]
 }
