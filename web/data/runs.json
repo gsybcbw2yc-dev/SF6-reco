@@ -5053,6 +5053,21 @@
       "observations_added": 1,
       "changed_characters": [],
       "error": null
+    },
+    {
+      "started_at": "2026-11-13T10:33:29Z",
+      "finished_at": "2026-11-13T10:33:32Z",
+      "trigger": "push",
+      "external_trigger_at": null,
+      "scheduled_for_estimate": null,
+      "estimated_delay_seconds": null,
+      "run_id": "43409933084",
+      "attempt": "1",
+      "result": "success",
+      "character_count": 1,
+      "observations_added": 1,
+      "changed_characters": [],
+      "error": null
     }
   ]
 }
