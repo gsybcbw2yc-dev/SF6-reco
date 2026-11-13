@@ -15,6 +15,14 @@
       $('goal-forecast-quality').textContent='概要または対戦履歴で対象キャラを選んでください。';
       return;
     }
+    // The mode follows the *character's* recorded promotion status.
+    // Never use MR=0 as a real Master Rating or extrapolate it to MR1500.
+    if(SF6MasterPromotionUI.render({rows,observations,character,phase}))return;
+    $('goal-master-panel').hidden=true;
+    $('goal-mr-panel').hidden=false;
+    $('goal-forecast-kicker').textContent='MR TARGET / MATCH FORECAST';
+    $('goal-forecast-title').textContent='あと何試合で到達するか';
+    $('goal-forecast-intro').textContent='マスター到達済みキャラのMR増減を使った試合数予測です。プレイ時間は計算しません。';
     const ranked=rows.filter(r=>r.mode==='ranked');
     const deltas=SF6MatchDeltas.infer(rows);
     const gap=45; // independent of the match-list display threshold
