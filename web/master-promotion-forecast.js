@@ -56,7 +56,7 @@
         map.set(a.key,notReady('LP差が大きく、未取得試合などの可能性'));continue;
       }
       if(!['win','loss','draw'].includes(a.outcome)||
-         a.outcome==='win'&&delta<=0||a.outcome==='loss'&&delta>=0||
+         a.outcome==='win'&&delta<=0||a.outcome==='loss'&&delta>0||
          a.outcome==='draw'&&delta!==0){
         map.set(a.key,notReady('勝敗とLP増減が整合しない'));continue;
       }
