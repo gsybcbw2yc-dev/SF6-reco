@@ -444,3 +444,26 @@ footer{border-top:1px solid var(--app-border);color:var(--app-faint);font-size:1
   .goal-match-row>span{font-size:10px}
   .goal-match-estimate{font-size:16px}
 }
+
+/* Character-aware Master promotion: LP 25000 goal when a fighter is below Master. */
+#goal-master-panel{margin-top:6px}
+.master-progress-row{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin:16px 0 14px}
+.master-progress-row h4{font-size:20px;letter-spacing:-.035em;color:#f1eefa;margin:5px 0 0;font-weight:720}
+.master-remaining{font-size:17px;letter-spacing:-.03em;font-weight:740;
+  color:#d1baff;font-variant-numeric:tabular-nums;white-space:nowrap}
+.master-progress{height:11px;width:100%;background:#242c3e;border-radius:999px;
+  overflow:hidden;border:1px solid rgba(179,156,247,.15)}
+.master-progress span{height:100%;display:block;background:linear-gradient(90deg,#7368bc,#bda1fd);
+  border-radius:999px;min-width:0;transition:width .2s ease}
+.master-progress-label{display:flex;justify-content:space-between;gap:10px;
+  margin:7px 0 19px;color:#9facbf;font-size:11px;font-variant-numeric:tabular-nums}
+.master-predictions{grid-template-columns:1fr;margin-bottom:0}
+.master-match-card .goal-match-row{min-height:50px}
+.master-match-card .goal-match-estimate{font-size:19px}
+@media(max-width:700px){
+  .master-progress-row{margin-top:14px;align-items:baseline;flex-wrap:wrap}
+  .master-progress-row h4{font-size:17px}
+  .master-remaining{font-size:16px}
+  .master-progress-label{font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){.master-progress span{transition:none}}
