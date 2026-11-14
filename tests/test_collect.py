@@ -44,6 +44,19 @@ class CollectorTests(unittest.TestCase):
         self.assertEqual(upgraded['observations'][0]['observation_type'], 'legacy')
         self.assertIsNone(upgraded['observations'][0]['delta_mr'])
 
+    def test_existing_first_verified_act_is_not_a_confirmed_transition(self):
+        first=dict(self.item, observed_at='2026-11-14T23:00:00Z',
+                   observation_type='heartbeat')
+        verified=dict(self.item, observed_at='2026-11-14T23:05:44Z',
+                      phase='14', phase_source='play_page.play.current_season_id',
+                      observation_type='phase_start')
+        source={'schema': 2, 'observations': [first, verified]}
+        result=collect.migrate(source)
+        self.assertEqual(result['observations'][1]['observation_type'], 'phase_verified')
+        self.assertEqual(result['observations'][1]['phase'], '14')
+        self.assertEqual(result['observations'][1]['observed_at'], '2026-11-14T23:05:44Z')
+        self.assertEqual(result['observations'][0], first)
+
     def test_change_heartbeat_and_phase_reset(self):
         history = {'schema': 2, 'observations': []}
         self.assertEqual(collect.record([self.item], '2026-01-01T00:00:00Z', history), (1, []))
