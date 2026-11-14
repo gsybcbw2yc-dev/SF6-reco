@@ -120,6 +120,51 @@ def normalized_rating(value):
     return num
 
 
+
+def act_diagnostic(raw):
+    """Describe plausible Act fields without storing raw profile or script data."""
+    match = NEXT.search(raw)
+    if not match:
+        return {'result': 'next_data_missing'}
+    try:
+        root = json.loads(html.unescape(match.group(1)))
+        page = root.get('props', {}).get('pageProps', {})
+        if not isinstance(page, dict):
+            return {'result': 'invalid_schema'}
+    except (ValueError, TypeError, AttributeError):
+        return {'result': 'invalid_schema'}
+    paths = []
+    fields = []
+    pending = [(page, 'pageProps', 0)]
+    while pending and len(paths) < 100:
+        node, path, depth = pending.pop()
+        if not isinstance(node, dict) or depth > 4:
+            continue
+        for key, value in node.items():
+            if not isinstance(key, str) or not KEY.fullmatch(key):
+                continue
+            subpath = path + '.' + key
+            if re.search(r'act|phase|season|period|filter', key, re.I):
+                paths.append(subpath)
+                if type(value) is int and 1 <= value <= 50:
+                    fields.append({'path': subpath, 'value': value})
+                elif isinstance(value, str):
+                    number = re.fullmatch(r'(?:Act\\s*[:：]?\\s*)?(\\d{1,2})', value.strip(), re.I)
+                    if number and 1 <= int(number.group(1)) <= 50:
+                        fields.append({'path': subpath, 'value': int(number.group(1))})
+            if isinstance(value, dict):
+                pending.append((value, subpath, depth + 1))
+    # Never look for Act inside the Next.js script: it may include historical
+    # dropdown options or unrelated data. This is a diagnostic only.
+    visible = re.sub(r'<script\\b[^>]*>.*?</script\\s*>', ' ', raw, flags=re.I | re.S)
+    visible = re.sub(r'<style\\b[^>]*>.*?</style\\s*>', ' ', visible, flags=re.I | re.S)
+    visible = html.unescape(re.sub(r'<[^>]+>', ' ', visible))
+    matches = re.findall(r'\\bAct\\s*[:：]?\\s*(\\d{1,2})\\b', visible, flags=re.I)
+    numbers = sorted({int(v) for v in matches if 1 <= int(v) <= 50})
+    return {'result': 'inspected', 'candidate_keys': sorted(set(paths))[:60],
+            'direct_values': fields[:20], 'visible_act_values': numbers[:20],
+            'visible_act_match_count': min(99, len(matches))}
+
 def parse_play(raw):
     match = NEXT.search(raw)
     if not match:
@@ -171,7 +216,7 @@ def parse_play(raw):
     return list(result.values())
 
 
-def fetch_latest(player, cookie):
+def fetch_latest(player, cookie, with_act_diagnostic=False):
     """One authenticated GET to the known PLAY route; no raw payload persisted."""
     if not re.fullmatch(r'\d{6,15}', player or '') or not cookie or '\n' in cookie or ';' in cookie:
         raise ValueError('invalid_config')
@@ -189,7 +234,9 @@ def fetch_latest(player, cookie):
         raise ValueError('play_response_too_large')
     if not final.startswith(ORIGIN+'/6/buckler/') or '/auth/' in final:
         raise ValueError('play_auth_redirect')
-    return parse_play(raw.decode('utf-8'))
+    decoded = raw.decode('utf-8')
+    rows = parse_play(decoded)
+    return (rows, act_diagnostic(decoded)) if with_act_diagnostic else rows
 
 
 def safe_issue(exc):
