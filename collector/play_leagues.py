@@ -160,7 +160,7 @@ def parse_play(raw):
         # current MR/LP observations, even for an otherwise played fighter.
         if (mr is None or mr == 0) and lp is None:
             continue
-        if not entry.get('is_played') and not (mr and mr > 0) and lp is None:
+        if not entry.get('is_played') and not (mr and mr > 0) and not (lp and lp > 0):
             continue
         result[char] = {'character':char,'mr':mr,'lp':lp,'phase':phase,
                          'phase_source':phase_source,
