@@ -80,7 +80,7 @@
       list.append(row);
     }
     $('goal-forecast-act').textContent=report.act===null?'フェーズ：取得元の値を使用':
-      `Act ${report.act}（ユーザー申告・暫定）。変更時は有効日時を区別します。`;
+      `Act ${report.act}（公式PLAY取得値または暫定割当）。試合のActは時刻による推定で、切替境界は判定不能です。`;
   }
   root.SF6MatchGoalUI={render};
 })(typeof globalThis!=='undefined'?globalThis:this);
