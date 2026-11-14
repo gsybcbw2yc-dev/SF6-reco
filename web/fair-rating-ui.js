@@ -31,14 +31,20 @@
       [{value:'',label:'対象キャラなし'}]);
     const character=selected.value;
     const actAt=time=>typeof SF6PhaseConfig==='undefined'?null:SF6PhaseConfig.assignedAct(time);
-    // A cheap version key skips regression and bootstrap for unrelated UI events.
-    const key=character+':'+snapshot.length+':'+(snapshot.at(-1)?.key||'')+':'+(snapshot[0]?.key||'');
-    if(key!==cacheKey){cached=SF6FairRating.analyze(snapshot,{character,actAt});cacheKey=key;}
-    const acts=cached.acts;
-    ensureOptions($('fair-act'),acts.length?acts.map(x=>({value:x.key,label:x.label+' · '+x.count+'試合'})):
+    // Build the ACT selector without estimating the model twice.
+    const groups=new Map();
+    for(const r of SF6FairRating.clean(snapshot,{character,actAt})){
+      if(!groups.has(r.phase))groups.set(r.phase,{value:r.phase,label:r.phaseLabel,n:0,t:0});
+      const group=groups.get(r.phase);group.n++;group.t=Math.max(group.t,r.t);
+    }
+    const acts=[...groups.values()].sort((a,b)=>b.t-a.t);
+    ensureOptions($('fair-act'),acts.length?acts.map(x=>({value:x.value,label:x.label+' · '+x.n+'試合'})):
       [{value:'',label:'分析可能なACTなし'}]);
     const selectedAct=$('fair-act').value;
-    const report=SF6FairRating.analyze(snapshot,{character,actAt,selectedAct});
+    const key=character+':'+selectedAct+':'+snapshot.length+':'+
+      (snapshot.at(-1)?.key||'')+':'+(snapshot[0]?.key||'');
+    if(key!==cacheKey){cached=SF6FairRating.analyze(snapshot,{character,actAt,selectedAct});cacheKey=key;}
+    const report=cached;
     const c=report.current;
     $('fair-phase-note').textContent=report.actLabel+
       ' · 検証可能 '+report.selectedN+'試合 · 記録済みの試合のみ。'+
