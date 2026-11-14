@@ -32,7 +32,7 @@ async function run() {
   element('phase').add({ value: 'all' });
   const listeners = {}, windows = {}, timers = [];
   const layerButtons=[];
-  for(const key of ['mr','lp'])for(const layer of ['observed','average','regression','matches']){
+  for(const key of ['mr','lp'])for(const layer of ['observed','average','regression']){
     const button=new Element();
     button.dataset={chart:key,layer};
     layerButtons.push(button);
@@ -171,20 +171,21 @@ async function run() {
   const svg=element('mr-chart').children[0];
   assert.ok(svg.children.some(x=>x.tagName==='polyline'&&x.attributes['data-chart-line']==='average'));
   assert.ok(svg.children.some(x=>x.tagName==='line'&&x.attributes['data-chart-line']==='regression'));
-  assert.ok(svg.children.some(x=>x.tagName==='polyline'&&x.attributes['data-chart-line']==='match-pre'));
-  assert.equal(svg.children.filter(x=>x.tagName==='rect'&&x.attributes['data-chart-point']==='match-pre').length,2);
+  // Battle Log evidence is still fetched for the separate provenance panel,
+  // but NEVER appears as yellow points/dashes in the MR/LP overview charts.
+  assert.equal(svg.children.some(x=>x.attributes['data-chart-line']==='match-pre'),false);
+  assert.equal(svg.children.some(x=>x.attributes['data-chart-point']==='match-pre'),false);
+  assert.equal(element('lp-chart').children[0].children.some(x=>
+    x.attributes['data-chart-line']==='match-pre'||x.attributes['data-chart-point']==='match-pre'),false);
   assert.match(element('match-rating-latest').textContent,/対戦前/);
   assert.match(element('match-rating-check').textContent,/11\/8/);
-  const matchPoint=svg.children.find(x=>x.tagName==='rect');
-  matchPoint.emit('click');
-  assert.match(element('mr-point-reading').textContent,/対戦前/);
-  element('mr-point-close').onclick();
-  const matchToggle=layerButtons.find(b=>b.dataset.chart==='mr'&&b.dataset.layer==='matches');
-  matchToggle.onclick();
-  assert.equal(element('mr-chart').children[0].children.some(x=>x.attributes['data-chart-line']==='match-pre'),false);
-  matchToggle.onclick();
-  assert.ok(element('mr-chart').children[0].children.some(x=>x.attributes['data-chart-line']==='match-pre'));
-  assert.equal(snapshot.history.observations.length,4); // overlays don't insert artificial half-hour measurements
+  assert.equal(snapshot.history.observations.length,4);
+  assert.equal(layerButtons.length,6);
+  const page=fs.readFileSync('web/index.html','utf8');
+  assert.equal(page.includes('data-layer="matches"'),false);
+  assert.equal(page.includes('chart-key-match'),false);
+  assert.equal(page.includes('id="match-rating-latest"'),true); // data provenance preserved
+  assert.equal(page.includes('id="mr-point-detail"'),true); // observed point details preserved
 
   // Regression toggle removes only regression line, not the observed SVG circles.
   const regressionMr=layerButtons.find(b=>b.dataset.chart==='mr'&&b.dataset.layer==='regression');
