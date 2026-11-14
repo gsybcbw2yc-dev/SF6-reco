@@ -13,7 +13,7 @@
   const ACTS=[{act:14,effectiveFrom:null,source:'user_provisional'}];
   let observations=[],boundaries=[];
   const actNumber=value=>{
-    if(!/^\\d{1,3}$/.test(String(value??'')))return null;
+    if(!/^\d{1,3}$/.test(String(value??'')))return null;
     const n=Number(value);
     return n>=1&&n<=100?n:null;
   };
