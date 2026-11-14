@@ -34,6 +34,7 @@
     // Build the ACT selector without estimating the model twice.
     const groups=new Map();
     for(const r of SF6FairRating.clean(snapshot,{character,actAt})){
+      if(r.phase==='unknown')continue;
       if(!groups.has(r.phase))groups.set(r.phase,{value:r.phase,label:r.phaseLabel,n:0,t:0});
       const group=groups.get(r.phase);group.n++;group.t=Math.max(group.t,r.t);
     }
@@ -47,8 +48,10 @@
     const report=cached;
     const c=report.current;
     $('fair-phase-note').textContent=report.actLabel+
-      ' · 検証可能 '+report.selectedN+'試合 · 記録済みの試合のみ。'+
-      (report.provisional?' 試合側にActの直接値はなく、旧記録は暫定・新記録は公式PLAYの観測時刻からの推定です。境界付近は未確定です。':'');
+      ' · 検証可能 '+report.selectedN+'試合 · 公式PLAYのActで統合集計。'+
+      (report.inferredN?' このうち'+report.inferredN+'試合は観測時刻から割り当て（初回公式確認以前'+report.retrospectiveN+'試合）。':'')+
+      (report.unassignedN?' Act判定不能'+report.unassignedN+'試合は集計対象外。':'')+
+      ' 試合別の公式Actが直接取得できたことを意味しません。';
     $('fair-rating-value').textContent=c.crossing!==null?fmt(c.crossing)+' MR':'算定保留';
     $('fair-rating-sub').textContent=c.crossing!==null?
       '相手への予測勝率が50%になるMR（真の実力・到達保証ではありません）':c.check.reason;
@@ -77,7 +80,7 @@
       '本人の適正MR・将来MRの確定値ではありません。相手との組合せ、'+
       '同じ相手との再戦、プレイ中の成長、マッチングと取得欠落による偏りがあります。'+
       '相手の対戦前MR・勝敗があるマスター帯のランクマッチのみ対象とし、'+
-      'ACTがunknownの場合はACT14を暫定適用します。'+
+      'Act区分は公式PLAYの観測値で統一し、記録内のActがunknownの試合は時刻から推定します。初回確認より前の割当は遡及推定、切替境界は集計除外です。'+
       '予測力はセッションを分離した過去→未来のBrierスコアで検証。'+
       '参考区間はセッション単位の再標本化であり厳密な保証ではありません。';
     const bands=$('fair-bands');bands.replaceChildren();
@@ -102,7 +105,7 @@
     }
     if(!meaningful.length)bands.append(node('p','このACTで対戦前MRを確認できる試合がありません。'));
     $('fair-conclusion').textContent=c.status==='exploratory'?
-      '暫定推定が可能で、今回の時系列検証では勝敗の予測精度も改善。ただし適正MRの証明ではありません。':
+      '50%交点を推定でき、今回の時系列検証では勝敗の予測精度も改善。ただし適正MRの証明ではありません。':
       c.status==='not_validated'?'交点の推定は可能ですが、未来試合への予測精度の改善は未確認です。':
       c.status==='uncertain'?'交点の候補はありますが、不確実性が大きいため判断を保留します。':
       'データ条件が足りないため、対戦互角MRを表示しません。';
