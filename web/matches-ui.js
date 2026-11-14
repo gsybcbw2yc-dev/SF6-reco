@@ -279,6 +279,7 @@
       this.renderTimePerformance(rows);
       this.renderDeep(rows);
       SF6MatchGoalUI.render(this.rows,this.observations);
+      SF6FairRatingUI.render(this.rows);
     }
   }
   window.matchDashboard=new Dashboard();
