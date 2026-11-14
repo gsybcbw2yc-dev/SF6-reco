@@ -76,4 +76,22 @@ assert.equal(prom.currentLP,24500);
 assert.equal(Phase.setVerifiedObservations([]),0);
 assert.equal(Phase.currentAct,null);
 assert.equal(Phase.label('unknown',t4),'Act不明');
-console.log('Official PLAY Act ID, time-based historical assignment, uncertain boundary, MR/LP forecast continuity passed');
+// Regression against the actually preserved archives. Raw phase stays unknown,
+// but both historic and directly recorded observations must share Act 14.
+// No test assumes a later Act15 event has not happened.
+const fs=require('node:fs');
+const archive=JSON.parse(fs.readFileSync('web/data/matches/2026-11.json','utf8'));
+const history=JSON.parse(fs.readFileSync('web/data/history.json','utf8'));
+assert.ok(history.observations.some(r=>r.phase==='unknown'));
+assert.ok(history.observations.some(r=>r.phase==='14'&&
+  r.phase_source==='play_page.play.current_season_id'));
+Phase.setVerifiedObservations(history.observations);
+assert.equal(Phase.phaseKey('unknown',history.observations[0].observed_at),'14');
+assert.equal(Phase.phaseKey('14',history.observations[0].observed_at),'14');
+const actual=Fair.analyze(archive.matches,{character:'AKUMA',actAt:Phase.assignedAct});
+const act14=actual.acts.find(x=>x.key==='act:14');
+assert.ok(act14&&act14.count>=100);
+assert.ok(act14.inferredN>0);
+assert.ok(act14.retrospectiveN>0);
+assert.ok(actual.acts.every(x=>/^act:\\d+$/.test(x.key)));
+console.log('Verified official ACT-only grouping, retrospective provenance, real archive analysis and forecasting passed');
