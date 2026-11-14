@@ -467,3 +467,23 @@ footer{border-top:1px solid var(--app-border);color:var(--app-faint);font-size:1
   .master-progress-label{font-size:10px}
 }
 @media(prefers-reduced-motion:reduce){.master-progress span{transition:none}}
+
+/* Separate per-character direct snapshots and real Battle Log pre-match traces. */
+.rating-evidence-bridge{margin:13px 0 20px;padding:12px 16px;border-radius:12px;
+ border:1px solid rgba(248,187,117,.22);background:rgba(248,187,117,.037)}
+.rating-evidence-title{display:flex;justify-content:space-between;align-items:baseline;gap:9px;flex-wrap:wrap}
+.rating-evidence-title strong{font-size:12px;color:#e6c59b;font-weight:720}
+.rating-evidence-title span{font-size:10px;color:#9aa7bd}
+.rating-evidence-bridge p{font-size:12px;color:#d4dce8;margin:8px 0 0;line-height:1.65;
+ font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.rating-evidence-bridge #match-rating-check{color:#abb8ca;font-size:11px}
+.rating-evidence-bridge small{font-size:10px;color:#8899b1;display:block;margin-top:8px;line-height:1.6}
+.chart-key-match{display:block;width:19px;height:3px;border-top:2px dashed #f8bb75;position:relative}
+.chart-key-match:after{content:'';position:absolute;width:6px;height:6px;top:-5px;left:7px;
+ background:#f8bb75;border-radius:2px}
+.chart-layer-toggle[data-layer="matches"].active{background:rgba(248,187,117,.11);
+ border-color:rgba(248,187,117,.43);color:#ffddb1}
+@media(max-width:700px){.rating-evidence-bridge{padding:11px 13px;margin:12px 0 17px}
+ .rating-evidence-bridge p{font-size:11px}
+ .chart-layer-toggle[data-layer="matches"]{font-size:11px}
+}
