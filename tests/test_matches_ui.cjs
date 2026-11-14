@@ -72,13 +72,13 @@ async function run(){
  assert.equal(prevHead.children[1].className,'battle-mr-indicator positive');
  assert.equal(previousCard.children.length,3); // no metadata row, no expanded details
  assert.equal(latestCard.children[0].children[1].children[0].textContent,'— MR');
- assert.ok(get('match-warning').textContent.includes('Act 14'));
+ assert.ok(get('match-warning').textContent.includes('公式PLAY'));
  assert.match(get('goal-forecast-quality').textContent,/予測|ランクマッチ|更新/);
  assert.equal(get('fair-rating-value').textContent,'算定保留');
  assert.match(get('fair-rating-sub').textContent,/100試合未満/);
  assert.ok(get('fair-character').options.some(x=>x.value==='AKUMA'));
  assert.equal(get('fair-act').value,''); // no valid opponent MR in synthetic matches
- assert.match(get('fair-phase-note').textContent,/暫定/);
+ assert.match(get('fair-phase-note').textContent,/公式Act未確認/);
  assert.equal(get('fair-bands').children.length,1); // explanatory empty-state message
  assert.match(get('fair-bands').children[0].textContent,/ありません/);
 
