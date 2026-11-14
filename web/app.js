@@ -25,7 +25,7 @@ function chart(id,points,key,color,preMatch=[]) {
     slopeEl.textContent='算定不可';
     slopeEl.title=reg.reason;
   }
-  if(!rows.length&&!matchRows.length){
+  if(!rows.length&&(!layers.matches||!matchRows.length)){
     node.innerHTML='<div class="empty">この期間に定期観測・ランクマッチの履歴がありません。</div>';
     return;
   }
@@ -153,7 +153,7 @@ function chart(id,points,key,color,preMatch=[]) {
       });
     });
   }
-  for(const i of new Set([0,rows.length-1])){
+  for(const i of [0,1]){
     const label=draw('text',{x:i?W-R:L,y:H-4,'text-anchor':i?'end':'start',
       fill:'#78859d','font-size':11});
     label.textContent=date(i?allPlotted.at(-1).observed_at:allPlotted[0].observed_at);
@@ -199,7 +199,7 @@ function updateStatus(){
       chosen+'：保存済みのランクマッチ記録がありません。';
   $('match-rating-check').textContent='バトルログ最終照合：'+
     (ratingEvidence.checked_at?date(ratingEvidence.checked_at)+' JST':'未確認')+
-    '（キャラクター別の直近試合を確認。直接のMR・LP定期観測とは別）';
+    '（保存済み対戦履歴の照合。両キャラの現在値を直接測定した時刻ではありません）';
   let recent=runs.filter(x=>new Date(x.started_at).getTime()>=Date.now()-864e5),successful=recent.filter(x=>x.result==='success'),failedRuns=recent.filter(x=>x.result==='failure'),skipped=recent.filter(x=>x.result==='skipped_recent_success');
   let attempts=successful.length+failedRuns.length,successRate=attempts?Math.round(successful.length/attempts*100)+'%':'算定不可';
   $('coverage').textContent=`直近24時間：取得成功 ${successful.length} 回、失敗 ${failedRuns.length} 回、省略 ${skipped.length} 回。到達済み取得の成功率 ${successRate}（予定枠への到達率とは別）。`;
