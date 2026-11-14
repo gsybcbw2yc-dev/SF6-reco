@@ -85,6 +85,64 @@ class BattleLogTests(unittest.TestCase):
             self.assertEqual(event['result'], 'failure')
             self.assertEqual(original, (path / index['months'][0]['path']).read_bytes())
 
+
+    def test_independent_rating_evidence_preserves_real_match_time(self):
+        """Backfill only ranked pre-match values, never invent a 30m snapshot."""
+        with tempfile.TemporaryDirectory() as temp:
+            folder = Path(temp) / 'matches'
+            folder.mkdir()
+            ranked_akuma = b.normalize(replay('AAA00001'), PLAYER, AT)
+            ranked_terry = dict(b.normalize(replay('BBB00002'), PLAYER, AT),
+                                character='TERRY', mr_before=0, lp_before=23119)
+            custom = dict(b.normalize(replay('CCC00003'), PLAYER, AT),
+                          mode='custom', character='TERRY', lp_before=23119)
+            no_time = dict(b.normalize(replay('DDD00004'), PLAYER, AT),
+                           occurred_at=None, character='TERRY')
+            evidence = b.make_rating_evidence(
+                {'2026-11': [ranked_akuma, ranked_terry, custom, no_time]}, AT)
+            self.assertEqual(evidence['schema'], 1)
+            self.assertEqual(len(evidence['events']), 2)
+            self.assertEqual(set(evidence['characters']), {'AKUMA', 'TERRY'})
+            self.assertTrue(all(x['source'] == 'battlelog_pre_match'
+                                and x['rating_basis'] == 'pre_match'
+                                and x['time_basis'] == 'buckler_uploaded_at'
+                                for x in evidence['events']))
+            self.assertEqual(evidence['characters']['TERRY']['last_pre_match_lp'], 23119)
+            self.assertEqual(evidence['characters']['TERRY']['last_pre_match_mr'], 0)
+            self.assertEqual(evidence['events'][0]['observed_at'], ranked_akuma['occurred_at'])
+            # Preserve all raw timestamps (including equal-time records); no 30m interpolation.
+            b.write_rating_evidence(folder, {'2026-11': [ranked_akuma, ranked_terry]}, AT)
+            saved = json.loads((Path(temp) / 'rating-evidence.json').read_text())
+            self.assertEqual(saved, b.make_rating_evidence(
+                {'2026-11': [ranked_akuma, ranked_terry]}, AT))
+            self.assertFalse((folder / 'rating-evidence.json').exists())
+            self.assertEqual(len(saved['events']), 2)
+            self.assertTrue(all('observed_at' in x and 'fetched_at' not in x for x in saved['events']))
+            self.assertNotIn('SYNTHETIC_OPPONENT', json.dumps(saved))
+            self.assertNotIn(PLAYER, json.dumps(saved))
+
+    def test_capture_regenerates_separate_rating_evidence_even_if_no_new_games(self):
+        with tempfile.TemporaryDirectory() as temp, patch.dict(os.environ, {'MATCH_MAX_PAGES': '1'}):
+            folder = Path(temp) / 'matches'
+            folder.mkdir()
+            def fetch(build, locale, player, page, cookie):
+                return {'current_page': 1, 'total_page': 1,
+                        'replay_list': [replay('TEST0001')]}
+            result = b.capture(raw([replay('TEST0001')]), PLAYER, 'TEST_SECRET', folder,
+                               AT, fetch, lambda _: None)
+            self.assertEqual(result['result'], 'success')
+            saved = json.loads((Path(temp) / 'rating-evidence.json').read_text())
+            self.assertEqual(len(saved['events']), 1)
+            self.assertEqual(saved['characters']['AKUMA']['last_pre_match_mr'], 1500)
+            self.assertTrue(saved['checked_at'].endswith('Z'))
+            result = b.capture(raw([replay('TEST0001')]), PLAYER, 'TEST_SECRET', folder,
+                               '2026-11-09T08:40:00Z', fetch, lambda _: None)
+            self.assertEqual(result['result'], 'success')
+            newest = json.loads((Path(temp) / 'rating-evidence.json').read_text())
+            self.assertEqual(len(newest['events']), 1)
+            self.assertNotEqual(newest['checked_at'], '')
+            self.assertEqual(newest['events'], saved['events'])  # no fictitious heartbeat per character
+
     def test_auth_and_schema_fail_closed(self):
         with self.assertRaises(ValueError): b.decode_page('<html>Sign in</html>')
         with self.assertRaises(ValueError): b.decode_page(raw([]).replace('"replay_list": []', '"__N_REDIRECT": "auth/login"'))
