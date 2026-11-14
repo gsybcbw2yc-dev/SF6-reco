@@ -18,8 +18,8 @@ for(let session=0;session<16;session++){
 const opts={character:'AKUMA',actAt:()=>14};
 const report=F.analyze(rows,opts);
 assert.equal(report.total,640);
-assert.equal(report.acts[0].key,'provisional:14');
-assert.equal(report.provisional,true);
+assert.equal(report.acts[0].key,'act:14');
+assert.equal(report.inferredN,640);
 assert.equal(report.current.n,640);
 assert.ok(report.current.crossing>1350&&report.current.crossing<1450);
 assert.ok(report.current.model.b<0);
@@ -35,14 +35,24 @@ assert.equal(report.current.bands.reduce((n,b)=>n+b.n,0),640);
 assert.equal(report.shift.earlyN,320);
 assert.equal(report.shift.lateN,320);
 assert.ok(report.shift.difference!==null);
-// User's ACT14 is provisional, not to be confused with official verified ACT14.
+// Direct record ACT 14 must join the same bucket as inferred ACT 14.
+const mixed14=rows.map((r,i)=>i<50?{...r,phase:'14'}:r);
+const merged=F.analyze(mixed14,opts);
+assert.equal(merged.acts.length,1);
+assert.equal(merged.selectedAct,'act:14');
+assert.equal(merged.selectedN,640);
+assert.equal(merged.inferredN,590);
+assert.equal(merged.retrospectiveN,0);
+assert.equal(F.analyze(rows,{character:'AKUMA'}).unassignedN,640);
+assert.equal(F.analyze(rows,{character:'AKUMA'}).acts.length,0);
+
 const withOfficial=[...rows.slice(0,450),...rows.slice(450,470).map((r,i)=>({
   ...r,key:'official-'+i,phase:'15'}))];
 const separated=F.analyze(withOfficial,opts);
 assert.equal(separated.acts.length,2);
-assert.equal(separated.selectedAct,'official:15');
+assert.equal(separated.selectedAct,'act:15');
 assert.equal(separated.current.crossing,null);
-const explicit=F.analyze(withOfficial,{...opts,selectedAct:'provisional:14'});
+const explicit=F.analyze(withOfficial,{...opts,selectedAct:'act:14'});
 assert.equal(explicit.selectedN,450);
 assert.notEqual(explicit.current.crossing,null);
 // Exclude missing MR, non-ranked, dup keys, invalid dates, tied missing win/loss.
