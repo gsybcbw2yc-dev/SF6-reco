@@ -215,7 +215,7 @@ def collect():
                     from . import play_leagues
                 else:
                     import play_leagues
-                play_items = play_leagues.fetch_latest(player, cookie)
+                play_items, act_probe = play_leagues.fetch_latest(player, cookie, with_act_diagnostic=True)
                 by_character = {x['character']: dict(x, rating_source='favorite_banner_fallback')
                                 for x in original}
                 for item in play_items:
@@ -224,7 +224,8 @@ def collect():
                     'source': 'play_character_league_infos',
                     'rating_view': 'latest_default', 'result': 'success',
                     'characters_available': len(play_items),
-                    'characters': sorted(x['character'] for x in play_items)})
+                    'characters': sorted(x['character'] for x in play_items),
+                    'act_diagnostic': act_probe})
                 print('PLAY character MR/LP: '+str(len(play_items))+' independent characters collected')
                 # If there is an explicit Act on the PLAY page, it is reported
                 # with the same trusted-key provenance as the existing source.
