@@ -3664,6 +3664,19 @@
       "delta_lp": 0,
       "observation_type": "heartbeat",
       "observation_id": "43597579173:1:TERRY"
+    },
+    {
+      "character": "TERRY",
+      "mr": 0,
+      "lp": 22823,
+      "phase": "unknown",
+      "phase_source": null,
+      "observed_at": "2026-11-14T13:30:40Z",
+      "source": "periodic_buckler_snapshot",
+      "delta_mr": 0,
+      "delta_lp": 0,
+      "observation_type": "heartbeat",
+      "observation_id": "43600095374:1:TERRY"
     }
   ]
 }
