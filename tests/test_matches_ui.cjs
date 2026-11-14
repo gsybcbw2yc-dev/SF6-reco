@@ -10,7 +10,7 @@ async function run(){
  const fetch=async url=>{calls.push(url);if(hold)await hold;if(offline)throw Error('offline');return {ok:true,json:async()=>url.includes('index.json')?{schema:1,count:rows.length,months:[{path:'2026-11.json',sha256:hash,count:rows.length,last_at:rows.at(-1).occurred_at}]}:url.includes('status.json')?{last_success:'2026-11-09T01:00:00Z',events:[{added:1,duplicates:0}]}:url.includes('data/history.json')?{observations:structuredClone(observations)}:{schema:1,matches:structuredClone(rows)}};};
  class Clock extends Date{static now(){return Date.parse('2026-11-09T02:00:00Z');}}
  const window={},context=vm.createContext({window,document,fetch,Date:Clock,Option:class{constructor(label,value){this.value=value;}}});
- vm.runInContext(fs.readFileSync('web/match-analysis.js','utf8'),context);vm.runInContext(fs.readFileSync('web/time-performance.js','utf8'),context);vm.runInContext(fs.readFileSync('web/deep-analysis.js','utf8'),context);vm.runInContext(fs.readFileSync('web/phase-config.js','utf8'),context);vm.runInContext(fs.readFileSync('web/match-deltas.js','utf8'),context);vm.runInContext(fs.readFileSync('web/match-goal-forecast.js','utf8'),context);vm.runInContext(fs.readFileSync('web/master-promotion-forecast.js','utf8'),context);vm.runInContext(fs.readFileSync('web/master-promotion-ui.js','utf8'),context);vm.runInContext(fs.readFileSync('web/match-goal-ui.js','utf8'),context);vm.runInContext(fs.readFileSync('web/matches-ui.js','utf8'),context);
+ vm.runInContext(fs.readFileSync('web/match-analysis.js','utf8'),context);vm.runInContext(fs.readFileSync('web/time-performance.js','utf8'),context);vm.runInContext(fs.readFileSync('web/deep-analysis.js','utf8'),context);vm.runInContext(fs.readFileSync('web/phase-config.js','utf8'),context);vm.runInContext(fs.readFileSync('web/match-deltas.js','utf8'),context);vm.runInContext(fs.readFileSync('web/match-goal-forecast.js','utf8'),context);vm.runInContext(fs.readFileSync('web/master-promotion-forecast.js','utf8'),context);vm.runInContext(fs.readFileSync('web/master-promotion-ui.js','utf8'),context);vm.runInContext(fs.readFileSync('web/match-goal-ui.js','utf8'),context);vm.runInContext(fs.readFileSync('web/fair-rating.js','utf8'),context);vm.runInContext(fs.readFileSync('web/fair-rating-ui.js','utf8'),context);vm.runInContext(fs.readFileSync('web/matches-ui.js','utf8'),context);
  const app=window.matchDashboard;await app.refresh();assert.equal(calls.length,4);assert.equal(get('match-list').children.length,1);assert.equal(get('match-character').value,'AKUMA');
  assert.equal(get('match-list').children[0].children.length,3); // header plus only date and pre-match values
  assert.equal(get('match-list').children[0].children[0].children[1].children[0].textContent,'— MR');
@@ -74,6 +74,13 @@ async function run(){
  assert.equal(latestCard.children[0].children[1].children[0].textContent,'— MR');
  assert.ok(get('match-warning').textContent.includes('Act 14'));
  assert.match(get('goal-forecast-quality').textContent,/予測|ランクマッチ|更新/);
+ assert.equal(get('fair-rating-value').textContent,'算定保留');
+ assert.match(get('fair-rating-sub').textContent,/100試合未満/);
+ assert.ok(get('fair-character').options.some(x=>x.value==='AKUMA'));
+ assert.equal(get('fair-act').value,'provisional:14');
+ assert.match(get('fair-phase-note').textContent,/暫定/);
+ assert.equal(get('fair-bands').children.length,0); // synthetic matches omit opponent MR
+
  assert.match(get('goal-window-20-evidence').textContent,/試合/);
  assert.equal(get('goal-1500-20-games').textContent,'達成済み');
  assert.equal(get('goal-1600-20-games').textContent,'データ不足');
@@ -108,6 +115,11 @@ async function run(){
  assert.equal(get('goal-master-panel').hidden,true);
  assert.equal(get('goal-mr-panel').hidden,false);
  assert.equal(get('goal-forecast-title').textContent,'あと何試合で到達するか');
- console.log('Monthly match UI, Terry character filter, LP-only MR forecast guard passed (synthetic)');
+
+ get('fair-character').value='AKUMA';get('fair-character').onchange();
+ assert.equal(get('fair-rating-value').textContent,'算定保留');
+ assert.match(get('fair-validation').textContent,/未検証/);
+ assert.match(get('fair-count').textContent,/0試合/);
+ console.log('Monthly match UI, Terry LP mode and exploratory ACT fair-MR integration passed (synthetic)');
 }
 run().catch(e=>{console.error(e);process.exitCode=1;});
