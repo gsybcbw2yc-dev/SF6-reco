@@ -46,6 +46,7 @@ assert.equal(Fair.period(match('boundary','2026-11-15T01:30:00Z'),Phase.assigned
 const uncertainA=match('uncertainA','2026-11-15T01:30:00Z');
 const uncertainB={...match('uncertainB','2026-11-15T01:33:00Z'),mr_before:1408,lp_before:24100};
 assert.equal(Deltas.infer([uncertainA,uncertainB]).get('uncertainA').delta,null);
+assert.equal(Master.inferLP([uncertainA,uncertainB],time=>Phase.assignedAct(time).act).get('uncertainA').delta,null);
 
 const now=Date.parse('2026-11-15T03:15:00Z');
 const battles=[
