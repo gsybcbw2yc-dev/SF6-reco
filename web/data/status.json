@@ -1,5 +1,5 @@
 {
-  "last_success": "2026-11-14T22:21:59Z",
+  "last_success": "2026-11-14T22:22:33Z",
   "last_error": null,
   "errors": [
     {
@@ -33,14 +33,295 @@
       "mr": 0,
       "lp": 23033,
       "phase": "unknown",
-      "phase_source": null
+      "phase_source": null,
+      "rating_source": "play_character_league_infos",
+      "rating_view": "latest_default"
+    },
+    {
+      "character": "RYU",
+      "mr": 0,
+      "lp": null,
+      "phase": "unknown",
+      "phase_source": null,
+      "rating_source": "play_character_league_infos",
+      "rating_view": "latest_default"
+    },
+    {
+      "character": "LUKE",
+      "mr": 0,
+      "lp": null,
+      "phase": "unknown",
+      "phase_source": null,
+      "rating_source": "play_character_league_infos",
+      "rating_view": "latest_default"
+    },
+    {
+      "character": "KIMBERLY",
+      "mr": 0,
+      "lp": null,
+      "phase": "unknown",
+      "phase_source": null,
+      "rating_source": "play_character_league_infos",
+      "rating_view": "latest_default"
+    },
+    {
+      "character": "CHUN-LI",
+      "mr": 0,
+      "lp": null,
+      "phase": "unknown",
+      "phase_source": null,
+      "rating_source": "play_character_league_infos",
+      "rating_view": "latest_default"
+    },
+    {
+      "character": "MANON",
+      "mr": 0,
+      "lp": null,
+      "phase": "unknown",
+      "phase_source": null,
+      "rating_source": "play_character_league_infos",
+      "rating_view": "latest_default"
+    },
+    {
+      "character": "ZANGIEF",
+      "mr": 0,
+      "lp": null,
+      "phase": "unknown",
+      "phase_source": null,
+      "rating_source": "play_character_league_infos",
+      "rating_view": "latest_default"
+    },
+    {
+      "character": "JP",
+      "mr": 0,
+      "lp": null,
+      "phase": "unknown",
+      "phase_source": null,
+      "rating_source": "play_character_league_infos",
+      "rating_view": "latest_default"
+    },
+    {
+      "character": "DHALSIM",
+      "mr": 0,
+      "lp": null,
+      "phase": "unknown",
+      "phase_source": null,
+      "rating_source": "play_character_league_infos",
+      "rating_view": "latest_default"
+    },
+    {
+      "character": "CAMMY",
+      "mr": 0,
+      "lp": null,
+      "phase": "unknown",
+      "phase_source": null,
+      "rating_source": "play_character_league_infos",
+      "rating_view": "latest_default"
+    },
+    {
+      "character": "KEN",
+      "mr": 0,
+      "lp": null,
+      "phase": "unknown",
+      "phase_source": null,
+      "rating_source": "play_character_league_infos",
+      "rating_view": "latest_default"
+    },
+    {
+      "character": "DEE_JAY",
+      "mr": 0,
+      "lp": null,
+      "phase": "unknown",
+      "phase_source": null,
+      "rating_source": "play_character_league_infos",
+      "rating_view": "latest_default"
+    },
+    {
+      "character": "LILY",
+      "mr": 0,
+      "lp": null,
+      "phase": "unknown",
+      "phase_source": null,
+      "rating_source": "play_character_league_infos",
+      "rating_view": "latest_default"
+    },
+    {
+      "character": "RASHID",
+      "mr": 0,
+      "lp": null,
+      "phase": "unknown",
+      "phase_source": null,
+      "rating_source": "play_character_league_infos",
+      "rating_view": "latest_default"
+    },
+    {
+      "character": "BLANKA",
+      "mr": 0,
+      "lp": null,
+      "phase": "unknown",
+      "phase_source": null,
+      "rating_source": "play_character_league_infos",
+      "rating_view": "latest_default"
+    },
+    {
+      "character": "JURI",
+      "mr": 0,
+      "lp": null,
+      "phase": "unknown",
+      "phase_source": null,
+      "rating_source": "play_character_league_infos",
+      "rating_view": "latest_default"
+    },
+    {
+      "character": "MARISA",
+      "mr": 0,
+      "lp": null,
+      "phase": "unknown",
+      "phase_source": null,
+      "rating_source": "play_character_league_infos",
+      "rating_view": "latest_default"
+    },
+    {
+      "character": "GUILE",
+      "mr": 0,
+      "lp": null,
+      "phase": "unknown",
+      "phase_source": null,
+      "rating_source": "play_character_league_infos",
+      "rating_view": "latest_default"
+    },
+    {
+      "character": "ED",
+      "mr": 0,
+      "lp": null,
+      "phase": "unknown",
+      "phase_source": null,
+      "rating_source": "play_character_league_infos",
+      "rating_view": "latest_default"
+    },
+    {
+      "character": "E._HONDA",
+      "mr": 0,
+      "lp": null,
+      "phase": "unknown",
+      "phase_source": null,
+      "rating_source": "play_character_league_infos",
+      "rating_view": "latest_default"
+    },
+    {
+      "character": "JAMIE",
+      "mr": 0,
+      "lp": null,
+      "phase": "unknown",
+      "phase_source": null,
+      "rating_source": "play_character_league_infos",
+      "rating_view": "latest_default"
+    },
+    {
+      "character": "AKUMA",
+      "mr": 1403,
+      "lp": 114705,
+      "phase": "unknown",
+      "phase_source": null,
+      "rating_source": "play_character_league_infos",
+      "rating_view": "latest_default"
+    },
+    {
+      "character": "SAGAT",
+      "mr": 0,
+      "lp": null,
+      "phase": "unknown",
+      "phase_source": null,
+      "rating_source": "play_character_league_infos",
+      "rating_view": "latest_default"
+    },
+    {
+      "character": "M._BISON",
+      "mr": 0,
+      "lp": null,
+      "phase": "unknown",
+      "phase_source": null,
+      "rating_source": "play_character_league_infos",
+      "rating_view": "latest_default"
+    },
+    {
+      "character": "MAI",
+      "mr": 0,
+      "lp": null,
+      "phase": "unknown",
+      "phase_source": null,
+      "rating_source": "play_character_league_infos",
+      "rating_view": "latest_default"
+    },
+    {
+      "character": "ELENA",
+      "mr": 0,
+      "lp": null,
+      "phase": "unknown",
+      "phase_source": null,
+      "rating_source": "play_character_league_infos",
+      "rating_view": "latest_default"
+    },
+    {
+      "character": "C._VIPER",
+      "mr": 0,
+      "lp": null,
+      "phase": "unknown",
+      "phase_source": null,
+      "rating_source": "play_character_league_infos",
+      "rating_view": "latest_default"
+    },
+    {
+      "character": "ALEX",
+      "mr": 0,
+      "lp": null,
+      "phase": "unknown",
+      "phase_source": null,
+      "rating_source": "play_character_league_infos",
+      "rating_view": "latest_default"
+    },
+    {
+      "character": "RANDOM",
+      "mr": 0,
+      "lp": null,
+      "phase": "unknown",
+      "phase_source": null,
+      "rating_source": "play_character_league_infos",
+      "rating_view": "latest_default"
+    },
+    {
+      "character": "INGRID",
+      "mr": 0,
+      "lp": null,
+      "phase": "unknown",
+      "phase_source": null,
+      "rating_source": "play_character_league_infos",
+      "rating_view": "latest_default"
+    },
+    {
+      "character": "YASMINE",
+      "mr": 0,
+      "lp": null,
+      "phase": "unknown",
+      "phase_source": null,
+      "rating_source": "play_character_league_infos",
+      "rating_view": "latest_default"
+    },
+    {
+      "character": "ARJUN",
+      "mr": 0,
+      "lp": null,
+      "phase": "unknown",
+      "phase_source": null,
+      "rating_source": "play_character_league_infos",
+      "rating_view": "latest_default"
     }
   ],
-  "last_attempt": "2026-11-14T22:21:56Z",
+  "last_attempt": "2026-11-14T22:22:29Z",
   "phase_diagnostic": {
     "candidate_paths": [],
     "reason": "No verified explicit phase value in this profile response"
   },
   "auth_health": "ok",
-  "last_rating_change": "2026-11-14T21:55:11Z"
+  "last_rating_change": "2026-11-14T22:22:33Z"
 }

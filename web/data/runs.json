@@ -6463,6 +6463,24 @@
       "observations_added": 1,
       "changed_characters": [],
       "error": null
+    },
+    {
+      "started_at": "2026-11-14T22:22:29Z",
+      "finished_at": "2026-11-14T22:22:33Z",
+      "trigger": "push",
+      "external_trigger_at": null,
+      "scheduled_for_estimate": null,
+      "estimated_delay_seconds": null,
+      "run_id": "43647735105",
+      "attempt": "1",
+      "result": "success",
+      "character_count": 32,
+      "observations_added": 32,
+      "changed_characters": [
+        "KEN",
+        "AKUMA"
+      ],
+      "error": null
     }
   ]
 }
