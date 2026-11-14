@@ -2,7 +2,7 @@
 (function(){
   'use strict';
   const views=['overview','matches','analysis','system'];
-  const analysisViews=['deep','timeofday','velocity'];
+  const analysisViews=['deep','timeofday','velocity','fairmr'];
   function toggle(tabName,ids,selector,prefix){
     if(!ids.includes(tabName))return;
     const buttons=[...document.querySelectorAll(selector)];
