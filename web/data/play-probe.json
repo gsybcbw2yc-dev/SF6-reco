@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "checked_at": "2026-11-14T22:20:24Z",
+  "checked_at": "2026-11-14T22:21:59Z",
   "source": "buckler_play_character_latest",
   "result": "page_available",
   "route": "/profile/{player}/play",
