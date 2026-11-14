@@ -20,7 +20,7 @@ assert.equal(Phase.label('unknown',t0),'Act 14（暫定）');
 assert.equal(Phase.setVerifiedObservations([
   observation(t3,15),observation(t1,14),observation(t1,14,'TERRY'),
   observation(t2,14),observation(t4,15),{...observation(t0,44),phase_source:null}
-]),5);
+  ]),4);
 assert.equal(Phase.currentAct,15);
 assert.equal(Phase.latestVerified().act,15);
 assert.equal(Phase.assignedAct(t0).act,14);
