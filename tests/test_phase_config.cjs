@@ -33,6 +33,7 @@ assert.equal(Phase.assignedAct('2026-11-15T01:30:00Z').act,null);
 assert.equal(Phase.label('unknown','2026-11-15T01:30:00Z'),
   'Act不明（切替境界）');
 assert.equal(Phase.assignedAct(t3).act,15);
+assert.equal(Phase.assignedAct('2026-11-15T02:30:00Z').act,15);
 assert.equal(Phase.label('15'),'Act 15（公式取得）');
 
 const match=(id,at,phase='unknown',character='AKUMA')=>({
