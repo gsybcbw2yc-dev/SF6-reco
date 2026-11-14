@@ -70,6 +70,10 @@
         this.rows=[...new Map(loaded.flat().map(r=>[r.key,r])).values()];
         this.index=index;this.status=status;
         this.observations=Array.isArray(history?.observations)?history.observations:[];
+        // Share official ACT observations with the match-only and fair-MR views
+        // even if those views refresh before the overview dashboard does.
+        if(typeof SF6PhaseConfig!=='undefined')
+          SF6PhaseConfig.setVerifiedObservations(this.observations);
         const chars=[...new Set(this.rows.map(r=>r.character))].sort();
         chars.forEach(c=>{if (![...$('match-character').options].some(o=>o.value===c)) $('match-character').add(new Option(c,c));});
         if(this.initial){
