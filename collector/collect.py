@@ -206,7 +206,40 @@ def collect():
                 except Exception:
                     save('matches/probe.json', {'result': 'probe_failure', 'checked_at': now(),
                                                'error': 'Battle log schema or authentication unavailable'})
-            return parse_page(raw.decode('utf-8'), diagnostic=True)
+            original, original_phase_paths = parse_page(raw.decode('utf-8'), diagnostic=True)
+            # PLAY shows every played fighter, independently of the favorite
+            # character returned by the Battle Log page. Keep the original as
+            # fallback when PLAY is unavailable; never lose existing history.
+            try:
+                if __package__:
+                    from . import play_leagues
+                else:
+                    import play_leagues
+                play_items = play_leagues.fetch_latest(player, cookie)
+                by_character = {x['character']: dict(x, rating_source='favorite_banner_fallback')
+                                for x in original}
+                for item in play_items:
+                    by_character[item['character']] = item
+                save('play-source.json', {'schema': 1, 'checked_at': now(),
+                    'source': 'play_character_league_infos',
+                    'rating_view': 'latest_default', 'result': 'success',
+                    'characters_available': len(play_items),
+                    'characters': sorted(x['character'] for x in play_items)})
+                print('PLAY character MR/LP: '+str(len(play_items))+' independent characters collected')
+                # If there is an explicit Act on the PLAY page, it is reported
+                # with the same trusted-key provenance as the existing source.
+                return list(by_character.values()), original_phase_paths
+            except Exception as play_exc:
+                if __package__:
+                    from . import play_leagues
+                else:
+                    import play_leagues
+                save('play-source.json', {'schema': 1, 'checked_at': now(),
+                    'source': 'play_character_league_infos', 'result': 'fallback_banner',
+                    'error': play_leagues.safe_issue(play_exc),
+                    'characters_available': 0})
+                print('PLAY source unavailable; keeping favorite-character fallback')
+                return original, original_phase_paths
         except urllib.error.HTTPError as exc:
             # Classify metadata only; never persist headers, body or cookie.
             server = (exc.headers.get('Server') or '').lower()
