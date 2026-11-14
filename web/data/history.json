@@ -3547,6 +3547,19 @@
       "delta_lp": 20,
       "observation_type": "change",
       "observation_id": "43576137447:1:AKUMA"
+    },
+    {
+      "character": "TERRY",
+      "mr": 0,
+      "lp": 22753,
+      "phase": "unknown",
+      "phase_source": null,
+      "observed_at": "2026-11-14T09:01:01Z",
+      "source": "periodic_buckler_snapshot",
+      "delta_mr": 0,
+      "delta_lp": -375,
+      "observation_type": "change",
+      "observation_id": "43578459153:1:TERRY"
     }
   ]
 }
