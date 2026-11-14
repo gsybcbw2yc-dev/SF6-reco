@@ -153,9 +153,14 @@ def parse_play(raw):
             continue
         # Unplayed characters frequently have empty shells. Do not pollute
         # the rating history with zeros for fighters the user never selected.
-        if not entry.get('is_played') and not (mr and mr > 0) and not (lp and lp > 0):
-            continue
         if mr is None and lp is None:
+            continue
+        # Buckler's is_played marker can be true while the latest Act has
+        # no rating: master_rating=0, league_point=null. These are NOT valid
+        # current MR/LP observations, even for an otherwise played fighter.
+        if (mr is None or mr == 0) and lp is None:
+            continue
+        if not entry.get('is_played') and not (mr and mr > 0) and lp is None:
             continue
         result[char] = {'character':char,'mr':mr,'lp':lp,'phase':phase,
                          'phase_source':phase_source,
