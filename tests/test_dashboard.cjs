@@ -32,7 +32,7 @@ async function run() {
   element('phase').add({ value: 'all' });
   const listeners = {}, windows = {}, timers = [];
   const layerButtons=[];
-  for(const key of ['mr','lp'])for(const layer of ['observed','average','regression']){
+  for(const key of ['mr','lp'])for(const layer of ['observed','average','regression','matches']){
     const button=new Element();
     button.dataset={chart:key,layer};
     layerButtons.push(button);
@@ -50,24 +50,25 @@ async function run() {
   };
   const window = { addEventListener: (name, cb) => { windows[name] = cb; } };
   let nowMs = Date.parse('2026-11-08T04:00:00Z'), calls = 0, fail = false, held;
-  let snapshot = { history: { observations: [{ character: 'AKUMA', mr: 1411, lp: 99763, phase: 'unknown', observed_at: '2026-11-08T03:00:00Z' }] }, status: { last_success: '2026-11-08T03:00:00Z' }, runs: { events: [] } };
+  let snapshot = { history: { observations: [{ character: 'AKUMA', mr: 1411, lp: 99763, phase: 'unknown', observed_at: '2026-11-08T03:00:00Z' }] }, status: { last_success: '2026-11-08T03:00:00Z' }, runs: { events: [] }, 'rating-evidence': { schema: 1, checked_at: null, events: [] } };
   class Clock extends Date { static now() { return nowMs; } }
   const fetch = async url => {
     calls++;
     if (held) await held;
     if (fail) throw new Error('offline');
-    const name = url.match(/data\/(history|status|runs)\.json/)[1];
+    const name = url.match(/data\/(history|status|runs|rating-evidence)\.json/)[1];
     return { ok: true, json: async () => structuredClone(snapshot[name]) };
   };
   const context = vm.createContext({ document, window, fetch, Date: Clock, Option: class { constructor(label, value) { this.value = value;this.label=label; } }, setInterval: cb => timers.push(cb), setTimeout() {}, URL: {}, Blob, innerWidth: 1024 });
   vm.runInContext(fs.readFileSync('web/time-analysis.js', 'utf8'), context);
   vm.runInContext(fs.readFileSync('web/time-analysis-ui.js', 'utf8'), context);
   vm.runInContext(fs.readFileSync('web/chart-trends.js', 'utf8'), context);
+  vm.runInContext(fs.readFileSync('web/rating-evidence.js', 'utf8'), context);
   vm.runInContext(fs.readFileSync('web/phase-config.js', 'utf8'), context);
   vm.runInContext(fs.readFileSync('web/app.js', 'utf8'), context);
   const flush = () => new Promise(resolve => setImmediate(resolve));
   await flush();
-  assert.equal(calls, 3);
+  assert.equal(calls, 4);
   assert.equal(element('mr').textContent, '1,411');
   assert.equal(element('phase').options.find(p=>p.value==='unknown')?.label,'Act 14（暫定）');
   assert.equal(element('mr-chart').children[0].attributes.viewBox, '0 0 340 176'); // portrait chart fills actual available space
@@ -103,7 +104,7 @@ async function run() {
   snapshot.history.observations.push({ character: 'AKUMA', mr: 1372, lp: 100843, phase: 'unknown', observed_at: '2026-11-08T04:01:00Z' });
   snapshot.status.last_success = '2026-11-08T04:01:00Z';
   timers[0](); await flush();
-  assert.equal(calls, 6);
+  assert.equal(calls, 8);
   assert.equal(element('mr').textContent, '1,372');
   assert.equal(element('lp').textContent, '100,843');
   assert.equal(element('mr-point-detail').hidden, true); // data redraw clears stale selection
@@ -132,11 +133,11 @@ async function run() {
   assert.equal(vm.runInContext('range', context), '30');
 
   document.hidden = true; nowMs += 60_000; timers[0](); await flush();
-  assert.equal(calls, 6);
+  assert.equal(calls, 8);
   document.hidden = false; listeners.visibilitychange(); await flush();
-  assert.equal(calls, 9);
+  assert.equal(calls, 12);
   windows.pageshow(); windows.focus(); await flush();
-  assert.equal(calls, 9); // quick duplicate resume events are throttled
+  assert.equal(calls, 12); // quick duplicate resume events are throttled
 
   fail = true; nowMs += 60_000; element('refresh').onclick(); await flush();
   assert.equal(element('mr').textContent, '1,372');
@@ -146,19 +147,45 @@ async function run() {
 
   held = new Promise(resolve => { context.releaseFetch = resolve; });
   nowMs += 60_000; timers[0](); element('refresh').onclick(); windows.focus();
-  assert.equal(calls, 18); // only one three-file request is in flight
+  assert.equal(calls, 24); // only one four-file request is in flight
   context.releaseFetch(); await flush();
   assert.equal(element('refresh').disabled, false);
   snapshot.history.observations.push(
     {character:'AKUMA',mr:1382,lp:100923,phase:'unknown',observed_at:'2026-11-08T04:30:00Z'},
     {character:'AKUMA',mr:1392,lp:101023,phase:'unknown',observed_at:'2026-11-08T05:00:00Z'}
   );
+  snapshot['rating-evidence']={
+    schema:1,checked_at:'2026-11-08T05:00:41Z',
+    events:[
+      {key:'m-a',character:'AKUMA',phase:'unknown',mr:1380,lp:100900,
+       observed_at:'2026-11-08T04:15:00Z',time_basis:'buckler_uploaded_at',
+       source:'battlelog_pre_match',rating_basis:'pre_match'},
+      {key:'m-b',character:'AKUMA',phase:'unknown',mr:1384,lp:100960,
+       observed_at:'2026-11-08T04:18:00Z',time_basis:'buckler_uploaded_at',
+       source:'battlelog_pre_match',rating_basis:'pre_match'}
+    ]
+  };
   snapshot.status.last_success='2026-11-08T05:00:00Z';
   nowMs+=60_000; timers[0](); await flush();
   assert.match(element('mr-slope').textContent,/MR\/時/);
   const svg=element('mr-chart').children[0];
   assert.ok(svg.children.some(x=>x.tagName==='polyline'&&x.attributes['data-chart-line']==='average'));
   assert.ok(svg.children.some(x=>x.tagName==='line'&&x.attributes['data-chart-line']==='regression'));
+  assert.ok(svg.children.some(x=>x.tagName==='polyline'&&x.attributes['data-chart-line']==='match-pre'));
+  assert.equal(svg.children.filter(x=>x.tagName==='rect'&&x.attributes['data-chart-point']==='match-pre').length,2);
+  assert.match(element('match-rating-latest').textContent,/試合前/);
+  assert.match(element('match-rating-check').textContent,/11\/8/);
+  const matchPoint=svg.children.find(x=>x.tagName==='rect');
+  matchPoint.emit('click');
+  assert.match(element('mr-point-reading').textContent,/試合前/);
+  element('mr-point-close').onclick();
+  const matchToggle=layerButtons.find(b=>b.dataset.chart==='mr'&&b.dataset.layer==='matches');
+  matchToggle.onclick();
+  assert.equal(element('mr-chart').children[0].children.some(x=>x.attributes['data-chart-line']==='match-pre'),false);
+  matchToggle.onclick();
+  assert.ok(element('mr-chart').children[0].children.some(x=>x.attributes['data-chart-line']==='match-pre'));
+  assert.equal(snapshot.history.observations.length,4); // overlays don't insert artificial half-hour measurements
+
   // Regression toggle removes only regression line, not the observed SVG circles.
   const regressionMr=layerButtons.find(b=>b.dataset.chart==='mr'&&b.dataset.layer==='regression');
   regressionMr.onclick();
