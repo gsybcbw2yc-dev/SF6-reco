@@ -93,5 +93,5 @@ const act14=actual.acts.find(x=>x.key==='act:14');
 assert.ok(act14&&act14.count>=100);
 assert.ok(act14.inferredN>0);
 assert.ok(act14.retrospectiveN>0);
-assert.ok(actual.acts.every(x=>/^act:\\d+$/.test(x.key)));
+assert.ok(actual.acts.every(x=>/^act:\d+$/.test(x.key)));
 console.log('Verified official ACT-only grouping, retrospective provenance, real archive analysis and forecasting passed');
