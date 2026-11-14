@@ -33,6 +33,33 @@ class PlayCharacterLeaguesTests(unittest.TestCase):
         self.assertTrue(all(x['rating_source']=='play_character_league_infos'
                             and x['rating_view']=='latest_default' for x in rows))
 
+    def test_current_season_id_matches_active_act_not_past_options(self):
+        raw=page([league('GOUKI',1403,114705),league('TERRY',0,23033)],
+                 current_phase=13)
+        root=json.loads(raw.split('>',1)[1].split('</script>',1)[0])
+        root['props']['pageProps']['play']['current_season_id']=14
+        root['props']['pageProps']['play']['season_ids']=[10,11,12,13,14]
+        raw='<script id="__NEXT_DATA__">'+json.dumps(root)+'</script>'
+        rows=p.parse_play(raw)
+        self.assertEqual({x['phase'] for x in rows}, {'14'})
+        self.assertEqual({x['phase_source'] for x in rows},
+                         {'play_page.play.current_season_id'})
+
+    def test_history_options_do_not_determine_current_act(self):
+        raw=page([league('GOUKI',1403,114705)])
+        root=json.loads(raw.split('>',1)[1].split('</script>',1)[0])
+        root['props']['pageProps']['play']['season_ids']=[13,14]
+        raw='<script id="__NEXT_DATA__">'+json.dumps(root)+'</script>'
+        self.assertEqual(p.parse_play(raw)[0]['phase'], 'unknown')
+
+    def test_invalid_current_season_cannot_become_official_act(self):
+        for value in (None, '14', True, -1, 0, 999):
+            root={'props': {'pageProps': {'play': {
+                'current_season_id': value,
+                'character_league_infos': [league('GOUKI',1403,114705)]}}}}
+            raw='<script id="__NEXT_DATA__">'+json.dumps(root)+'</script>'
+            self.assertEqual(p.parse_play(raw)[0]['phase'], 'unknown')
+
     def test_no_phase_guessing_and_zero_lp_rookie(self):
         rows=p.parse_play(page([league('RYU',None,0,True)]))
         self.assertEqual(len(rows),1)
