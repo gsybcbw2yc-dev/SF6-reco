@@ -215,7 +215,7 @@ def collect():
                     from . import play_leagues
                 else:
                     import play_leagues
-                play_items, act_probe = play_leagues.fetch_latest(player, cookie, with_act_diagnostic=True)
+                play_items = play_leagues.fetch_latest(player, cookie)
                 by_character = {x['character']: dict(x, rating_source='favorite_banner_fallback')
                                 for x in original}
                 for item in play_items:
@@ -225,7 +225,13 @@ def collect():
                     'rating_view': 'latest_default', 'result': 'success',
                     'characters_available': len(play_items),
                     'characters': sorted(x['character'] for x in play_items),
-                    'act_diagnostic': act_probe})
+                    'current_act': int(play_items[0]['phase']) if play_items and
+                        all(x['phase'] == play_items[0]['phase'] and
+                            x.get('phase_source') == 'play_page.play.current_season_id'
+                            for x in play_items) else None,
+                    'act_source': 'play_page.play.current_season_id' if play_items and
+                        all(x.get('phase_source') == 'play_page.play.current_season_id'
+                            for x in play_items) else None})
                 print('PLAY character MR/LP: '+str(len(play_items))+' independent characters collected')
                 # If there is an explicit Act on the PLAY page, it is reported
                 # with the same trusted-key provenance as the existing source.
@@ -331,6 +337,12 @@ def main():
         status['last_error'] = None
         status['auth_health'] = 'ok'
         status['latest'] = items
+        verified = [x for x in items if x.get('phase_source') == 'play_page.play.current_season_id'
+                    and x.get('phase', '').isdigit()]
+        if verified and all(x['phase'] == verified[0]['phase'] for x in verified):
+            status['act_current'] = {
+                'number': int(verified[0]['phase']), 'verified_at': observed,
+                'source': 'play_page.play.current_season_id'}
         status['phase_diagnostic'] = {'candidate_paths': phase_paths,
                                       'reason': None if all(x['phase'] != 'unknown' for x in items)
                                       else 'No verified explicit phase value in this profile response'}
