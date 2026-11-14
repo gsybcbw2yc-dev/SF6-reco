@@ -478,12 +478,6 @@ footer{border-top:1px solid var(--app-border);color:var(--app-faint);font-size:1
  font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
 .rating-evidence-bridge #match-rating-check{color:#abb8ca;font-size:11px}
 .rating-evidence-bridge small{font-size:10px;color:#8899b1;display:block;margin-top:8px;line-height:1.6}
-.chart-key-match{display:block;width:19px;height:3px;border-top:2px dashed #f8bb75;position:relative}
-.chart-key-match:after{content:'';position:absolute;width:6px;height:6px;top:-5px;left:7px;
- background:#f8bb75;border-radius:2px}
-.chart-layer-toggle[data-layer="matches"].active{background:rgba(248,187,117,.11);
- border-color:rgba(248,187,117,.43);color:#ffddb1}
 @media(max-width:700px){.rating-evidence-bridge{padding:11px 13px;margin:12px 0 17px}
  .rating-evidence-bridge p{font-size:11px}
- .chart-layer-toggle[data-layer="matches"]{font-size:11px}
 }
