@@ -244,7 +244,7 @@
             line(card,`記録上のMR/LP収支：${signed(ref.mr)} / ${signed(ref.lp)}　· ${method}`,'session-delta');
             const detail=element('details',undefined,'session-delta-method');
             detail.append(element('summary','収支の算定根拠'));
-            line(detail,`セッション開始の対戦前値 MR ${metric(ref.startMr)}／LP ${metric(ref.startLp)} から、${method}による後続値との差分。次セッション ${ref.nextStart?date(ref.nextStart)+' JST':'未開始'}。定期観測の照合 ${ref.snapshots}件。${typeof SF6PhaseConfig!=='undefined'?SF6PhaseConfig.label(s.phase,s.start):'Act不明'}（試合時刻からの割当）。（定期観測自体の一致判定は原データで実施）。`);
+            line(detail,`セッション開始の対戦前値 MR ${metric(ref.startMr)}／LP ${metric(ref.startLp)} から、${method}による後続値との差分。次セッション ${ref.nextStart?date(ref.nextStart)+' JST':'未開始'}。定期観測の照合 ${ref.snapshots}件。${typeof SF6PhaseConfig!=='undefined'?SF6PhaseConfig.label(s.phase,s.start):'Act不明'}（試合時刻からの推定）。定期観測の一致判定には保存済みの元データを使用します。`);
             line(detail,'間に未取得のランクマッチやフェーズ変更がある可能性を排除できません。対戦ごとの確定増減と区別するため、記録上の参考収支として表示します。');
             card.append(detail);
           } else {
