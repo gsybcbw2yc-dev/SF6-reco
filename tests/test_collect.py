@@ -56,7 +56,11 @@ class CollectorTests(unittest.TestCase):
         reset = dict(self.item, phase='10', phase_source='page.current_phase', mr=1500)
         self.assertEqual(collect.record([reset], '2026-02-01T00:00:00Z', history), (1, []))
         self.assertIsNone(history['observations'][-1]['delta_mr'])
+        self.assertEqual(history['observations'][-1]['observation_type'], 'phase_verified')
+        next_act = dict(self.item, phase='11', phase_source='play_page.play.current_season_id')
+        self.assertEqual(collect.record([next_act], '2026-02-02T00:00:00Z', history), (1, []))
         self.assertEqual(history['observations'][-1]['observation_type'], 'phase_start')
+        self.assertIsNone(history['observations'][-1]['delta_mr'])
 
     def test_each_success_is_observed_but_same_attempt_is_idempotent(self):
         history = {'schema': 2, 'observations': []}
