@@ -173,7 +173,7 @@ async function run() {
   assert.ok(svg.children.some(x=>x.tagName==='line'&&x.attributes['data-chart-line']==='regression'));
   assert.ok(svg.children.some(x=>x.tagName==='polyline'&&x.attributes['data-chart-line']==='match-pre'));
   assert.equal(svg.children.filter(x=>x.tagName==='rect'&&x.attributes['data-chart-point']==='match-pre').length,2);
-  assert.match(element('match-rating-latest').textContent,/試合前/);
+  assert.match(element('match-rating-latest').textContent,/対戦前/);
   assert.match(element('match-rating-check').textContent,/11\/8/);
   const matchPoint=svg.children.find(x=>x.tagName==='rect');
   matchPoint.emit('click');
