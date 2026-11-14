@@ -1,4 +1,4 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="ストリートファイター6のMR・LP観測履歴"><meta name="theme-color" content="#0a0e19"><title>SF6 | RATING ARCHIVE</title><link rel="stylesheet" href="style.css?v=20261110-5"><link rel="stylesheet" href="design-system.css?v=20261115-2"></head><body><main class="shell"><header class="app-header"><div class="brand"><span class="mark" aria-hidden="true">Ⅵ</span><div><strong>RATING ARCHIVE</strong><small>STREET FIGHTER 6 · PERSONAL ANALYTICS</small></div></div><div class="live" aria-live="polite"><span class="dot"></span><span id="health">接続確認中</span></div></header>
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="ストリートファイター6のMR・LP観測履歴"><meta name="theme-color" content="#0a0e19"><title>SF6 | RATING ARCHIVE</title><link rel="stylesheet" href="style.css?v=20261110-5"><link rel="stylesheet" href="design-system.css?v=20261115-3"></head><body><main class="shell"><header class="app-header"><div class="brand"><span class="mark" aria-hidden="true">Ⅵ</span><div><strong>RATING ARCHIVE</strong><small>STREET FIGHTER 6 · PERSONAL ANALYTICS</small></div></div><div class="live" aria-live="polite"><span class="dot"></span><span id="health">接続確認中</span></div></header>
 <nav class="primary-nav" role="tablist" aria-label="画面切り替え">
 <button type="button" data-nav-view="overview" role="tab" aria-controls="view-overview" aria-selected="true" class="active">概要</button>
 <button type="button" data-nav-view="matches" role="tab" aria-controls="view-matches" aria-selected="false">対戦履歴</button>
@@ -30,7 +30,46 @@
 <button type="button" data-analysis-view="deep" aria-selected="true" aria-controls="analysis-deep" role="tab" class="active">詳細分析</button>
 <button type="button" data-analysis-view="timeofday" aria-selected="false" aria-controls="analysis-timeofday" role="tab">時間帯・曜日</button>
 <button type="button" data-analysis-view="velocity" aria-selected="false" aria-controls="analysis-velocity" role="tab">MR到達予測</button>
+<button type="button" data-analysis-view="fairmr" aria-selected="false" aria-controls="analysis-fairmr" role="tab">対戦互角MR</button>
 </nav>
+<div class="analysis-page" id="analysis-fairmr" role="tabpanel" hidden>
+<section class="panel fairmr-panel" aria-label="相手MRに対する対戦互角MRの探索的推定">
+ <div class="fairmr-heading">
+   <div><span class="kicker">EQUAL-WIN OPPONENT MR / RESEARCH</span>
+   <h3>対戦互角MR</h3>
+   <p>相手の絶対MRと勝敗から、勝率が50%になる相手MRを推定します。適正MRや将来の到達値と同一ではありません。</p></div>
+   <div class="fairmr-filters">
+     <label>自分のキャラ<select id="fair-character"><option value="AKUMA">AKUMA</option></select></label>
+     <label>ACT<select id="fair-act"><option value="">データを確認中</option></select></label>
+   </div>
+ </div>
+ <p id="fair-phase-note" class="fairmr-phase">対象データを確認中…</p>
+ <div class="fairmr-headline">
+   <div><span class="kicker">50% WIN-RATE CROSSING</span>
+    <strong id="fair-rating-value" class="fairmr-number">算定中…</strong>
+    <p id="fair-rating-sub">対戦履歴を取得中…</p>
+    <p id="fair-rating-range" class="fairmr-range">不確実性を計算中…</p>
+   </div>
+   <div class="fairmr-evidence">
+    <strong id="fair-count">対戦数を集計中…</strong>
+    <p id="fair-conclusion">推定の信頼性を確認中…</p>
+   </div>
+ </div>
+ <div class="fairmr-sections">
+  <section class="fairmr-section"><h4>相手MR帯別の実際の勝率</h4>
+   <p>100MRごとの集計。試合数の少ない帯は参考値です。</p>
+   <div id="fair-bands" class="fairmr-bands"></div>
+  </section>
+  <section class="fairmr-section"><h4>未来の試合に対する予測検証</h4>
+   <p id="fair-validation">過去→未来の時系列検証を計算中…</p>
+   <h4 class="fairmr-subheading">ACT内の前半・後半</h4>
+   <p id="fair-trend">成長傾向を確認中…</p>
+  </section>
+ </div>
+ <details class="analysis-guide fairmr-details"><summary>計算方法・不確実性・注意事項</summary>
+  <p id="fair-limits">ランクマッチの勝敗と双方の対戦前MRのみを利用します。</p>
+ </details>
+</section></div>
 <div class="analysis-page" id="analysis-deep" role="tabpanel"><section class="deep-panel" aria-label="プレイ改善のための詳細戦績分析"><div class="deep-title"><span class="kicker">ADVANCED PERFORMANCE</span><h3>勝敗を掘り下げる4つの分析</h3><p>保存されたランクマッチの勝敗・対戦前MRから計算します。対戦履歴で設定した期間・キャラ・操作タイプの条件と連動します。</p></div><div class="deep-tabs" role="tablist" aria-label="詳細分析を切り替え"><button data-deep-tab="streak" class="active" role="tab" aria-selected="true" type="button">連敗後の勝率</button><button data-deep-tab="rating" role="tab" aria-selected="false" type="button">相手とのMR差</button><button data-deep-tab="position" role="tab" aria-selected="false" type="button">セッション内</button><button data-deep-tab="recent" role="tab" aria-selected="false" type="button">直近の成績</button></div><div id="deep-panel-streak" role="tabpanel"><h4>連敗数と次戦の勝率</h4><details class="analysis-guide"><summary>集計方法・注意事項</summary><p id="deep-streak-note"></p></details><div id="deep-streak-list" class="deep-list"></div></div><div id="deep-panel-rating" role="tabpanel" hidden><h4>相手との対戦前MR差別勝率</h4><details class="analysis-guide"><summary>集計方法・注意事項</summary><p id="deep-rating-note"></p></details><div id="deep-rating-list" class="deep-list"></div></div><div id="deep-panel-position" role="tabpanel" hidden><h4>セッションの何試合目に勝てているか</h4><details class="analysis-guide"><summary>集計方法・注意事項</summary><p id="deep-position-note"></p></details><div id="deep-position-list" class="deep-list"></div></div><div id="deep-panel-recent" role="tabpanel" hidden><h4>直近20・50・100試合</h4><details class="analysis-guide"><summary>集計方法・注意事項</summary><p id="deep-recent-note"></p></details><div id="deep-recent-list" class="deep-recent-grid"></div></div><p class="deep-disclaimer">記録漏れ・対戦アップロード時刻と実試合時刻の差・対戦相手の実力差に注意してください。これらは観測された傾向であり、疲労・メンタル・キャラ有利不利などの原因を断定するものではありません。</p></section></div>
 <div class="analysis-page" id="analysis-timeofday" role="tabpanel" hidden><section class="tod-panel" aria-label="時間帯別パフォーマンス"><div class="tod-header"><div><span class="kicker">TIME PERFORMANCE</span><h3>時間帯・曜日別の戦績</h3></div><label class="battle-option">集計する時間幅<select id="time-bucket"><option value="4" selected>4時間単位</option><option value="2">2時間単位</option><option value="1">1時間単位</option></select></label></div><p>試合をした時間帯だけを分析します。上の「期間・モード・キャラ・操作」フィルタと連動します。</p><p id="time-performance-status">時間帯を集計しています。</p><p id="time-performance-compare"></p><div class="tod-legend"><span><i class="positive"></i>勝率50%以上</span><span><i class="negative"></i>勝率50%未満</span><span>薄い表示＝試合なし</span></div><div id="time-performance-hours" class="tod-hours" aria-label="時間帯別の試合数と勝率"></div><h4>曜日別の戦績</h4><div id="time-performance-weekdays" class="tod-weekdays"></div><p id="time-performance-note"></p></section></div>
 <div class="analysis-page" id="analysis-velocity" role="tabpanel" hidden><section class="panel time-analysis"><section class="goal-forecast" aria-label="目標MRまでの必要試合数"><div class="goal-forecast-heading"><div><span class="kicker" id="goal-forecast-kicker">MR TARGET / MATCH FORECAST</span><h3 id="goal-forecast-title">あと何試合で到達するか</h3></div><span id="goal-forecast-current" class="goal-forecast-current">現在MR —</span></div><p class="goal-forecast-intro" id="goal-forecast-intro">ランクマッチのMR増減を使った参考予測です。対象キャラは「概要」のCHARACTERから切り替えられます。プレイ時間は計算しません。</p><div id="goal-master-panel" hidden>
@@ -67,4 +106,4 @@
 <article class="panel activity"><span class="kicker">SYSTEM / DATA</span><h2>取得状況とデータ</h2><p id="error">取得エラーはありません。</p><p id="freshness">取得状況を確認しています。</p><p id="coverage">取得履歴を確認しています。</p><p id="cadence">予定間隔と実際の取得間隔を確認しています。</p><p id="longest-gap"></p><p id="token-expiry"></p><p id="phase-note"></p><p>最終画面確認：<span id="last-check">未確認</span></p><div class="actions"><button id="refresh" type="button">今すぐ更新 ↻</button><button id="csv">CSV を保存 ↗</button><button id="json">JSON を保存 ↗</button></div><p id="refresh-state" aria-live="polite">画面データを確認しています。</p><small>MR・LPグラフは公式PLAYの定期観測値を表示します。バトルログの試合前値は別途保存し、対戦履歴・分析に利用します。</small><details><summary>取得エラー履歴</summary><ul id="errors"></ul></details></article>
 </section>
 <footer>RATING ARCHIVE <span>Unofficial personal tracker · Data from Buckler's Boot Camp</span></footer>
-</main><script src="time-analysis.js?v=20261109-3"></script><script src="time-analysis-ui.js?v=20261111-3"></script><script src="match-analysis.js?v=20261111-1"></script><script src="time-performance.js?v=20261110-1"></script><script src="deep-analysis.js?v=20261110-1"></script><script src="phase-config.js?v=20261111-1"></script><script src="match-deltas.js?v=20261111-1"></script><script src="match-goal-forecast.js?v=20261111-1"></script><script src="master-promotion-forecast.js?v=20261113-1"></script><script src="master-promotion-ui.js?v=20261113-1"></script><script src="match-goal-ui.js?v=20261113-1"></script><script src="matches-ui.js?v=20261111-3"></script><script src="chart-trends.js?v=20261111-1"></script><script src="rating-evidence.js?v=20261115-1"></script><script src="app.js?v=20261115-2"></script><script src="view-navigation.js?v=20261110-2"></script></body></html>
+</main><script src="time-analysis.js?v=20261109-3"></script><script src="time-analysis-ui.js?v=20261111-3"></script><script src="match-analysis.js?v=20261111-1"></script><script src="time-performance.js?v=20261110-1"></script><script src="deep-analysis.js?v=20261110-1"></script><script src="phase-config.js?v=20261111-1"></script><script src="match-deltas.js?v=20261111-1"></script><script src="match-goal-forecast.js?v=20261111-1"></script><script src="master-promotion-forecast.js?v=20261113-1"></script><script src="master-promotion-ui.js?v=20261113-1"></script><script src="match-goal-ui.js?v=20261113-1"></script><script src="fair-rating.js?v=20261115-1"></script><script src="fair-rating-ui.js?v=20261115-1"></script><script src="matches-ui.js?v=20261115-4"></script><script src="chart-trends.js?v=20261111-1"></script><script src="rating-evidence.js?v=20261115-1"></script><script src="app.js?v=20261115-2"></script><script src="view-navigation.js?v=20261115-1"></script></body></html>
