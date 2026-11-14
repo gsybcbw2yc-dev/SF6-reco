@@ -117,41 +117,39 @@
     const groups=blocks(rows),all=groups.flat();
     if(all.length<200||groups.length<8)return {status:'insufficient',reason:'200試合・8セッション以上が必要',
       tested:0,folds:0};
-    // Each split occurs ONLY between sessions, never between games in one set.
-    let start=Math.max(0,Math.ceil(all.length*.6));
-    const scores={brier:0,baseBrier:0,logloss:0,baseLogloss:0};
-    let tested=0,folds=0,train=[],test=[],count=0,stop=0;
-    for(const group of groups){
-      if(count<start){train.push(...group);count+=group.length;}
-      else{
-        test.push(...group);count+=group.length;
-        if(test.length>=Math.max(22,Math.round(all.length*.09))||count===all.length){
-          const model=fit(train),baseline=rate(train);
-          if(model&&baseline!==null){
-            for(const r of test){
-              const p=Math.max(1e-6,Math.min(1-1e-6,model.probability(r.opp))),
-                q=Math.max(1e-6,Math.min(1-1e-6,baseline));
-              scores.brier+=(r.y-p)**2;scores.baseBrier+=(r.y-q)**2;
-              scores.logloss+=-(r.y*Math.log(p)+(1-r.y)*Math.log(1-p));
-              scores.baseLogloss+=-(r.y*Math.log(q)+(1-r.y)*Math.log(1-q));
-            }
-            tested+=test.length;folds++;
-          }
-          train.push(...test);test=[];
-        }
-      }
+    // Choose the session boundary closest to 60% of the full archive.
+    // NEVER leak the same session into both train and test.
+    const target=all.length*.6;
+    let closest=-1,dist=Infinity,prior=0;
+    for(let i=1;i<groups.length;i++){
+      prior+=groups[i-1].length;
+      if(prior<200||all.length-prior<60)continue;
+      if(Math.abs(prior-target)<dist){dist=Math.abs(prior-target);closest=i;}
     }
-    if(test.length){const m=fit(train),q=rate(train);if(m&&q!==null){
-      for(const r of test){const p=Math.max(1e-6,Math.min(1-1e-6,m.probability(r.opp))),b=Math.max(1e-6,Math.min(1-1e-6,q));
-        scores.brier+=(r.y-p)**2;scores.baseBrier+=(r.y-b)**2;
-        scores.logloss+=-(r.y*Math.log(p)+(1-r.y)*Math.log(1-p));
-        scores.baseLogloss+=-(r.y*Math.log(b)+(1-r.y)*Math.log(1-b));}
-      tested+=test.length;folds++;}}
+    if(closest===-1)return {status:'insufficient',reason:'セッションを分離できる学習・検証期間が不足',
+      tested:0,folds:0};
+    let train=groups.slice(0,closest).flat(),tested=0,folds=0;
+    const scores={brier:0,baseBrier:0,logloss:0,baseLogloss:0};
+    for(const test of groups.slice(closest)){
+      const model=fit(train),baseline=rate(train);
+      if(model&&baseline!==null){
+        for(const r of test){
+          const p=Math.max(1e-6,Math.min(1-1e-6,model.probability(r.opp))),
+            q=Math.max(1e-6,Math.min(1-1e-6,baseline));
+          scores.brier+=(r.y-p)**2;scores.baseBrier+=(r.y-q)**2;
+          scores.logloss+=-(r.y*Math.log(p)+(1-r.y)*Math.log(1-p));
+          scores.baseLogloss+=-(r.y*Math.log(q)+(1-r.y)*Math.log(1-q));
+        }
+        tested+=test.length;folds++;
+      }
+      train.push(...test);
+    }
     return {status:tested>=60?'ready':'insufficient',tested,folds,
+      training:groups.slice(0,closest).reduce((sum,g)=>sum+g.length,0),
       brier:tested?scores.brier/tested:null,baselineBrier:tested?scores.baseBrier/tested:null,
       logloss:tested?scores.logloss/tested:null,baselineLogloss:tested?scores.baseLogloss/tested:null,
       improved:tested>=60&&scores.brier<scores.baseBrier,
-      reason:'古いセッションで学習し、その後のセッションのみ予測（基準は学習時点までの勝率）'};
+      reason:'古いセッションのみで学習し、各次セッションを予測後に追加して再学習（基準：過去の全体勝率）'};
   }
   function mrBands(rows,step=100){
     const bins=new Map();
