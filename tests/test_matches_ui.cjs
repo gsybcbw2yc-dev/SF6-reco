@@ -79,7 +79,8 @@ async function run(){
  assert.ok(get('fair-character').options.some(x=>x.value==='AKUMA'));
  assert.equal(get('fair-act').value,''); // no valid opponent MR in synthetic matches
  assert.match(get('fair-phase-note').textContent,/暫定/);
- assert.equal(get('fair-bands').children.length,0); // synthetic matches omit opponent MR
+ assert.equal(get('fair-bands').children.length,1); // explanatory empty-state message
+ assert.match(get('fair-bands').children[0].textContent,/ありません/);
 
  assert.match(get('goal-window-20-evidence').textContent,/試合/);
  assert.equal(get('goal-1500-20-games').textContent,'達成済み');
