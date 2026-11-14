@@ -530,3 +530,9 @@ footer{border-top:1px solid var(--app-border);color:var(--app-faint);font-size:1
  .fairmr-number{font-size:32px}
  .fairmr-section{padding:12px}
 }
+
+/* Four analysis categories fit on iPhone without squeezed labels. */
+@media(max-width:520px){
+  .analysis-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));max-width:100%}
+  .analysis-nav button{width:100%;min-height:41px;padding:9px 7px;white-space:nowrap}
+}
