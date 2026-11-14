@@ -8,9 +8,13 @@ const match=(id,mins,mr,outcome='win',extra={})=>({
  mr_before:mr,lp_before:100000+mins*10,
  outcome,...extra
 });
-assert.equal(global.SF6PhaseConfig.label('unknown'),'Act 14（暫定）');
-assert.equal(global.SF6PhaseConfig.label('15'),'Act 15（公式取得）');
-assert.equal(global.SF6PhaseConfig.acts[0].source,'user_provisional');
+assert.equal(global.SF6PhaseConfig.label('unknown'),'Act不明');
+assert.equal(global.SF6PhaseConfig.currentAct,null);
+global.SF6PhaseConfig.setVerifiedObservations([{
+ observed_at:'2026-11-11T00:10:00Z',character:'AKUMA',phase:'14',
+ phase_source:'play_page.play.current_season_id'}]);
+assert.equal(global.SF6PhaseConfig.label('15'),'Act 15');
+assert.equal(global.SF6PhaseConfig.acts[0].source,'official');
 
 const a=match('a',0,1400,'win',{lp_before:100000});
 const b=match('b',3,1408,'loss',{lp_before:100250});
@@ -41,11 +45,13 @@ assert.equal(D.infer([a,match('latest',3,1408,'win',{delta_basis:'verified_post_
  .get('match-latest').delta,12);
 assert.equal(D.infer([a,match('next',3,1408),match('next2',5,1417) ]).get('match-next').delta,9);
 
-// user-reported Act change can be dated without rewriting stored rows.
-const transitions=global.SF6PhaseConfig.acts;
-transitions.push({act:15,effectiveFrom:'2026-11-11T00:01:00Z',source:'user_provisional'});
-assert.equal(global.SF6PhaseConfig.label('unknown',a.occurred_at),'Act 14（暫定）');
-assert.equal(global.SF6PhaseConfig.label('unknown',b.occurred_at),'Act 15（暫定）');
+// ACT transition is sourced only from verified PLAY snapshots.
+global.SF6PhaseConfig.setVerifiedObservations([
+ {observed_at:'2026-11-11T00:00:00Z',phase:'14',phase_source:'play_page.play.current_season_id'},
+ {observed_at:'2026-11-11T00:01:00Z',phase:'15',phase_source:'play_page.play.current_season_id'}
+]);
+assert.equal(global.SF6PhaseConfig.label('unknown',a.occurred_at),'Act 14');
+assert.equal(global.SF6PhaseConfig.label('unknown',b.occurred_at),'Act 15');
 assert.equal(D.infer([a,b]).get(a.key).delta,null);
-transitions.pop();
+global.SF6PhaseConfig.setVerifiedObservations([]);
 console.log('Match MR reference changes, strict sign/gap checks and provisional Act label passed');
