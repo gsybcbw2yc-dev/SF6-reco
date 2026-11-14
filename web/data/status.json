@@ -1,5 +1,5 @@
 {
-  "last_success": "2026-11-14T14:00:48Z",
+  "last_success": "2026-11-14T14:30:41Z",
   "last_error": null,
   "errors": [
     {
@@ -29,14 +29,14 @@
   ],
   "latest": [
     {
-      "character": "TERRY",
+      "character": "KEN",
       "mr": 0,
-      "lp": 22823,
+      "lp": 18960,
       "phase": "unknown",
       "phase_source": null
     }
   ],
-  "last_attempt": "2026-11-14T14:00:41Z",
+  "last_attempt": "2026-11-14T14:30:33Z",
   "phase_diagnostic": {
     "candidate_paths": [],
     "reason": "No verified explicit phase value in this profile response"
