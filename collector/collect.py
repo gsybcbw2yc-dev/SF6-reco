@@ -265,6 +265,19 @@ def collect():
 def migrate(history):
     """Keep every v1 observation; do not invent phase or historical change times."""
     if history.get('schema') == 2:
+        # A first verified PLAY season is not evidence that the Act actually
+        # changed at that instant. Repair older first-verification labels only;
+        # never change timestamps, ratings, raw phase values or phase sources.
+        preceding = {}
+        for row in history.get('observations', []):
+            character = row.get('character')
+            previous = preceding.get(character)
+            if (row.get('observation_type') == 'phase_start' and previous and
+                    previous.get('phase') == 'unknown' and
+                    row.get('phase_source') == 'play_page.play.current_season_id'):
+                row['observation_type'] = 'phase_verified'
+            if character:
+                preceding[character] = row
         return history
     for observation in history.get('observations', []):
         observation.setdefault('phase_source', None)
