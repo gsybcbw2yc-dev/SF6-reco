@@ -150,6 +150,58 @@ def save_archive(folder, index, by_month, additions, fetched_at):
     write_json(folder / 'index.json', index)
 
 
+def make_rating_evidence(by_month, checked_at):
+    """Independent, per-character *pre-match* rating history with real source times.
+
+    The date is Buckler uploaded_at, NOT the observation minute or match start.
+    No heartbeat, fabricated 30-minute snapshot, or post-match balance is created.
+    """
+    ranked = {}
+    for records in by_month.values():
+        for row in records:
+            if (row.get('mode') != 'ranked' or not row.get('key')
+                    or row.get('time_basis') != 'buckler_uploaded_at'
+                    or not isinstance(row.get('occurred_at'), str)):
+                continue
+            try:
+                datetime.fromisoformat(row['occurred_at'].replace('Z', '+00:00'))
+            except ValueError:
+                continue
+            mr, lp = row.get('mr_before'), row.get('lp_before')
+            if mr is None and lp is None:
+                continue
+            if any(type(n) is not int or n < 0 or n > 10_000_000
+                   for n in (mr, lp) if n is not None):
+                continue
+            ranked[row['key']] = {
+                'key': row['key'], 'character': row.get('character', 'UNKNOWN'),
+                'phase': row.get('phase', 'unknown'),
+                'observed_at': row['occurred_at'], 'time_basis': 'buckler_uploaded_at',
+                'mr': mr, 'lp': lp, 'source': 'battlelog_pre_match',
+                'rating_basis': 'pre_match',
+            }
+    events = sorted(ranked.values(), key=lambda p: (p['observed_at'], p['key']))
+    latest = {}
+    for item in events:
+        latest[item['character']] = {
+            'last_match_uploaded_at': item['observed_at'],
+            'last_pre_match_mr': item['mr'], 'last_pre_match_lp': item['lp'],
+        }
+    return {
+        'schema': 1, 'source': 'stored_ranked_battlelog_pre_match',
+        'checked_at': checked_at, 'timestamp_basis': 'buckler_uploaded_at',
+        'rating_basis': 'pre_match_not_current_or_post_match',
+        'events': events, 'characters': latest,
+    }
+
+
+def write_rating_evidence(folder, by_month, checked_at):
+    evidence = make_rating_evidence(by_month, checked_at)
+    write_json(folder.parent / 'rating-evidence.json', evidence)
+    return evidence
+
+
+
 class SameOriginRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         if not newurl.startswith(ORIGIN + '/6/buckler/') or '/auth/' in newurl:
@@ -246,6 +298,7 @@ def capture(raw, player, cookie, folder, fetched_at, fetcher=fetch_page, delay=t
         index['coverage_note'] = 'Only the exposed recent source window is available; gaps and older uncollected matches cannot be reconstructed.'
         completed_at = clock()
         save_archive(folder, index, by_month, additions, completed_at)
+        write_rating_evidence(folder, by_month, completed_at)
         event.update(result='success', added=len(additions), stop_reason=stop, source_total_pages=total)
         status.update(last_success=completed_at, last_error=None, route='mixed_battlelog', source_total_pages=total)
     except Exception as exc:
@@ -254,7 +307,9 @@ def capture(raw, player, cookie, folder, fetched_at, fetcher=fetch_page, delay=t
         # Persist valid pages already obtained, even if a later page failed.
         if additions and index is not None and by_month is not None:
             try:
-                save_archive(folder, index, by_month, additions, clock())
+                incomplete_at = clock()
+                save_archive(folder, index, by_month, additions, incomplete_at)
+                write_rating_evidence(folder, by_month, incomplete_at)
                 event.update(result='partial', added=len(additions))
             except Exception:
                 event['error'] = 'Match archive write failed'
