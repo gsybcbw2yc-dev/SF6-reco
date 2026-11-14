@@ -41,14 +41,14 @@
     ensureOptions($('fair-act'),acts.length?acts.map(x=>({value:x.value,label:x.label+' · '+x.n+'試合'})):
       [{value:'',label:'分析可能なACTなし'}]);
     const selectedAct=$('fair-act').value;
-    const key=character+':'+selectedAct+':'+snapshot.length+':'+
+    const key=character+':'+selectedAct+':'+(typeof SF6PhaseConfig!=='undefined'?SF6PhaseConfig.version():'')+':'+snapshot.length+':'+
       (snapshot.at(-1)?.key||'')+':'+(snapshot[0]?.key||'');
     if(key!==cacheKey){cached=SF6FairRating.analyze(snapshot,{character,actAt,selectedAct});cacheKey=key;}
     const report=cached;
     const c=report.current;
     $('fair-phase-note').textContent=report.actLabel+
       ' · 検証可能 '+report.selectedN+'試合 · 記録済みの試合のみ。'+
-      (report.provisional?' ACTラベルはユーザー申告に基づく暫定設定です。':'');
+      (report.provisional?' 試合側にActの直接値はなく、旧記録は暫定・新記録は公式PLAYの観測時刻からの推定です。境界付近は未確定です。':'');
     $('fair-rating-value').textContent=c.crossing!==null?fmt(c.crossing)+' MR':'算定保留';
     $('fair-rating-sub').textContent=c.crossing!==null?
       '相手への予測勝率が50%になるMR（真の実力・到達保証ではありません）':c.check.reason;
