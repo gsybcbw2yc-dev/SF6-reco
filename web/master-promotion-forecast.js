@@ -24,7 +24,7 @@
       lastMR:candidates.filter(x=>usable(x.mr)).at(-1)?.mr??null,
       reached:master};
   }
-  function inferLP(rows,actAt=()=>null){
+  function inferLP(rows,actAt=()=>undefined){
     const sorted=rows.filter(x=>x&&Number.isFinite(stamp(x.occurred_at))).slice()
       .sort((a,b)=>stamp(a.occurred_at)-stamp(b.occurred_at)||
         String(a.key||'').localeCompare(String(b.key||'')));
@@ -76,7 +76,7 @@
     return `${label} ★${Math.min(5,Math.floor((lp-base)/step)+1)}`;
   }
   function analyze({rows=[],observations=[],character,phase='all',now=Date.now(),
-                   actAt=()=>null,sessionRefs=new Map(),sessions=[],deltas=null}={}){
+                   actAt=()=>undefined,sessionRefs=new Map(),sessions=[],deltas=null}={}){
     const status=latestStatus(observations,character);
     const current=status.currentLP;
     const remaining=current===null?null:Math.max(0,TARGET-current);
