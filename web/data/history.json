@@ -4130,6 +4130,36 @@
       "delta_lp": 0,
       "observation_type": "heartbeat",
       "observation_id": "43650331283:1:AKUMA"
+    },
+    {
+      "character": "TERRY",
+      "mr": 0,
+      "lp": 23033,
+      "phase": "unknown",
+      "phase_source": null,
+      "rating_source": "play_character_league_infos",
+      "rating_view": "latest_default",
+      "observed_at": "2026-11-14T23:03:10Z",
+      "source": "periodic_buckler_snapshot",
+      "delta_mr": 0,
+      "delta_lp": 0,
+      "observation_type": "heartbeat",
+      "observation_id": "43651231676:1:TERRY"
+    },
+    {
+      "character": "AKUMA",
+      "mr": 1403,
+      "lp": 114705,
+      "phase": "unknown",
+      "phase_source": null,
+      "rating_source": "play_character_league_infos",
+      "rating_view": "latest_default",
+      "observed_at": "2026-11-14T23:03:10Z",
+      "source": "periodic_buckler_snapshot",
+      "delta_mr": 0,
+      "delta_lp": 0,
+      "observation_type": "heartbeat",
+      "observation_id": "43651231676:1:AKUMA"
     }
   ]
 }

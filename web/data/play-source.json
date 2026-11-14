@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "checked_at": "2026-11-14T22:52:30Z",
+  "checked_at": "2026-11-14T23:03:10Z",
   "source": "play_character_league_infos",
   "rating_view": "latest_default",
   "result": "success",
@@ -8,5 +8,40 @@
   "characters": [
     "AKUMA",
     "TERRY"
-  ]
+  ],
+  "act_diagnostic": {
+    "result": "inspected",
+    "candidate_keys": [
+      "pageProps.fighter_banner_info.favorite_character_alpha",
+      "pageProps.fighter_banner_info.favorite_character_id",
+      "pageProps.fighter_banner_info.favorite_character_league_info",
+      "pageProps.fighter_banner_info.favorite_character_name",
+      "pageProps.fighter_banner_info.favorite_character_play_point",
+      "pageProps.fighter_banner_info.favorite_character_tool_name",
+      "pageProps.play.battle_stats.drive_impact",
+      "pageProps.play.battle_stats.drive_impact_to_drive_impact",
+      "pageProps.play.battle_stats.gauge_rate_drive_impact",
+      "pageProps.play.battle_stats.received_drive_impact",
+      "pageProps.play.battle_stats.received_drive_impact_to_drive_impact",
+      "pageProps.play.battle_stats.total_all_character_play_point",
+      "pageProps.play.character_league_infos",
+      "pageProps.play.character_play_point_infos",
+      "pageProps.play.character_win_rates",
+      "pageProps.play.character_win_rates_by_rival_character",
+      "pageProps.play.current_season_id",
+      "pageProps.play.season_ids"
+    ],
+    "direct_values": [
+      {
+        "path": "pageProps.play.current_season_id",
+        "value": 14
+      },
+      {
+        "path": "pageProps.fighter_banner_info.favorite_character_id",
+        "value": 27
+      }
+    ],
+    "visible_act_values": [],
+    "visible_act_match_count": 0
+  }
 }
