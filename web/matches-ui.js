@@ -188,7 +188,7 @@
       const collection=this.status?.events?.at(-1);
       $('match-status').textContent=`保存済み ${this.index?.count??0} 試合／選択条件 ${rows.length} 試合。取得成功：${date(this.status?.last_success)} JST。${this.status?.last_error?'取得エラー：'+this.status.last_error.message:collection?'直近追加 '+collection.added+' 件・重複除外 '+collection.duplicates+' 件':''}`;
       const age=this.status?.last_success?(Date.now()-Date.parse(this.status.last_success))/60000:Infinity;
-      $('match-warning').textContent=(age>90?'試合取得が90分以上更新されていません。表示が古い可能性があります。 ':'')+'Bucklerが公開する最近の履歴だけを取得しています。取り込み以前・上限超過・取得失敗による欠落があり得ます。試合右上のMR差は原則として次の試合の対戦前値との差による参考推定です。フェーズ未取得の試合は、公式PLAYのAct観測時刻に基づいて推定します。初回観測以前はAct 14（ユーザー申告・暫定）、Act切替の観測間は判定不能です。';
+      $('match-warning').textContent=(age>90?'試合取得が90分以上更新されていません。表示が古い可能性があります。 ':'')+'Bucklerが公開する最近の履歴だけを取得しています。取り込み以前・上限超過・取得失敗による欠落があり得ます。試合右上のMR差は原則として次の試合の対戦前値との差による参考推定です。フェーズ未取得の試合は、公式PLAYのAct観測時刻に基づいて推定します。初回の公式Act観測以前は最初に確認したActへ遡及推定し、切替境界は判定不能として除外します。公式PLAYから取得した現在Actと各試合の推定Actは証拠の強さが異なります。';
       $('match-summary').textContent=`${allStats.wins}勝 ${allStats.losses}敗${allStats.draws?` ${allStats.draws}分`:''}${allStats.unknown?` · 不明${allStats.unknown}`:''}　｜　勝率 ${percent(allStats.winRate)}`;
       // Always infer from the full downloaded archive, never just the filtered page.
       const mrDeltas=SF6MatchDeltas.infer(this.rows);
