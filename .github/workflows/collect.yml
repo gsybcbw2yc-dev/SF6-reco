@@ -65,21 +65,6 @@ jobs:
           COLLECTION_ORIGIN: ${{ inputs.origin }}
           EXTERNAL_TRIGGER_UNIX: ${{ inputs.external_trigger_unix }}
         run: python collector/collect.py
-      - name: Probe per-character PLAY rating source safely
-        if: success()
-        env:
-          CFN_PLAYER_ID: "1866568348"
-          BUCKLER_ID: ${{ secrets.BUCKLER_ID }}
-        run: |
-          python - <<'PY'
-          import os
-          from collector.play_leagues import probe, utc_now
-          from collector.collect import save
-          result=probe(os.environ.get('CFN_PLAYER_ID',''),os.environ.get('BUCKLER_ID',''),utc_now())
-          save('play-probe.json',result)
-          print('Play page probe:',result['result'],result['error'],
-                'candidate paths:',len((result.get('structure') or {}).get('candidate_paths',[])))
-          PY
       - name: Commit observations and status
         if: always()
         run: |
