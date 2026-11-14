@@ -177,7 +177,7 @@ async function run() {
   assert.match(element('match-rating-check').textContent,/11\/8/);
   const matchPoint=svg.children.find(x=>x.tagName==='rect');
   matchPoint.emit('click');
-  assert.match(element('mr-point-reading').textContent,/試合前/);
+  assert.match(element('mr-point-reading').textContent,/対戦前/);
   element('mr-point-close').onclick();
   const matchToggle=layerButtons.find(b=>b.dataset.chart==='mr'&&b.dataset.layer==='matches');
   matchToggle.onclick();
