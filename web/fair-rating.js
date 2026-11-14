@@ -16,17 +16,19 @@
   const percentile=(sorted,p)=>sorted[Math.max(0,Math.min(sorted.length-1,Math.floor((sorted.length-1)*p)))];
   function period(r,actAt=()=>null){
     const raw=r.phase;
-    if(raw&&raw!=='unknown'&&/^\d{1,3}$/.test(String(raw))){
-      return {key:'official:'+String(Number(raw)),label:'Act '+Number(raw)+'（記録内のフェーズ値）',provisional:false};
+    if(raw!==null&&raw!==undefined&&/^\d{1,3}$/.test(String(raw))){
+      const n=Number(raw);
+      if(n>=1&&n<=100)
+        return {key:'act:'+n,label:'Act '+n,inferred:false,origin:'record_phase'};
     }
+    if(raw&&raw!=='unknown')return {key:'unknown',label:'Act不明',inferred:false,origin:'invalid_phase'};
     const assigned=actAt(r.occurred_at);
-    if(assigned!==null&&assigned!==undefined&&assigned!==''){
-      const num=typeof assigned==='object'?assigned.act:assigned;
-      if(num!==null&&num!==undefined&&num!=='')
-        return {key:'provisional:'+num,label:'Act '+num+
-          (assigned?.source==='official_observation'?'（公式観測時刻から推定）':'（暫定）'),provisional:true};
+    const num=typeof assigned==='object'&&assigned!==null?assigned.act:assigned;
+    if(Number.isInteger(Number(num))&&num!==null&&num!==undefined&&Number(num)>=1&&Number(num)<=100){
+      return {key:'act:'+Number(num),label:'Act '+Number(num),inferred:true,
+        origin:typeof assigned==='object'?assigned.source||'time_inference':'time_inference'};
     }
-    return {key:'unknown',label:'Act不明',provisional:true};
+    return {key:'unknown',label:'Act不明',inferred:false,origin:'unverified'};
   }
   function clean(rows,{character,actAt=()=>null}={}){
     const used=new Set(),out=[];
@@ -38,7 +40,7 @@
       const phase=period(r,actAt);
       out.push({key:r.key,t:stamp(r.occurred_at),time:r.occurred_at,opp:r.opponent_mr_before,
         own:r.mr_before,y:r.outcome==='win'?1:0,phase:phase.key,
-        phaseLabel:phase.label,provisional:phase.provisional,
+        phaseLabel:phase.label,inferred:phase.inferred,origin:phase.origin,
         opponent:r.opponent_character});
     }
     out.sort((a,b)=>a.t-b.t||a.key.localeCompare(b.key));
@@ -180,7 +182,8 @@
   function analyze(rows,{character='AKUMA',actAt=()=>null,selectedAct=null}={}){
     const cleanRows=clean(rows,{character,actAt}),byAct=new Map();
     for(const r of cleanRows){
-      if(!byAct.has(r.phase))byAct.set(r.phase,{key:r.phase,label:r.phaseLabel,provisional:r.provisional,rows:[]});
+      if(r.phase==='unknown')continue;
+      if(!byAct.has(r.phase))byAct.set(r.phase,{key:r.phase,label:r.phaseLabel,rows:[]});
       byAct.get(r.phase).rows.push(r);
     }
     const acts=[...byAct.values()].sort((a,b)=>b.rows.at(-1).t-a.rows.at(-1).t);
@@ -195,10 +198,14 @@
         difference:early.crossing!==null&&late.crossing!==null?
           late.crossing-early.crossing:null,earlyN:half,lateN:selected.rows.length-half};
     }
-    return {character,total:cleanRows.length,acts:acts.map(x=>({key:x.key,label:x.label,
-      count:x.rows.length,provisional:x.provisional})),
-      selectedAct:selected?.key??null,actLabel:selected?.label??'記録なし',
-      provisional:selected?.provisional??true,selectedN:selected?.rows.length??0,
+    const selectedRows=selected?.rows||[];
+    return {character,total:cleanRows.length,unassignedN:cleanRows.filter(x=>x.phase==='unknown').length,
+      acts:acts.map(x=>({key:x.key,label:x.label,count:x.rows.length,
+        inferredN:x.rows.filter(r=>r.inferred).length,
+        retrospectiveN:x.rows.filter(r=>r.origin==='retrospective_inference').length})),
+      selectedAct:selected?.key??null,actLabel:selected?.label??'公式Act未確認',
+      selectedN:selectedRows.length,inferredN:selectedRows.filter(r=>r.inferred).length,
+      retrospectiveN:selectedRows.filter(r=>r.origin==='retrospective_inference').length,
       current,shift,scope:'同一ACTの保存済みランクマッチ／勝敗・対戦前MRが検証可能な試合のみ'};
   }
   return {CENTER,MIN_N,sigmoid,period,clean,fit,conditions,blocks,interval,backtest,mrBands,evaluate,analyze};
