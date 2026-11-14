@@ -26,7 +26,8 @@
     const stale=age>MAX_AGE_MS||age< -10*60000;
     const phaseAct=latest&&/^\d{1,3}$/.test(String(latest.phase))?Number(latest.phase):null;
     const act=phaseAct??(latest?.phase==='unknown'?actAt(observedAt):null);
-    const compatible=r=>!latest||r.phase===latest.phase||
+    const compatible=r=>!latest||
+      (r.phase===latest.phase&&(r.phase!=='unknown'||act===null||actAt(r.occurred_at)===act))||
       (r.phase==='unknown'&&act!==null&&actAt(r.occurred_at)===act);
     const ranked=[...new Map(rows.filter(r=>r.mode==='ranked'&&r.character===character&&validTime(r.occurred_at)&&
       (phase==='all'||r.phase===phase||
