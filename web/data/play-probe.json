@@ -1,0 +1,170 @@
+{
+  "schema": 1,
+  "checked_at": "2026-11-14T22:20:24Z",
+  "source": "buckler_play_character_latest",
+  "result": "page_available",
+  "route": "/profile/{player}/play",
+  "structure": {
+    "candidate_paths": [
+      "page.fighter_banner_info.allow_cross_play",
+      "page.fighter_banner_info.enjoy_total_point",
+      "page.fighter_banner_info.favorite_character_alpha",
+      "page.fighter_banner_info.favorite_character_id",
+      "page.fighter_banner_info.favorite_character_league_info",
+      "page.fighter_banner_info.favorite_character_league_info.league_point",
+      "page.fighter_banner_info.favorite_character_league_info.league_rank",
+      "page.fighter_banner_info.favorite_character_league_info.league_rank_info",
+      "page.fighter_banner_info.favorite_character_league_info.league_rank_info.league_rank_name",
+      "page.fighter_banner_info.favorite_character_league_info.league_rank_info.league_rank_number",
+      "page.fighter_banner_info.favorite_character_league_info.master_league",
+      "page.fighter_banner_info.favorite_character_league_info.master_rating",
+      "page.fighter_banner_info.favorite_character_league_info.master_rating_ranking",
+      "page.fighter_banner_info.favorite_character_name",
+      "page.fighter_banner_info.favorite_character_play_point",
+      "page.fighter_banner_info.favorite_character_tool_name",
+      "page.fighter_banner_info.inside_rank",
+      "page.fighter_banner_info.last_play_at",
+      "page.fighter_banner_info.max_content_play_time",
+      "page.fighter_banner_info.max_content_play_time.play_time",
+      "page.fighter_banner_info.online_status_info.custom_room_master_short_id",
+      "page.fighter_banner_info.play_time_zone",
+      "page.play",
+      "page.play.base_info.content_play_time_list",
+      "page.play.base_info.content_play_time_list[].play_time",
+      "page.play.base_info.enjoy_fight_point",
+      "page.play.base_info.enjoy_total_point",
+      "page.play.base_info.enjoy_user_point",
+      "page.play.battle_stats.battle_hub_match_play_count",
+      "page.play.battle_stats.casual_match_play_count",
+      "page.play.battle_stats.custom_room_match_play_count",
+      "page.play.battle_stats.gauge_rate_ca",
+      "page.play.battle_stats.gauge_rate_drive_arts",
+      "page.play.battle_stats.gauge_rate_drive_guard",
+      "page.play.battle_stats.gauge_rate_drive_impact",
+      "page.play.battle_stats.gauge_rate_drive_other",
+      "page.play.battle_stats.gauge_rate_drive_reversal",
+      "page.play.battle_stats.gauge_rate_drive_rush_from_cancel",
+      "page.play.battle_stats.gauge_rate_drive_rush_from_parry",
+      "page.play.battle_stats.gauge_rate_sa_lv1",
+      "page.play.battle_stats.gauge_rate_sa_lv2",
+      "page.play.battle_stats.gauge_rate_sa_lv3",
+      "page.play.battle_stats.rank_match_play_count",
+      "page.play.battle_stats.rival_ai_highest_league_rank",
+      "page.play.battle_stats.rival_ai_highest_league_rank_txt",
+      "page.play.battle_stats.total_all_character_play_point",
+      "page.play.character_league_infos",
+      "page.play.character_league_infos[].character_alpha",
+      "page.play.character_league_infos[].character_id",
+      "page.play.character_league_infos[].character_name",
+      "page.play.character_league_infos[].character_sort",
+      "page.play.character_league_infos[].character_tool_name",
+      "page.play.character_league_infos[].is_played",
+      "page.play.character_league_infos[].league_info",
+      "page.play.character_league_infos[].league_info.league_point",
+      "page.play.character_league_infos[].league_info.league_rank",
+      "page.play.character_league_infos[].league_info.master_league",
+      "page.play.character_league_infos[].league_info.master_rating",
+      "page.play.character_league_infos[].league_info.master_rating_ranking",
+      "page.play.character_play_point_infos",
+      "page.play.character_play_point_infos[].character_alpha",
+      "page.play.character_play_point_infos[].character_id",
+      "page.play.character_play_point_infos[].character_name",
+      "page.play.character_play_point_infos[].character_sort",
+      "page.play.character_play_point_infos[].character_tool_name",
+      "page.play.character_play_point_infos[].play_point",
+      "page.play.character_win_rates",
+      "page.play.character_win_rates[].character_alpha",
+      "page.play.character_win_rates[].character_id",
+      "page.play.character_win_rates[].character_name",
+      "page.play.character_win_rates[].character_sort",
+      "page.play.character_win_rates[].character_tool_name",
+      "page.play.character_win_rates_by_rival_character",
+      "page.play.character_win_rates_by_rival_character[].character_alpha",
+      "page.play.character_win_rates_by_rival_character[].character_id",
+      "page.play.character_win_rates_by_rival_character[].character_name",
+      "page.play.character_win_rates_by_rival_character[].character_sort",
+      "page.play.character_win_rates_by_rival_character[].character_tool_name",
+      "page.play.character_win_rates_by_rival_character[].rival_character_win_rates",
+      "page.play.character_win_rates_by_rival_character[].rival_character_win_rates[].rival_character_alpha",
+      "page.play.character_win_rates_by_rival_character[].rival_character_win_rates[].rival_character_id",
+      "page.play.character_win_rates_by_rival_character[].rival_character_win_rates[].rival_character_name",
+      "page.play.character_win_rates_by_rival_character[].rival_character_win_rates[].rival_character_sort",
+      "page.play.character_win_rates_by_rival_character[].rival_character_win_rates[].rival_character_tool_name"
+    ],
+    "lists": [
+      {
+        "path": "page.play.character_win_rates_by_rival_character",
+        "count": 34,
+        "element_keys": [
+          "character_alpha",
+          "character_id",
+          "character_name",
+          "character_sort",
+          "character_tool_name",
+          "rival_character_win_rates"
+        ]
+      },
+      {
+        "path": "page.play.character_win_rates_by_rival_character[].rival_character_win_rates",
+        "count": 34,
+        "element_keys": [
+          "battle_count",
+          "rival_character_alpha",
+          "rival_character_id",
+          "rival_character_name",
+          "rival_character_sort",
+          "rival_character_tool_name",
+          "win_count"
+        ]
+      },
+      {
+        "path": "page.play.character_win_rates",
+        "count": 34,
+        "element_keys": [
+          "battle_count",
+          "character_alpha",
+          "character_id",
+          "character_name",
+          "character_sort",
+          "character_tool_name",
+          "win_count"
+        ]
+      },
+      {
+        "path": "page.play.character_play_point_infos",
+        "count": 32,
+        "element_keys": [
+          "character_alpha",
+          "character_id",
+          "character_name",
+          "character_sort",
+          "character_tool_name",
+          "play_point"
+        ]
+      },
+      {
+        "path": "page.play.character_league_infos",
+        "count": 33,
+        "element_keys": [
+          "character_alpha",
+          "character_id",
+          "character_name",
+          "character_sort",
+          "character_tool_name",
+          "is_played",
+          "league_info"
+        ]
+      },
+      {
+        "path": "page.play.base_info.content_play_time_list",
+        "count": 10,
+        "element_keys": [
+          "content_type",
+          "content_type_name",
+          "play_time"
+        ]
+      }
+    ]
+  },
+  "error": null
+}
