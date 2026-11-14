@@ -86,7 +86,8 @@
     const currentPhase=status.latest?.phase??null;
     const phaseAct=currentPhase&&/^\d{1,3}$/.test(String(currentPhase))?Number(currentPhase):null;
     const currentAct=phaseAct??(currentPhase==='unknown'?actAt(status.latest?.observed_at):null);
-    const compatible=r=>!currentPhase||r.phase===currentPhase||
+    const compatible=r=>!currentPhase||
+      (r.phase===currentPhase&&(r.phase!=='unknown'||currentAct===null||actAt(r.occurred_at)===currentAct))||
       (r.phase==='unknown'&&currentAct!==null&&actAt(r.occurred_at)===currentAct);
     const ranked=[...new Map(rows.filter(r=>r&&r.key&&r.mode==='ranked'&&r.character===character&&
       Number.isFinite(stamp(r.occurred_at))&&
