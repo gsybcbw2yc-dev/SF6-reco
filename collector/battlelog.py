@@ -197,7 +197,8 @@ def make_rating_evidence(by_month, checked_at):
 
 def write_rating_evidence(folder, by_month, checked_at):
     evidence = make_rating_evidence(by_month, checked_at)
-    write_json(folder.parent / 'rating-evidence.json', evidence)
+    destination = folder.parent if folder.name == 'matches' else folder
+    write_json(destination / 'rating-evidence.json', evidence)
     return evidence
 
 
