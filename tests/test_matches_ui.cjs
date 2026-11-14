@@ -77,7 +77,7 @@ async function run(){
  assert.equal(get('fair-rating-value').textContent,'算定保留');
  assert.match(get('fair-rating-sub').textContent,/100試合未満/);
  assert.ok(get('fair-character').options.some(x=>x.value==='AKUMA'));
- assert.equal(get('fair-act').value,'provisional:14');
+ assert.equal(get('fair-act').value,''); // no valid opponent MR in synthetic matches
  assert.match(get('fair-phase-note').textContent,/暫定/);
  assert.equal(get('fair-bands').children.length,0); // synthetic matches omit opponent MR
 
