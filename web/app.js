@@ -174,9 +174,14 @@ function updateStatus(){
   $('longest-gap').textContent=gaps.length?`記録済み成功間の最長空白：${Math.round(Math.max(...gaps))}分（runs.json導入後のみ）。`:'成功間の空白はまだ計算できません。';
   let daysLeft=Math.ceil((new Date('2026-12-08T00:00:00+09:00')-Date.now())/864e5);
   $('token-expiry').textContent=daysLeft<=14?daysLeft<=0?'外部起動用トークンの有効期限（12月8日）を確認し、必要なら更新してください。':`外部起動用トークンの期限まで約${daysLeft}日。期限前に更新してください。`:'';
-  const assumed=typeof SF6PhaseConfig!=='undefined'?SF6PhaseConfig.label('unknown'):'未判定';
-  $('phase-note').textContent=`現在の暫定表示：${assumed}（ユーザー指定・Buckler上は未判定）。`+
-    (status.phase_diagnostic?.reason?` 取得元フェーズ：判定不能（${status.phase_diagnostic.reason}）`:'');
+  const verifiedAct=status.act_current;
+  if(Number.isInteger(verifiedAct?.number)&&verifiedAct.number>=1&&verifiedAct.number<=100){
+    $('phase-note').textContent=`現在のAct：Act ${verifiedAct.number}（Buckler公式PLAYで${date(verifiedAct.verified_at)} JST確認）。取得前の旧記録は暫定扱い、試合のActは観測時刻からの推定です。`;
+  }else{
+    const assumed=typeof SF6PhaseConfig!=='undefined'?SF6PhaseConfig.label('unknown'):'未判定';
+    $('phase-note').textContent=`Act未確認。表示：${assumed}（ユーザー指定・暫定）。`+
+      (status.phase_diagnostic?.reason?` 取得元：${status.phase_diagnostic.reason}`:'');
+  }
   $('error').textContent=status.last_error?`${date(status.last_error.at)} · ${status.last_error.message}`:'取得エラーはありません。';
   $('errors').replaceChildren(...(status.errors||[]).map(e=>{let li=document.createElement('li');li.textContent=`${date(e.at)} · ${e.message}`;return li}));
   $('last-check').textContent=lastFetchAt?date(new Date(lastFetchAt).toISOString())+' JST':'未確認';
@@ -198,6 +203,7 @@ async function refresh(force=false){
     const nextVersion=JSON.stringify(nextHistory)+JSON.stringify(nextEvidence.events);
     const changed=nextVersion!==historyVersion;
     history=nextHistory;ratingEvidence=nextEvidence;status=s;runs=r.events;lastFetchAt=Date.now();
+    if(typeof SF6PhaseConfig!=='undefined')SF6PhaseConfig.setVerifiedObservations(nextHistory);
     updateSelectors();updateStatus();
     if(changed||!hasData){historyVersion=nextVersion;render()}
     hasData=true;
