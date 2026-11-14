@@ -70,7 +70,7 @@ async function run() {
   await flush();
   assert.equal(calls, 4);
   assert.equal(element('mr').textContent, '1,411');
-  assert.equal(element('phase').options.find(p=>p.value==='unknown')?.label,'Act 14（暫定）');
+  assert.equal(element('phase').options.find(p=>p.value==='unknown')?.label,'Act不明');
   assert.equal(element('mr-chart').children[0].attributes.viewBox, '0 0 340 176'); // portrait chart fills actual available space
   assert.equal(typeof window.onSf6ViewChange, 'function');
   // iOS regression: points open an inline card readout, never a fixed tooltip.
@@ -101,11 +101,19 @@ async function run() {
   element('character').value = 'AKUMA';
   vm.runInContext("range='30'", context);
   nowMs += 60_000;
-  snapshot.history.observations.push({ character: 'AKUMA', mr: 1372, lp: 100843, phase: 'unknown', observed_at: '2026-11-08T04:01:00Z' });
+  snapshot.history.observations.push({ character: 'AKUMA', mr: 1372, lp: 100843, phase: '14', phase_source: 'play_page.play.current_season_id', observed_at: '2026-11-08T04:01:00Z' });
   snapshot.status.last_success = '2026-11-08T04:01:00Z';
   timers[0](); await flush();
   assert.equal(calls, 8);
   assert.equal(element('mr').textContent, '1,372');
+  assert.ok(element('phase').options.some(p=>p.value==='14'));
+  assert.ok(!element('phase').options.some(p=>p.value==='unknown'));
+  assert.equal(element('phase').options.find(p=>p.value==='14')?.label,'Act 14');
+  element('phase').value='14';
+  element('phase').onchange();
+  assert.equal(element('samples').textContent,'2 件の観測値');
+  element('phase').value='all';
+  element('phase').onchange();
   assert.equal(element('lp').textContent, '100,843');
   assert.equal(element('mr-point-detail').hidden, true); // data redraw clears stale selection
   assert.equal(element('mr-chart').children[0].children.filter(x=>x.tagName==='circle').length, 2);
