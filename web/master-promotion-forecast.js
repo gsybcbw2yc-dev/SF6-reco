@@ -46,7 +46,8 @@
         map.set(a.key,notReady('同時刻の試合があり、順序不明'));continue;
       }
       if(b.mode!=='ranked'||a.character!==b.character||a.phase!==b.phase||
-         a.phase==='unknown'&&actAt(a.occurred_at)!==actAt(b.occurred_at)){
+         a.phase==='unknown'&&(actAt(a.occurred_at)===null||
+           actAt(b.occurred_at)===null||actAt(a.occurred_at)!==actAt(b.occurred_at))){
         map.set(a.key,notReady('次試合のモード・キャラ・フェーズが異なる'));continue;
       }
       if(!validLP(a.lp_before)||!validLP(b.lp_before)){
@@ -83,11 +84,15 @@
       now-stamp(status.lpObservedAt)<-10*60000;
     const inferred=deltas??inferLP(rows,actAt);
     const currentPhase=status.latest?.phase??null;
-    const currentAct=currentPhase==='unknown'?actAt(status.latest?.observed_at):null;
+    const phaseAct=currentPhase&&/^\d{1,3}$/.test(String(currentPhase))?Number(currentPhase):null;
+    const currentAct=phaseAct??(currentPhase==='unknown'?actAt(status.latest?.observed_at):null);
+    const compatible=r=>!currentPhase||r.phase===currentPhase||
+      (r.phase==='unknown'&&currentAct!==null&&actAt(r.occurred_at)===currentAct);
     const ranked=[...new Map(rows.filter(r=>r&&r.key&&r.mode==='ranked'&&r.character===character&&
-      Number.isFinite(stamp(r.occurred_at))&&(phase==='all'||r.phase===phase)&&
-      (!currentPhase||r.phase===currentPhase)&&
-      (currentAct===null||r.phase!=='unknown'||actAt(r.occurred_at)===currentAct))
+      Number.isFinite(stamp(r.occurred_at))&&
+      (phase==='all'||r.phase===phase||
+        (r.phase==='unknown'&&/^\d{1,3}$/.test(String(phase))&&actAt(r.occurred_at)===Number(phase)))&&
+      compatible(r))
       .map(r=>[r.key,r])).values()]
       .sort((a,b)=>stamp(b.occurred_at)-stamp(a.occurred_at)||String(a.key).localeCompare(String(b.key)));
     const cohorts=WINDOWS.map(size=>{
@@ -126,7 +131,8 @@
     const audit={checked:0,matched:0,provisional:0,conflict:0,residuals:[]};
     for(const session of sessions){
       if(session.characters?.length!==1||session.characters[0]!==character)continue;
-      if(phase!=='all'&&session.phase!==phase)continue;
+      if(phase!=='all'&&session.phase!==phase&&
+          !(session.phase==='unknown'&&/^\d{1,3}$/.test(String(phase))&&actAt(session.start)===Number(phase)))continue;
       const ref=sessionRefs.get(session.key);
       if(!ref)continue;
       const within=ranked.filter(r=>stamp(r.occurred_at)>=stamp(session.start)&&
