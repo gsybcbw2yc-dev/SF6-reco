@@ -294,7 +294,12 @@ def record(items, timestamp, history, run_id=None, attempt=None):
         row = dict(item, observed_at=timestamp, source='periodic_buckler_snapshot',
                    delta_mr=(item['mr'] - previous['mr'] if same_phase and previous['mr'] is not None and item['mr'] is not None else None),
                    delta_lp=(item['lp'] - previous['lp'] if same_phase and previous['lp'] is not None and item['lp'] is not None else None),
-                   observation_type='phase_start' if previous and not same_phase else 'change' if rating_changed else 'heartbeat' if previous else 'initial')
+                   observation_type=('phase_start' if previous and not same_phase and
+                        previous['phase'] != 'unknown' and item['phase'] != 'unknown'
+                        else 'phase_verified' if previous and not same_phase and
+                        previous['phase'] == 'unknown' and item['phase'] != 'unknown'
+                        else 'phase_unverified' if previous and not same_phase
+                        else 'change' if rating_changed else 'heartbeat' if previous else 'initial'))
         if observation_id:
             row['observation_id'] = observation_id
         existing.append(row)
