@@ -9,7 +9,7 @@ const match=(id,mins,mr,outcome='win',extra={})=>({
  outcome,...extra
 });
 assert.equal(global.SF6PhaseConfig.label('unknown'),'Act 14（暫定）');
-assert.equal(global.SF6PhaseConfig.label('15'),'15');
+assert.equal(global.SF6PhaseConfig.label('15'),'Act 15（公式取得）');
 assert.equal(global.SF6PhaseConfig.acts[0].source,'user_provisional');
 
 const a=match('a',0,1400,'win',{lp_before:100000});
