@@ -16,7 +16,7 @@ class Node {
    return prevented;
  }
 }
-const ids=['overview','matches','analysis','system'],analyses=['deep','timeofday','velocity'];
+const ids=['overview','matches','analysis','system'],analyses=['deep','timeofday','velocity','fairmr'];
 const views=Object.fromEntries(ids.map(x=>['view-'+x,new Node('view-'+x)]));
 const panels=Object.fromEntries(analyses.map(x=>['analysis-'+x,new Node('analysis-'+x)]));
 const navs=ids.map(x=>new Node('',{navView:x})),
@@ -44,6 +44,12 @@ assert.equal(panels['analysis-timeofday'].hidden,false);
 assert.equal(panels['analysis-deep'].hidden,true);
 const prevented=tabs[1].key('ArrowRight');assert.equal(prevented,true);
 assert.equal(tabs[2].focused,true);
+assert.equal(panels['analysis-velocity'].hidden,false);
+tabs[3].click();
+assert.equal(isCurrent(tabs,'fairmr'),true);
+assert.equal(panels['analysis-fairmr'].hidden,false);
+assert.equal(panels['analysis-velocity'].hidden,true);
+tabs[2].click();
 assert.equal(panels['analysis-velocity'].hidden,false);
 navs[3].click();assert.equal(views['view-system'].hidden,false);
 assert.equal(panels['analysis-velocity'].hidden,false); // preserve inner tab when leaving analytics
