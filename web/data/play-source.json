@@ -1,8 +1,14 @@
 {
   "schema": 1,
-  "checked_at": "2026-11-14T23:05:11Z",
+  "checked_at": "2026-11-14T23:05:44Z",
   "source": "play_character_league_infos",
-  "result": "fallback_banner",
-  "error": "play_collection_TypeError",
-  "characters_available": 0
+  "rating_view": "latest_default",
+  "result": "success",
+  "characters_available": 2,
+  "characters": [
+    "AKUMA",
+    "TERRY"
+  ],
+  "current_act": 14,
+  "act_source": "play_page.play.current_season_id"
 }
