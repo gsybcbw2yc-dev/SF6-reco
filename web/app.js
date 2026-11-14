@@ -1,4 +1,4 @@
-const $=id=>document.getElementById(id); let history=[],runs=[],status={},ratingEvidence={events:[],characters:{},checked_at:null},range='7';const fmt=n=>n==null?'—':Number(n).toLocaleString('ja-JP');const date=s=>new Date(s).toLocaleString('ja-JP',{timeZone:'Asia/Tokyo',month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});const signed=n=>n==null?'—':(n>0?'+':'')+fmt(n);
+const $=id=>document.getElementById(id); let history=[],rawHistory=[],runs=[],status={},ratingEvidence={events:[],characters:{},checked_at:null},range='7';const fmt=n=>n==null?'—':Number(n).toLocaleString('ja-JP');const date=s=>new Date(s).toLocaleString('ja-JP',{timeZone:'Asia/Tokyo',month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});const signed=n=>n==null?'—':(n>0?'+':'')+fmt(n);
 function download(name,contents,type){const a=document.createElement('a'),url=URL.createObjectURL(new Blob([contents],{type}));a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 // Per-chart visibility state persists across data refreshes and time-range changes.
 const chartLayers={
@@ -137,8 +137,13 @@ function updateSelectors(){
   if(!hasData){let preferred=chars.find(c=>/akuma|gouki|豪鬼/i.test(c));if(preferred)$('character').value=preferred}
   else $('character').value=selected;
   const phase=$('phase').value;
-  [...new Set(history.map(x=>x.phase))].sort().forEach(p=>{if(![...$('phase').options].some(o=>o.value===p))$('phase').add(new Option(typeof SF6PhaseConfig!=='undefined'?SF6PhaseConfig.label(p):p,p))});
-  if(hasData)$('phase').value=phase;
+  const choices=[...new Set(history.map(x=>x.phase))].sort();
+  // Only one filter per canonical ACT, not old "unknown" plus official 14.
+  $('phase').options.length=1;
+  for(const p of choices){
+    $('phase').add(new Option(p==='unknown'?'Act不明':typeof SF6PhaseConfig!=='undefined'?SF6PhaseConfig.label(p):p,p));
+  }
+  $('phase').value=phase==='all'||choices.includes(phase)?phase:'all';
 }
 function updateStatus(){
   const chosen=$('character').value;
@@ -176,10 +181,9 @@ function updateStatus(){
   $('token-expiry').textContent=daysLeft<=14?daysLeft<=0?'外部起動用トークンの有効期限（12月8日）を確認し、必要なら更新してください。':`外部起動用トークンの期限まで約${daysLeft}日。期限前に更新してください。`:'';
   const verifiedAct=status.act_current;
   if(Number.isInteger(verifiedAct?.number)&&verifiedAct.number>=1&&verifiedAct.number<=100){
-    $('phase-note').textContent=`現在のAct：Act ${verifiedAct.number}（Buckler公式PLAYで${date(verifiedAct.verified_at)} JST確認）。取得前の旧記録は暫定扱い、試合のActは観測時刻からの推定です。`;
+    $('phase-note').textContent=`現在のAct：Act ${verifiedAct.number}（Buckler公式PLAYで${date(verifiedAct.verified_at)} JST確認）。履歴は同じAct番号に統合。公式確認前のAct割当は遡及推定であり、当時のActの直接証拠ではありません。`;
   }else{
-    const assumed=typeof SF6PhaseConfig!=='undefined'?SF6PhaseConfig.label('unknown'):'未判定';
-    $('phase-note').textContent=`Act未確認。表示：${assumed}（ユーザー指定・暫定）。`+
+    $('phase-note').textContent='公式PLAYのAct番号は未確認。確認できるまでActは不明として扱い、手動の暫定番号は使用しません。'+
       (status.phase_diagnostic?.reason?` 取得元：${status.phase_diagnostic.reason}`:'');
   }
   $('error').textContent=status.last_error?`${date(status.last_error.at)} · ${status.last_error.message}`:'取得エラーはありません。';
@@ -199,11 +203,14 @@ async function refresh(force=false){
     if(!Array.isArray(h.observations)||!Array.isArray(r.events))throw Error('データ形式を確認できません');
     const rawEvidence=responses[3].ok?await responses[3].json().catch(()=>null):null;
     const nextEvidence=SF6RatingEvidence.normalize(rawEvidence);
-    const nextHistory=[...h.observations].sort((a,b)=>a.observed_at.localeCompare(b.observed_at));
-    const nextVersion=JSON.stringify(nextHistory)+JSON.stringify(nextEvidence.events);
+    const nextRawHistory=[...h.observations].sort((a,b)=>a.observed_at.localeCompare(b.observed_at));
+    if(typeof SF6PhaseConfig!=='undefined')SF6PhaseConfig.setVerifiedObservations(nextRawHistory);
+    // Normalize for UI only. Raw exported observations retain the exact source.
+    const nextHistory=nextRawHistory.map(p=>({...p,phase:
+      typeof SF6PhaseConfig!=='undefined'?SF6PhaseConfig.phaseKey(p.phase,p.observed_at):p.phase}));
+    const nextVersion=JSON.stringify(nextRawHistory)+JSON.stringify(nextEvidence.events);
     const changed=nextVersion!==historyVersion;
-    history=nextHistory;ratingEvidence=nextEvidence;status=s;runs=r.events;lastFetchAt=Date.now();
-    if(typeof SF6PhaseConfig!=='undefined')SF6PhaseConfig.setVerifiedObservations(nextHistory);
+    rawHistory=nextRawHistory;history=nextHistory;ratingEvidence=nextEvidence;status=s;runs=r.events;lastFetchAt=Date.now();
     updateSelectors();updateStatus();
     if(changed||!hasData){historyVersion=nextVersion;render()}
     hasData=true;
@@ -250,7 +257,7 @@ window.onSf6MatchCharacterChange=selected=>{
   }
 };
 $('character').onchange=()=>{syncOverviewCharacterToMatches();render();updateStatus();window.matchDashboard?.render();};
-$('phase').onchange=()=>{render();window.matchDashboard?.render();};document.querySelectorAll('[data-range]').forEach(b=>b.onclick=()=>{range=b.dataset.range;document.querySelector('.segmented .active')?.classList.remove('active');b.classList.add('active');render()});$('json').onclick=()=>download('sf6-history.json',JSON.stringify({schema:2,observations:history},null,2),'application/json');$('csv').onclick=()=>download('sf6-history.csv','observed_at,character,phase,mr,lp,delta_mr,delta_lp,observation_type,source\n'+history.map(p=>['observed_at','character','phase','mr','lp','delta_mr','delta_lp','observation_type','source'].map(k=>'"'+String(p[k]??'').replaceAll('"','""')+'"').join(',')).join('\n'),'text/csv');refresh(true);
+$('phase').onchange=()=>{render();window.matchDashboard?.render();};document.querySelectorAll('[data-range]').forEach(b=>b.onclick=()=>{range=b.dataset.range;document.querySelector('.segmented .active')?.classList.remove('active');b.classList.add('active');render()});$('json').onclick=()=>download('sf6-history.json',JSON.stringify({schema:2,observations:rawHistory},null,2),'application/json');$('csv').onclick=()=>download('sf6-history.csv','observed_at,character,phase,mr,lp,delta_mr,delta_lp,observation_type,source\n'+rawHistory.map(p=>['observed_at','character','phase','mr','lp','delta_mr','delta_lp','observation_type','source'].map(k=>'"'+String(p[k]??'').replaceAll('"','""')+'"').join(',')).join('\n'),'text/csv');refresh(true);
 setInterval(()=>{if(!document.hidden)refresh()},60000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});
 window.addEventListener('pageshow',()=>refresh());
