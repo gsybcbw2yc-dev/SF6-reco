@@ -87,5 +87,115 @@ def probe(player, cookie, fetched_at):
     return output
 
 
+
+# Buckler's PLAY page serves the full per-character league array (not only
+# the favorite-character banner). The unfiltered default view shows 'latest'
+# in the official page UI; do not mistake the separate maximum MR for latest.
+PLAY_URL = ORIGIN+'/6/buckler/profile/{player}/play'
+
+
+def normalize_character(entry):
+    char = (entry.get('character_alpha') or entry.get('character_tool_name') or
+            entry.get('character_name'))
+    if isinstance(char, dict):
+        char = char.get('en') or char.get('ja')
+    if not isinstance(char, str) or not re.fullmatch(r'[A-Za-z0-9 _.-]{1,60}', char):
+        return None
+    char = char.strip().upper().replace(' ', '_')
+    return {'GOUKI': 'AKUMA'}.get(char, char)
+
+
+def normalized_rating(value):
+    if value is None or value == '' or value == -1:
+        return None
+    if type(value) not in (int, str):
+        raise ValueError('invalid_numeric_rating')
+    if isinstance(value, str) and not re.fullmatch(r'-?\d{1,9}', value):
+        raise ValueError('invalid_numeric_rating')
+    num = int(value)
+    if num == -1:
+        return None
+    if not 0 <= num <= 10_000_000:
+        raise ValueError('invalid_numeric_rating')
+    return num
+
+
+def parse_play(raw):
+    match = NEXT.search(raw)
+    if not match:
+        raise ValueError('play_next_data_missing')
+    root = json.loads(html.unescape(match.group(1)))
+    page = root.get('props', {}).get('pageProps', {})
+    if not isinstance(page, dict) or '__N_REDIRECT' in page:
+        raise ValueError('play_auth_or_schema')
+    play = page.get('play', {})
+    leagues = play.get('character_league_infos') if isinstance(play, dict) else None
+    if not isinstance(leagues, list):
+        raise ValueError('play_character_leagues_missing')
+    phase = 'unknown'
+    phase_source = None
+    for k in ('master_league_phase','phase_id','current_phase','current_phase_id'):
+        value=page.get(k)
+        if type(value) is int and 1 <= value <= 100:
+            phase=str(value);phase_source='play_page.'+k;break
+    result = {}
+    for entry in leagues:
+        if not isinstance(entry,dict):
+            continue
+        char=normalize_character(entry)
+        info=entry.get('league_info')
+        if not char or not isinstance(info, dict):
+            continue
+        try:
+            mr=normalized_rating(info.get('master_rating'))
+            lp=normalized_rating(info.get('league_point'))
+        except ValueError:
+            continue
+        # Unplayed characters frequently have empty shells. Do not pollute
+        # the rating history with zeros for fighters the user never selected.
+        if not entry.get('is_played') and not (mr and mr > 0) and not (lp and lp > 0):
+            continue
+        if mr is None and lp is None:
+            continue
+        result[char] = {'character':char,'mr':mr,'lp':lp,'phase':phase,
+                         'phase_source':phase_source,
+                         'rating_source':'play_character_league_infos',
+                         'rating_view':'latest_default'}
+    if not result:
+        raise ValueError('play_has_no_played_ratings')
+    return list(result.values())
+
+
+def fetch_latest(player, cookie):
+    """One authenticated GET to the known PLAY route; no raw payload persisted."""
+    if not re.fullmatch(r'\d{6,15}', player or '') or not cookie or '\n' in cookie or ';' in cookie:
+        raise ValueError('invalid_config')
+    cookie=cookie.strip().strip('"\'')
+    if cookie.lower().startswith('buckler_id='):
+        cookie=cookie.split('=',1)[1]
+    req=urllib.request.Request(PLAY_URL.format(player=player),headers={
+        'User-Agent':'Mozilla/5.0 (compatible; PersonalSF6Tracker/1.0)',
+        'Cookie':'buckler_id='+cookie,
+        'Accept-Language':'en-US,en;q=0.8'})
+    with urllib.request.urlopen(req, timeout=20) as response:
+        raw=response.read(2_500_001)
+        final=response.geturl()
+    if len(raw)>2_500_000:
+        raise ValueError('play_response_too_large')
+    if not final.startswith(ORIGIN+'/6/buckler/') or '/auth/' in final:
+        raise ValueError('play_auth_redirect')
+    return parse_play(raw.decode('utf-8'))
+
+
+def safe_issue(exc):
+    if isinstance(exc, urllib.error.HTTPError):
+        return 'play_http_'+str(exc.code)
+    if isinstance(exc, ValueError) and str(exc) in (
+        'invalid_config','play_next_data_missing','play_auth_or_schema',
+        'play_character_leagues_missing','play_has_no_played_ratings',
+        'play_response_too_large','play_auth_redirect'):
+        return str(exc)
+    return 'play_collection_'+type(exc).__name__
+
 def utc_now():
     return datetime.now(timezone.utc).isoformat(timespec='seconds').replace('+00:00','Z')
