@@ -45,8 +45,12 @@ async function run(){
  // A subsequent ranked session plus periodic rating snapshots corroborate the earlier closing balance.
  rows.push({...first,key:'next-session-hash',occurred_at:'2026-11-09T00:50:00Z',
    mr_before:1510,lp_before:50080,outcome:'win'});
- observations=[{character:'AKUMA',phase:'unknown',mr:1510,lp:50080,
-   observed_at:'2026-11-09T00:18:00Z'}];
+ observations=[
+    {character:'AKUMA',phase:'unknown',mr:1510,lp:50080,
+      observed_at:'2026-11-09T00:18:00Z'},
+    {character:'AKUMA',phase:'14',phase_source:'play_page.play.current_season_id',
+      mr:1510,lp:50080,observed_at:'2026-11-09T01:45:00Z'}
+  ];
  hash='c'.repeat(64);
  await app.refresh();
  assert.equal(get('session-list').children.length,2);
