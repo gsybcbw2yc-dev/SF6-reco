@@ -15,8 +15,8 @@ const observation=(time,act,character='AKUMA')=>({
   observed_at:time,character,phase:String(act),
   phase_source:'play_page.play.current_season_id'
 });
-assert.equal(Phase.currentAct,14);
-assert.equal(Phase.label('unknown',t0),'Act 14（暫定）');
+assert.equal(Phase.currentAct,null);
+assert.equal(Phase.label('unknown',t0),'Act不明');
 assert.equal(Phase.setVerifiedObservations([
   observation(t3,15),observation(t1,14),observation(t1,14,'TERRY'),
   observation(t2,14),observation(t4,15),{...observation(t0,44),phase_source:null}
@@ -24,24 +24,28 @@ assert.equal(Phase.setVerifiedObservations([
 assert.equal(Phase.currentAct,15);
 assert.equal(Phase.latestVerified().act,15);
 assert.equal(Phase.assignedAct(t0).act,14);
-assert.equal(Phase.assignedAct(t0).source,'user_provisional');
+assert.equal(Phase.assignedAct(t0).source,'retrospective_inference');
 assert.equal(Phase.assignedAct('2026-11-15T00:30:00Z').act,14);
 assert.equal(Phase.assignedAct('2026-11-15T00:30:00Z').source,'official_observation');
 assert.equal(Phase.label('unknown','2026-11-15T00:30:00Z'),
-  'Act 14（時刻推定）');
+  'Act 14');
 assert.equal(Phase.assignedAct('2026-11-15T01:30:00Z').act,null);
 assert.equal(Phase.label('unknown','2026-11-15T01:30:00Z'),
-  'Act不明（切替境界）');
+  'Act不明');
 assert.equal(Phase.assignedAct(t3).act,15);
 assert.equal(Phase.assignedAct('2026-11-15T02:30:00Z').act,15);
-assert.equal(Phase.label('15'),'Act 15（公式取得）');
+assert.equal(Phase.label('15'),'Act 15');
+assert.equal(Phase.phaseKey('unknown',t0),'14');
+assert.equal(Phase.phaseKey('14',t0),'14');
+assert.equal(Phase.resolve('unknown',t0).inferred,true);
+assert.equal(Phase.resolve('14',t0).inferred,false);
 
 const match=(id,at,phase='unknown',character='AKUMA')=>({
  key:id,mode:'ranked',character,phase,occurred_at:at,
  mr_before:1400,opponent_mr_before:1400,lp_before:24000,outcome:'win'
 });
-assert.equal(Fair.period(match('old',t0),Phase.assignedAct).key,'provisional:14');
-assert.equal(Fair.period(match('new','2026-11-15T02:30:00Z'),Phase.assignedAct).key,'provisional:15');
+assert.equal(Fair.period(match('old',t0),Phase.assignedAct).key,'act:14');
+assert.equal(Fair.period(match('new','2026-11-15T02:30:00Z'),Phase.assignedAct).key,'act:15');
 assert.equal(Fair.period(match('boundary','2026-11-15T01:30:00Z'),Phase.assignedAct).key,'unknown');
 const uncertainA=match('uncertainA','2026-11-15T01:30:00Z');
 const uncertainB={...match('uncertainB','2026-11-15T01:33:00Z'),mr_before:1408,lp_before:24100};
@@ -70,6 +74,6 @@ assert.equal(prom.storedGames,2);
 assert.equal(prom.currentLP,24500);
 // Same ACT at both sides must not be inferred to cover an unobserved switch.
 assert.equal(Phase.setVerifiedObservations([]),0);
-assert.equal(Phase.currentAct,14);
-assert.equal(Phase.label('unknown',t4),'Act 14（暫定）');
+assert.equal(Phase.currentAct,null);
+assert.equal(Phase.label('unknown',t4),'Act不明');
 console.log('Official PLAY Act ID, time-based historical assignment, uncertain boundary, MR/LP forecast continuity passed');
