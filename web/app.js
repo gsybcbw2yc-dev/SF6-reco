@@ -1,11 +1,11 @@
-const $=id=>document.getElementById(id); let history=[],runs=[],status={},range='7';const fmt=n=>n==null?'—':Number(n).toLocaleString('ja-JP');const date=s=>new Date(s).toLocaleString('ja-JP',{timeZone:'Asia/Tokyo',month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});const signed=n=>n==null?'—':(n>0?'+':'')+fmt(n);
+const $=id=>document.getElementById(id); let history=[],runs=[],status={},ratingEvidence={events:[],characters:{},checked_at:null},range='7';const fmt=n=>n==null?'—':Number(n).toLocaleString('ja-JP');const date=s=>new Date(s).toLocaleString('ja-JP',{timeZone:'Asia/Tokyo',month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});const signed=n=>n==null?'—':(n>0?'+':'')+fmt(n);
 function download(name,contents,type){const a=document.createElement('a'),url=URL.createObjectURL(new Blob([contents],{type}));a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 // Per-chart visibility state persists across data refreshes and time-range changes.
 const chartLayers={
-  mr:{observed:true,average:true,regression:true},
-  lp:{observed:true,average:true,regression:true}
+  mr:{observed:true,average:true,regression:true,matches:true},
+  lp:{observed:true,average:true,regression:true,matches:true}
 };
-function chart(id,points,key,color) {
+function chart(id,points,key,color,preMatch=[]) {
   const node=$(id),detail=$(key+'-point-detail'),
         reading=$(key+'-point-reading'),closeButton=$(key+'-point-close'),
         slopeEl=$(key+'-slope'),layers=chartLayers[key];
@@ -14,6 +14,7 @@ function chart(id,points,key,color) {
   reading.textContent='';
   closeButton.onclick=null;
   const rows=SF6ChartTrends.normalized(points,key);
+  const matchRows=SF6ChartTrends.normalized(preMatch,key);
   const reg=SF6ChartTrends.regression(rows,key);
   slopeEl.className=reg.available?(reg.slope<0?'negative':''):'unavailable';
   if(reg.available){
@@ -24,8 +25,8 @@ function chart(id,points,key,color) {
     slopeEl.textContent='算定不可';
     slopeEl.title=reg.reason;
   }
-  if(!rows.length){
-    node.innerHTML='<div class="empty">この期間の観測データはありません。初回取得後にグラフが表示されます。</div>';
+  if(!rows.length&&!matchRows.length){
+    node.innerHTML='<div class="empty">この期間に定期観測・ランクマッチの履歴がありません。</div>';
     return;
   }
   const W=Math.max(300,Math.round(node.clientWidth||600)),
@@ -33,12 +34,14 @@ function chart(id,points,key,color) {
         L=52,R=12,T=16,B=30;
   const maSegments=SF6ChartTrends.movingAverage(rows,key,5);
   const projected=reg.available&&layers.regression?[reg.startValue,reg.endValue]:[];
-  const displayValues=[...rows.map(row=>row[key]),...projected,
+  const visibleMatchRows=layers.matches?matchRows:[];
+  const allPlotted=[...rows,...visibleMatchRows].sort((a,b)=>a.stamp-b.stamp);
+  const displayValues=[...rows.map(row=>row[key]),...visibleMatchRows.map(row=>row[key]),...projected,
     ...(layers.average?maSegments.flat().map(item=>item.value):[])];
   let min=Math.min(...displayValues),max=Math.max(...displayValues);
   const pad=Math.max(1,(max-min)*.13);
   min-=pad;max+=pad;
-  const start=rows[0].stamp,end=rows.at(-1).stamp;
+  const start=allPlotted[0].stamp,end=allPlotted.at(-1).stamp;
   const X=time=>start===end?W/2:L+(time-start)/(end-start)*(W-L-R);
   const Y=value=>T+(max-value)/(max-min)*(H-T-B);
   const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
@@ -58,6 +61,37 @@ function chart(id,points,key,color) {
     label.textContent=fmt(Math.round(max-i*(max-min)/3));
   }
   const coords=rows.map(row=>[X(row.stamp),Y(row[key])]);
+  // Separate evidence: only connect consecutive pre-match ratings within a
+  // battle session. Do not extrapolate through hours without actual matches.
+  if(layers.matches){
+    const matchSegments=SF6RatingEvidence.segments(matchRows,12);
+    for(const segment of matchSegments){
+      if(segment.length<2)continue;
+      draw('polyline',{points:segment.map(p=>X(p.stamp)+','+Y(p[key])).join(' '),
+        fill:'none',stroke:'#f8bb75','stroke-width':1.75,
+        'stroke-dasharray':'2.5 4','stroke-linejoin':'round','opacity':'.85',
+        'data-chart-line':'match-pre'});
+    }
+    // A limited number of selectable markers protects iPhone performance.
+    const step=Math.max(1,Math.ceil(matchRows.length/90));
+    matchRows.forEach((p,i)=>{
+      if(i%step!==0&&i!==matchRows.length-1)return;
+      const dot=draw('rect',{x:X(p.stamp)-2.5,y:Y(p[key])-2.5,width:5,height:5,
+        rx:1,fill:'#f8bb75',stroke:'#101722','stroke-width':.75,
+        'data-chart-point':'match-pre',role:'button',tabindex:0,
+        'aria-label':date(p.observed_at)+' '+key.toUpperCase()+' '+fmt(p[key])+'（試合前・アップロード日時）'});
+      const show=()=>{
+        reading.textContent=date(p.observed_at)+' JST · '+p.character+' · '+key.toUpperCase()+
+          ' '+fmt(p[key])+'（ランクマッチ対戦前、記録時刻はアップロード時刻）';
+        detail.hidden=false;
+      };
+      dot.addEventListener('click',show);
+      dot.addEventListener('keydown',event=>{
+        if(event.key==='Enter'||event.key===' '){event.preventDefault();show();}
+        else if(event.key==='Escape'){event.preventDefault();detail.hidden=true;}
+      });
+    });
+  }
   if(layers.observed){
     for(let i=1;i<coords.length;i++){
       if(rows[i].character!==rows[i-1].character||rows[i].phase!==rows[i-1].phase)continue;
@@ -122,16 +156,17 @@ function chart(id,points,key,color) {
   for(const i of new Set([0,rows.length-1])){
     const label=draw('text',{x:i?W-R:L,y:H-4,'text-anchor':i?'end':'start',
       fill:'#78859d','font-size':11});
-    label.textContent=date(rows[i].observed_at);
+    label.textContent=date(i?allPlotted.at(-1).observed_at:allPlotted[0].observed_at);
   }
   node.append(svg);
 }
 
-function render(){let character=$('character').value,phase=$('phase').value,all=history.filter(p=>(character==='すべて'||p.character===character)&&(phase==='all'||p.phase===phase));let cutoff=range==='all'?0:Date.now()-Number(range)*864e5,points=all.filter(p=>new Date(p.observed_at).getTime()>=cutoff);let latest=all.at(-1);for(let key of ['mr','lp']){let valid=points.filter(p=>p[key]!=null&&(key!=='mr'||p[key]>0)),last=valid.at(-1),previous=valid.at(-2);$(key).textContent=key==='mr'&&!(typeof latest?.mr==='number'&&latest.mr>0)?'未計測':fmt(latest?.[key]);$(key+'-delta').textContent=last&&previous&&last.phase===previous.phase&&last.character===previous.character?`前回観測比 ${signed(last[key]-previous[key])}`:'比較可能な同フェーズの観測値がありません';$(key+'-stats').textContent=`期間内最高 ${fmt(valid.length?Math.max(...valid.map(p=>p[key])):null)}　最低 ${fmt(valid.length?Math.min(...valid.map(p=>p[key])):null)}`;chart(key+'-chart',valid,key,key==='mr'?'#b48aff':'#5bd7e8')}let mr=all.filter(p=>typeof p.mr==='number'&&p.mr>0);function delta(days){let recent=mr.at(-1),before=mr.filter(p=>new Date(p.observed_at)<=new Date(recent?.observed_at).getTime()-days*864e5).at(-1);return recent&&before?signed(recent.mr-before.mr):'—'}$('day').textContent=delta(1);$('week').textContent=delta(7);let first=points.find(p=>p.mr!=null),last=points.filter(p=>p.mr!=null).at(-1);$('trend').textContent=!first||!last||first===last?'—':last.mr>first.mr?'上昇傾向':last.mr<first.mr?'下降傾向':'横ばい';$('samples').textContent=`${all.length} 件の観測値`;let changes=all.filter(p=>p.observation_type==='change');$('last-change').textContent='最終変動：'+(changes.length?date(changes.at(-1).observed_at)+' JST':'比較用の変動は未検出');renderTimeAnalysis(history,range,timeWindow)}
+function render(){let character=$('character').value,phase=$('phase').value,all=history.filter(p=>(character==='すべて'||p.character===character)&&(phase==='all'||p.phase===phase));let cutoff=range==='all'?0:Date.now()-Number(range)*864e5,points=all.filter(p=>new Date(p.observed_at).getTime()>=cutoff);let latest=all.at(-1);for(let key of ['mr','lp']){let valid=points.filter(p=>p[key]!=null&&(key!=='mr'||p[key]>0)),last=valid.at(-1),previous=valid.at(-2);$(key).textContent=key==='mr'&&!(typeof latest?.mr==='number'&&latest.mr>0)?'未計測':fmt(latest?.[key]);$(key+'-delta').textContent=last&&previous&&last.phase===previous.phase&&last.character===previous.character?`前回観測比 ${signed(last[key]-previous[key])}`:'比較可能な同フェーズの観測値がありません';$(key+'-stats').textContent=`期間内最高 ${fmt(valid.length?Math.max(...valid.map(p=>p[key])):null)}　最低 ${fmt(valid.length?Math.min(...valid.map(p=>p[key])):null)}`;chart(key+'-chart',valid,key,key==='mr'?'#b48aff':'#5bd7e8',
+  SF6RatingEvidence.trace(ratingEvidence,character,phase,cutoff,key))}let mr=all.filter(p=>typeof p.mr==='number'&&p.mr>0);function delta(days){let recent=mr.at(-1),before=mr.filter(p=>new Date(p.observed_at)<=new Date(recent?.observed_at).getTime()-days*864e5).at(-1);return recent&&before?signed(recent.mr-before.mr):'—'}$('day').textContent=delta(1);$('week').textContent=delta(7);let first=points.find(p=>p.mr!=null),last=points.filter(p=>p.mr!=null).at(-1);$('trend').textContent=!first||!last||first===last?'—':last.mr>first.mr?'上昇傾向':last.mr<first.mr?'下降傾向':'横ばい';$('samples').textContent=`${all.length} 件の観測値`;let changes=all.filter(p=>p.observation_type==='change');$('last-change').textContent='最終変動：'+(changes.length?date(changes.at(-1).observed_at)+' JST':'比較用の変動は未検出');renderTimeAnalysis(history,range,timeWindow)}
 let timeWindow=60;
 let refreshing=false,hasData=false,lastFetchAt=0,historyVersion='';
 function updateSelectors(){
-  const chars=[...new Set(history.map(x=>x.character))].sort();
+  const chars=[...new Set([...history.map(x=>x.character),...ratingEvidence.events.map(x=>x.character)])].sort();
   const selected=$('character').value;
   chars.forEach(c=>{if(![...$('character').options].some(o=>o.value===c))$('character').add(new Option(c,c))});
   if(!hasData){let preferred=chars.find(c=>/akuma|gouki|豪鬼/i.test(c));if(preferred)$('character').value=preferred}
@@ -156,6 +191,15 @@ function updateStatus(){
     '最終成功：'+(lastObserved?date(lastObserved)+' JST':'未取得')):
     `${chosen} の最終観測：${lastObserved?date(lastObserved)+' JST':'未取得'}。`+
     (age>90?'このキャラの観測値は古い可能性があります。':'');
+  const recentPre=SF6RatingEvidence.latest(ratingEvidence,chosen);
+  $('match-rating-latest').textContent=chosen==='すべて'?
+    'CHARACTERでキャラクターを選ぶと、そのキャラの直近ランクマッチの対戦前値を表示します。':
+    recentPre?'直近ランクマッチの対戦前（参考）：'+date(recentPre.observed_at)+' JST · MR '+
+      (recentPre.mr>0?fmt(recentPre.mr):'未計測')+' / LP '+fmt(recentPre.lp):
+      chosen+'：保存済みのランクマッチ記録がありません。';
+  $('match-rating-check').textContent='バトルログ最終照合：'+
+    (ratingEvidence.checked_at?date(ratingEvidence.checked_at)+' JST':'未確認')+
+    '（キャラクター別の直近試合を確認。直接のMR・LP定期観測とは別）';
   let recent=runs.filter(x=>new Date(x.started_at).getTime()>=Date.now()-864e5),successful=recent.filter(x=>x.result==='success'),failedRuns=recent.filter(x=>x.result==='failure'),skipped=recent.filter(x=>x.result==='skipped_recent_success');
   let attempts=successful.length+failedRuns.length,successRate=attempts?Math.round(successful.length/attempts*100)+'%':'算定不可';
   $('coverage').textContent=`直近24時間：取得成功 ${successful.length} 回、失敗 ${failedRuns.length} 回、省略 ${skipped.length} 回。到達済み取得の成功率 ${successRate}（予定枠への到達率とは別）。`;
@@ -178,14 +222,17 @@ async function refresh(force=false){
   refreshing=true;$('refresh').disabled=true;$('refresh-state').textContent='最新データを確認中…';
   try{
     const version=Date.now();
-    const responses=await Promise.all(['history','status','runs'].map(name=>fetch(`data/${name}.json?v=${version}`,{cache:'no-store'})));
-    if(responses.some(r=>!r.ok))throw Error('データファイルを読み込めません');
-    const [h,s,r]=await Promise.all(responses.map(x=>x.json()));
+    const responses=await Promise.all(['history','status','runs','rating-evidence']
+      .map(name=>fetch(`data/${name}.json?v=${version}`,{cache:'no-store'}).catch(()=>({ok:false}))));
+    if(responses.slice(0,3).some(r=>!r.ok))throw Error('データファイルを読み込めません');
+    const [h,s,r]=await Promise.all(responses.slice(0,3).map(x=>x.json()));
     if(!Array.isArray(h.observations)||!Array.isArray(r.events))throw Error('データ形式を確認できません');
+    const rawEvidence=responses[3].ok?await responses[3].json().catch(()=>null):null;
+    const nextEvidence=SF6RatingEvidence.normalize(rawEvidence);
     const nextHistory=[...h.observations].sort((a,b)=>a.observed_at.localeCompare(b.observed_at));
-    const nextVersion=JSON.stringify(nextHistory);
+    const nextVersion=JSON.stringify(nextHistory)+JSON.stringify(nextEvidence.events);
     const changed=nextVersion!==historyVersion;
-    history=nextHistory;status=s;runs=r.events;lastFetchAt=Date.now();
+    history=nextHistory;ratingEvidence=nextEvidence;status=s;runs=r.events;lastFetchAt=Date.now();
     updateSelectors();updateStatus();
     if(changed||!hasData){historyVersion=nextVersion;render()}
     hasData=true;
@@ -210,7 +257,8 @@ document.querySelectorAll('[data-chart][data-layer]').forEach(button=>{
     const cutoff=range==='all'?0:Date.now()-Number(range)*864e5;
     const selected=history.filter(p=>(character==='すべて'||p.character===character)&&
       (phase==='all'||p.phase===phase)&&(key!=='mr'||p.mr>0)&&new Date(p.observed_at).getTime()>=cutoff);
-    chart(key+'-chart',selected,key,key==='mr'?'#b48aff':'#5bd7e8');
+    chart(key+'-chart',selected,key,key==='mr'?'#b48aff':'#5bd7e8',
+      SF6RatingEvidence.trace(ratingEvidence,character,phase,cutoff,key));
   };
 });
 document.querySelectorAll('[data-window]').forEach(b=>b.onclick=()=>{timeWindow=Number(b.dataset.window);document.querySelector('.time-windows .active')?.classList.remove('active');b.classList.add('active');renderTimeAnalysis(history,range,timeWindow)});
