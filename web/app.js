@@ -2,10 +2,10 @@ const $=id=>document.getElementById(id); let history=[],runs=[],status={},rating
 function download(name,contents,type){const a=document.createElement('a'),url=URL.createObjectURL(new Blob([contents],{type}));a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 // Per-chart visibility state persists across data refreshes and time-range changes.
 const chartLayers={
-  mr:{observed:true,average:true,regression:true,matches:true},
-  lp:{observed:true,average:true,regression:true,matches:true}
+  mr:{observed:true,average:true,regression:true},
+  lp:{observed:true,average:true,regression:true}
 };
-function chart(id,points,key,color,preMatch=[]) {
+function chart(id,points,key,color) {
   const node=$(id),detail=$(key+'-point-detail'),
         reading=$(key+'-point-reading'),closeButton=$(key+'-point-close'),
         slopeEl=$(key+'-slope'),layers=chartLayers[key];
@@ -14,7 +14,6 @@ function chart(id,points,key,color,preMatch=[]) {
   reading.textContent='';
   closeButton.onclick=null;
   const rows=SF6ChartTrends.normalized(points,key);
-  const matchRows=SF6ChartTrends.normalized(preMatch,key);
   const reg=SF6ChartTrends.regression(rows,key);
   slopeEl.className=reg.available?(reg.slope<0?'negative':''):'unavailable';
   if(reg.available){
@@ -25,8 +24,8 @@ function chart(id,points,key,color,preMatch=[]) {
     slopeEl.textContent='算定不可';
     slopeEl.title=reg.reason;
   }
-  if(!rows.length&&(!layers.matches||!matchRows.length)){
-    node.innerHTML='<div class="empty">この期間に定期観測・ランクマッチの履歴がありません。</div>';
+  if(!rows.length){
+    node.innerHTML='<div class="empty">この期間に定期観測データはありません。</div>';
     return;
   }
   const W=Math.max(300,Math.round(node.clientWidth||600)),
@@ -34,14 +33,12 @@ function chart(id,points,key,color,preMatch=[]) {
         L=52,R=12,T=16,B=30;
   const maSegments=SF6ChartTrends.movingAverage(rows,key,5);
   const projected=reg.available&&layers.regression?[reg.startValue,reg.endValue]:[];
-  const visibleMatchRows=layers.matches?matchRows:[];
-  const allPlotted=[...rows,...visibleMatchRows].sort((a,b)=>a.stamp-b.stamp);
-  const displayValues=[...rows.map(row=>row[key]),...visibleMatchRows.map(row=>row[key]),...projected,
+  const displayValues=[...rows.map(row=>row[key]),...projected,
     ...(layers.average?maSegments.flat().map(item=>item.value):[])];
   let min=Math.min(...displayValues),max=Math.max(...displayValues);
   const pad=Math.max(1,(max-min)*.13);
   min-=pad;max+=pad;
-  const start=allPlotted[0].stamp,end=allPlotted.at(-1).stamp;
+  const start=rows[0].stamp,end=rows.at(-1).stamp;
   const X=time=>start===end?W/2:L+(time-start)/(end-start)*(W-L-R);
   const Y=value=>T+(max-value)/(max-min)*(H-T-B);
   const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
@@ -61,37 +58,6 @@ function chart(id,points,key,color,preMatch=[]) {
     label.textContent=fmt(Math.round(max-i*(max-min)/3));
   }
   const coords=rows.map(row=>[X(row.stamp),Y(row[key])]);
-  // Separate evidence: only connect consecutive pre-match ratings within a
-  // battle session. Do not extrapolate through hours without actual matches.
-  if(layers.matches){
-    const matchSegments=SF6RatingEvidence.segments(matchRows,12);
-    for(const segment of matchSegments){
-      if(segment.length<2)continue;
-      draw('polyline',{points:segment.map(p=>X(p.stamp)+','+Y(p[key])).join(' '),
-        fill:'none',stroke:'#f8bb75','stroke-width':1.75,
-        'stroke-dasharray':'2.5 4','stroke-linejoin':'round','opacity':'.85',
-        'data-chart-line':'match-pre'});
-    }
-    // A limited number of selectable markers protects iPhone performance.
-    const step=Math.max(1,Math.ceil(matchRows.length/90));
-    matchRows.forEach((p,i)=>{
-      if(i%step!==0&&i!==matchRows.length-1)return;
-      const dot=draw('rect',{x:X(p.stamp)-2.5,y:Y(p[key])-2.5,width:5,height:5,
-        rx:1,fill:'#f8bb75',stroke:'#101722','stroke-width':.75,
-        'data-chart-point':'match-pre',role:'button',tabindex:0,
-        'aria-label':date(p.observed_at)+' '+key.toUpperCase()+' '+fmt(p[key])+'（試合前・アップロード日時）'});
-      const show=()=>{
-        reading.textContent=date(p.observed_at)+' JST · '+p.character+' · '+key.toUpperCase()+
-          ' '+fmt(p[key])+'（ランクマッチ対戦前、記録時刻はアップロード時刻）';
-        detail.hidden=false;
-      };
-      dot.addEventListener('click',show);
-      dot.addEventListener('keydown',event=>{
-        if(event.key==='Enter'||event.key===' '){event.preventDefault();show();}
-        else if(event.key==='Escape'){event.preventDefault();detail.hidden=true;}
-      });
-    });
-  }
   if(layers.observed){
     for(let i=1;i<coords.length;i++){
       if(rows[i].character!==rows[i-1].character||rows[i].phase!==rows[i-1].phase)continue;
@@ -156,13 +122,12 @@ function chart(id,points,key,color,preMatch=[]) {
   for(const i of [0,1]){
     const label=draw('text',{x:i?W-R:L,y:H-4,'text-anchor':i?'end':'start',
       fill:'#78859d','font-size':11});
-    label.textContent=date(i?allPlotted.at(-1).observed_at:allPlotted[0].observed_at);
+    label.textContent=date(i?rows.at(-1).observed_at:rows[0].observed_at);
   }
   node.append(svg);
 }
 
-function render(){let character=$('character').value,phase=$('phase').value,all=history.filter(p=>(character==='すべて'||p.character===character)&&(phase==='all'||p.phase===phase));let cutoff=range==='all'?0:Date.now()-Number(range)*864e5,points=all.filter(p=>new Date(p.observed_at).getTime()>=cutoff);let latest=all.at(-1);for(let key of ['mr','lp']){let valid=points.filter(p=>p[key]!=null&&(key!=='mr'||p[key]>0)),last=valid.at(-1),previous=valid.at(-2);$(key).textContent=key==='mr'&&!(typeof latest?.mr==='number'&&latest.mr>0)?'未計測':fmt(latest?.[key]);$(key+'-delta').textContent=last&&previous&&last.phase===previous.phase&&last.character===previous.character?`前回観測比 ${signed(last[key]-previous[key])}`:'比較可能な同フェーズの観測値がありません';$(key+'-stats').textContent=`期間内最高 ${fmt(valid.length?Math.max(...valid.map(p=>p[key])):null)}　最低 ${fmt(valid.length?Math.min(...valid.map(p=>p[key])):null)}`;chart(key+'-chart',valid,key,key==='mr'?'#b48aff':'#5bd7e8',
-  SF6RatingEvidence.trace(ratingEvidence,character,phase,cutoff,key))}let mr=all.filter(p=>typeof p.mr==='number'&&p.mr>0);function delta(days){let recent=mr.at(-1),before=mr.filter(p=>new Date(p.observed_at)<=new Date(recent?.observed_at).getTime()-days*864e5).at(-1);return recent&&before?signed(recent.mr-before.mr):'—'}$('day').textContent=delta(1);$('week').textContent=delta(7);let first=points.find(p=>p.mr!=null),last=points.filter(p=>p.mr!=null).at(-1);$('trend').textContent=!first||!last||first===last?'—':last.mr>first.mr?'上昇傾向':last.mr<first.mr?'下降傾向':'横ばい';$('samples').textContent=`${all.length} 件の観測値`;let changes=all.filter(p=>p.observation_type==='change');$('last-change').textContent='最終変動：'+(changes.length?date(changes.at(-1).observed_at)+' JST':'比較用の変動は未検出');renderTimeAnalysis(history,range,timeWindow)}
+function render(){let character=$('character').value,phase=$('phase').value,all=history.filter(p=>(character==='すべて'||p.character===character)&&(phase==='all'||p.phase===phase));let cutoff=range==='all'?0:Date.now()-Number(range)*864e5,points=all.filter(p=>new Date(p.observed_at).getTime()>=cutoff);let latest=all.at(-1);for(let key of ['mr','lp']){let valid=points.filter(p=>p[key]!=null&&(key!=='mr'||p[key]>0)),last=valid.at(-1),previous=valid.at(-2);$(key).textContent=key==='mr'&&!(typeof latest?.mr==='number'&&latest.mr>0)?'未計測':fmt(latest?.[key]);$(key+'-delta').textContent=last&&previous&&last.phase===previous.phase&&last.character===previous.character?`前回観測比 ${signed(last[key]-previous[key])}`:'比較可能な同フェーズの観測値がありません';$(key+'-stats').textContent=`期間内最高 ${fmt(valid.length?Math.max(...valid.map(p=>p[key])):null)}　最低 ${fmt(valid.length?Math.min(...valid.map(p=>p[key])):null)}`;chart(key+'-chart',valid,key,key==='mr'?'#b48aff':'#5bd7e8')}let mr=all.filter(p=>typeof p.mr==='number'&&p.mr>0);function delta(days){let recent=mr.at(-1),before=mr.filter(p=>new Date(p.observed_at)<=new Date(recent?.observed_at).getTime()-days*864e5).at(-1);return recent&&before?signed(recent.mr-before.mr):'—'}$('day').textContent=delta(1);$('week').textContent=delta(7);let first=points.find(p=>p.mr!=null),last=points.filter(p=>p.mr!=null).at(-1);$('trend').textContent=!first||!last||first===last?'—':last.mr>first.mr?'上昇傾向':last.mr<first.mr?'下降傾向':'横ばい';$('samples').textContent=`${all.length} 件の観測値`;let changes=all.filter(p=>p.observation_type==='change');$('last-change').textContent='最終変動：'+(changes.length?date(changes.at(-1).observed_at)+' JST':'比較用の変動は未検出');renderTimeAnalysis(history,range,timeWindow)}
 let timeWindow=60;
 let refreshing=false,hasData=false,lastFetchAt=0,historyVersion='';
 function updateSelectors(){
@@ -257,8 +222,7 @@ document.querySelectorAll('[data-chart][data-layer]').forEach(button=>{
     const cutoff=range==='all'?0:Date.now()-Number(range)*864e5;
     const selected=history.filter(p=>(character==='すべて'||p.character===character)&&
       (phase==='all'||p.phase===phase)&&(key!=='mr'||p.mr>0)&&new Date(p.observed_at).getTime()>=cutoff);
-    chart(key+'-chart',selected,key,key==='mr'?'#b48aff':'#5bd7e8',
-      SF6RatingEvidence.trace(ratingEvidence,character,phase,cutoff,key));
+    chart(key+'-chart',selected,key,key==='mr'?'#b48aff':'#5bd7e8');
   };
 });
 document.querySelectorAll('[data-window]').forEach(b=>b.onclick=()=>{timeWindow=Number(b.dataset.window);document.querySelector('.time-windows .active')?.classList.remove('active');b.classList.add('active');renderTimeAnalysis(history,range,timeWindow)});
