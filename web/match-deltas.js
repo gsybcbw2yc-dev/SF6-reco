@@ -37,7 +37,9 @@
       if(next.mode!=='ranked'||cur.character!==next.character||cur.phase!==next.phase||
          (cur.phase==='unknown'&&
           typeof SF6PhaseConfig!=='undefined'&&
-          SF6PhaseConfig.assignedAct(cur.occurred_at).act!==SF6PhaseConfig.assignedAct(next.occurred_at).act)){
+          (SF6PhaseConfig.assignedAct(cur.occurred_at).act===null||
+           SF6PhaseConfig.assignedAct(next.occurred_at).act===null||
+           SF6PhaseConfig.assignedAct(cur.occurred_at).act!==SF6PhaseConfig.assignedAct(next.occurred_at).act))){
         results.set(cur.key,{...base,reason:'次試合のモード・キャラ・Actが異なるため比較不可'});continue;
       }
       if(!usable(cur.mr_before)||!usable(next.mr_before)){
