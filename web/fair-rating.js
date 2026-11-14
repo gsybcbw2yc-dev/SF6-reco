@@ -22,7 +22,9 @@
     const assigned=actAt(r.occurred_at);
     if(assigned!==null&&assigned!==undefined&&assigned!==''){
       const num=typeof assigned==='object'?assigned.act:assigned;
-      return {key:'provisional:'+num,label:'Act '+num+'（暫定）',provisional:true};
+      if(num!==null&&num!==undefined&&num!=='')
+        return {key:'provisional:'+num,label:'Act '+num+
+          (assigned?.source==='official_observation'?'（公式観測時刻から推定）':'（暫定）'),provisional:true};
     }
     return {key:'unknown',label:'Act不明',provisional:true};
   }
