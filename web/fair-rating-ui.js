@@ -12,7 +12,7 @@
     if(cls)e.className=cls;
     return e;
   }
-  let snapshot=[],bound=false,cacheKey='',cached=null;
+  let snapshot=[],bound=false,cacheKey='',cached=null,lastRows=null;
   function ensureOptions(el, options){
     const selected=el.value;
     const values=options.map(x=>x.value);
@@ -108,6 +108,7 @@
       'データ条件が足りないため、対戦互角MRを表示しません。';
   }
   function render(rows){
+    if(rows!==lastRows){cacheKey='';lastRows=rows;}
     snapshot=Array.isArray(rows)?rows:[];
     if(!bound){
       $('fair-character').onchange=()=>{cacheKey='';$('fair-act').value='';show();};
