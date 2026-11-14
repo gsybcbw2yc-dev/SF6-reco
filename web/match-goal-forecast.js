@@ -24,11 +24,14 @@
     const current=latest?.mr??null,observedAt=latest?.observed_at??null;
     const age=latest?now-Date.parse(observedAt):Infinity;
     const stale=age>MAX_AGE_MS||age< -10*60000;
-    const act=latest?.phase==='unknown'?actAt(observedAt):null;
+    const phaseAct=latest&&/^\d{1,3}$/.test(String(latest.phase))?Number(latest.phase):null;
+    const act=phaseAct??(latest?.phase==='unknown'?actAt(observedAt):null);
+    const compatible=r=>!latest||r.phase===latest.phase||
+      (r.phase==='unknown'&&act!==null&&actAt(r.occurred_at)===act);
     const ranked=[...new Map(rows.filter(r=>r.mode==='ranked'&&r.character===character&&validTime(r.occurred_at)&&
-      (phase==='all'||r.phase===phase)&&
-      (!latest||r.phase===latest.phase)&&
-      (act===null||r.phase!=='unknown'||actAt(r.occurred_at)===act)&&r.key)
+      (phase==='all'||r.phase===phase||
+        (r.phase==='unknown'&&/^\d{1,3}$/.test(String(phase))&&actAt(r.occurred_at)===Number(phase)))&&
+      compatible(r)&&r.key)
       .map(r=>[r.key,r])).values()]
       .sort((a,b)=>Date.parse(b.occurred_at)-Date.parse(a.occurred_at)||String(a.key).localeCompare(String(b.key)));
     const cohort=WINDOWS.map(size=>{
@@ -64,7 +67,8 @@
     const sessionAudits=[];
     for(const s of sessions){
       if(s.characters?.length!==1||s.characters[0]!==character)continue;
-      if(phase!=='all'&&s.phase!==phase)continue;
+      if(phase!=='all'&&s.phase!==phase&&
+         !(s.phase==='unknown'&&/^\d{1,3}$/.test(String(phase))&&actAt(s.start)===Number(phase)))continue;
       if(act!==null&&s.phase==='unknown'&&actAt(s.start)!==act)continue;
       const ref=sessionRefs.get(s.key);
       if(!ref)continue;
