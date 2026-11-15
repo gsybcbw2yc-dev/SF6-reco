@@ -71,10 +71,11 @@
     return {a,b,cross:Math.abs(b)>1e-9?CENTER-MR_SCALE*a/b:null,
       probability:mr=>sigmoid(a+b*(mr-CENTER)/MR_SCALE)};
   }
-  function conditions(rows,model){
-    if(rows.length<MIN_N)return {ok:false,reason:'対戦データ100試合未満'};
+  function conditions(rows,model,minimum=MIN_N){
+    const outcomeMin=minimum===50?10:20,sideMin=minimum===50?15:30;
+    if(rows.length<minimum)return {ok:false,reason:'対戦データ'+minimum+'試合未満'};
     const wins=rows.reduce((s,r)=>s+r.y,0);
-    if(wins<20||rows.length-wins<20)return {ok:false,reason:'勝ち・負けそれぞれ20試合未満'};
+    if(wins<outcomeMin||rows.length-wins<outcomeMin)return {ok:false,reason:'勝ち・負けそれぞれ'+outcomeMin+'試合未満'};
     const mr=rows.map(r=>r.opp).sort((a,b)=>a-b);
     const low=percentile(mr,.05),high=percentile(mr,.95);
     if(high-low<100)return {ok:false,reason:'相手MRの分布が狭すぎます'};
@@ -83,7 +84,7 @@
       return {ok:false,reason:'50%到達点が主な観測MR範囲の外です'};
     const left=rows.filter(x=>x.opp<model.cross).length;
     const right=rows.length-left;
-    if(left<30||right<30)return {ok:false,reason:'50%到達点の片側の対戦が30試合未満'};
+    if(left<sideMin||right<sideMin)return {ok:false,reason:'50%到達点の片側の対戦が'+sideMin+'試合未満'};
     return {ok:true,reason:'条件付き推定可能',low,high,left,right};
   }
   function blocks(rows){
@@ -179,6 +180,66 @@
       !result.backtest.improved?'not_validated':'exploratory';
     return result;
   }
+  // Every tenth match (and the latest complete timestamp group). Each point
+  // uses exactly N past matches; ambiguous timestamp cuts are unavailable.
+  function rolling(rows){
+    const windows=[50,100,200],series=Object.fromEntries(windows.map(n=>[n,[]]));
+    const points=[];
+    let last=0;
+    for(let end=1;end<=rows.length;end++){
+      if(end<rows.length&&rows[end-1].t===rows[end].t)continue;
+      if(end-last<10&&end!==rows.length)continue;
+      last=end;
+      const r=rows[end-1];let tieStart=end-1;
+      while(tieStart>0&&rows[tieStart-1].t===r.t)tieStart--;
+      const own=rows.slice(tieStart,end).every(x=>x.own===r.own)?r.own:null;
+      const point={t:r.t,time:r.time,count:end,own};points.push(point);
+      for(const n of windows){
+        let crossing=null,reason='対戦データ'+n+'試合未満';
+        const start=end-n;
+        if(start>=0){
+          if(start>0&&rows[start-1].t===rows[start].t)reason='同時刻の試合が窓の境界をまたぐため算定保留';
+          else{
+            const sample=rows.slice(start,end),model=fit(sample),check=conditions(sample,model,n===50?50:MIN_N);
+            if(check.ok)crossing=model.cross;
+            reason=check.reason;
+          }
+        }
+        series[n].push({...point,crossing,reason});
+      }
+    }
+    return {windows,points,series};
+  }
+  // A matchup is scored strictly out of time against a common MR-only model
+  // learned from earlier sessions of the same ACT, never from its own session.
+  function adjustedMatchups(rows){
+    const sessions=blocks(rows),byChar=new Map();
+    let train=[],tested=0,skipped=0,brier=0,baseBrier=0,unknown=0;
+    for(let si=0;si<sessions.length;si++){
+      const test=sessions[si];
+      let start=Math.max(0,train.length-300);
+      while(start>0&&train[start-1].t===train[start].t)start--;
+      const sample=train.slice(start),model=fit(sample);
+      const check=conditions(sample,model),baseline=rate(sample);
+      for(const r of test){
+        const char=typeof r.opponent==='string'?r.opponent.trim():'';
+        if(!char||/^(unknown|不明)$/i.test(char)){unknown++;continue;}
+        if(!byChar.has(char))byChar.set(char,{character:char,total:0,n:0,wins:0,expectedWins:0,sessions:new Set()});
+        const entry=byChar.get(char);entry.total++;
+        if(!check.ok||r.opp<check.low||r.opp>check.high){skipped++;continue;}
+        const p=model.probability(r.opp);
+        entry.n++;entry.wins+=r.y;entry.expectedWins+=p;entry.sessions.add(si);
+        tested++;brier+=(r.y-p)**2;baseBrier+=(r.y-baseline)**2;
+      }
+      train.push(...test);
+    }
+    const matchups=[...byChar.values()].map(({sessions,...e})=>({...e,sessions:sessions.size,
+      actual:e.n?100*e.wins/e.n:null,expected:e.n?100*e.expectedWins/e.n:null,
+      delta:e.n?100*(e.wins-e.expectedWins)/e.n:null,qualified:e.n>=20&&sessions.size>=3}));
+    matchups.sort((a,b)=>Number(b.qualified)-Number(a.qualified)||(a.delta??Infinity)-(b.delta??Infinity)||a.character.localeCompare(b.character));
+    return {matchups,tested,skipped,unknown,brier:tested?brier/tested:null,baselineBrier:tested?baseBrier/tested:null,
+      validated:tested>=60&&brier<baseBrier};
+  }
   function analyze(rows,{character='AKUMA',actAt=()=>null,selectedAct=null}={}){
     const cleanRows=clean(rows,{character,actAt}),byAct=new Map();
     for(const r of cleanRows){
@@ -206,7 +267,9 @@
       selectedAct:selected?.key??null,actLabel:selected?.label??'公式Act未確認',
       selectedN:selectedRows.length,inferredN:selectedRows.filter(r=>r.inferred).length,
       retrospectiveN:selectedRows.filter(r=>r.origin==='retrospective_inference').length,
-      current,shift,scope:'同一ACTの保存済みランクマッチ／勝敗・対戦前MRが検証可能な試合のみ'};
+      current,shift,rolling:rolling(selectedRows),adjusted:adjustedMatchups(selectedRows),
+      scope:'同一ACTの保存済みランクマッチ／勝敗・対戦前MRが検証可能な試合のみ'};
   }
-  return {CENTER,MIN_N,sigmoid,period,clean,fit,conditions,blocks,interval,backtest,mrBands,evaluate,analyze};
+  return {CENTER,MIN_N,sigmoid,period,clean,fit,conditions,blocks,interval,backtest,mrBands,evaluate,rolling,adjustedMatchups,analyze};
 });
+

@@ -532,7 +532,32 @@ footer{border-top:1px solid var(--app-border);color:var(--app-faint);font-size:1
 }
 
 /* Four analysis categories fit on iPhone without squeezed labels. */
+.fairmr-extra{margin-top:16px}
+.fairmr-extra-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.fairmr-extra .kicker{font-size:10px;color:#b7a6dc;display:block;margin-bottom:5px}
+.fairmr-window{display:flex;align-items:center;gap:8px;color:#a9b6ca;font-size:11px;font-weight:600}
+.fairmr-window select{background:#171e2d;color:#e5eaf5;border:1px solid #374158;border-radius:8px;padding:8px;max-width:100%;font-size:12px}
+.fairmr-rolling-summary{font-size:17px;font-weight:720;color:#e4dafa;margin:14px 0 6px;font-variant-numeric:tabular-nums}
+.fairmr-chart{width:100%;max-width:820px;margin:0 auto;min-width:0}
+.fairmr-chart svg{display:block;width:100%;height:auto;overflow:visible}
+.fairmr-gridline{stroke:#364157;stroke-width:1}
+.fairmr-axis{fill:#a9b6ca;font-size:16px;font-variant-numeric:tabular-nums}
+.fairmr-line-real{stroke:#6db8df;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.fairmr-line-est{stroke:#c7aafb;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.fairmr-chart-dot.fairmr-line-real{fill:#6db8df;stroke:none}
+.fairmr-chart-dot.fairmr-line-est{fill:#c7aafb;stroke:none}
+.fairmr-legend{display:flex;gap:16px;flex-wrap:wrap;font-size:11px;color:#c6cfdf;margin:5px 0 10px}
+.fairmr-legend span::before{content:'';display:inline-block;width:15px;height:3px;border-radius:3px;vertical-align:middle;margin-right:6px}
+.fairmr-legend-real::before{background:#6db8df}.fairmr-legend-est::before{background:#c7aafb}
+.fairmr-table-scroll{overflow-x:auto;margin:12px 0;max-width:100%}
+.fairmr-matchups{width:100%;border-collapse:collapse;text-align:right;font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.fairmr-matchups th,.fairmr-matchups td{padding:9px 7px;border-bottom:1px solid #30394b}
+.fairmr-matchups th:first-child{text-align:left}.fairmr-matchups thead{color:#a9b6ca;font-size:11px}
+.fairmr-matchups tbody th{font-weight:600;color:#e1e5ef}.fairmr-matchups th small{font-size:10px;color:#a6b0c3;font-weight:400;margin-left:5px}
+.fairmr-unqualified td{color:#9caac0}.fairmr-positive{color:#71deb7;font-weight:700}.fairmr-negative{color:#ff9c9b;font-weight:700}
+@media(max-width:530px){.fairmr-matchups th,.fairmr-matchups td{padding:8px 5px;font-size:11px}.fairmr-matchups th small{display:block;margin-left:0}.fairmr-rolling-summary{font-size:15px}}
 @media(max-width:520px){
   .analysis-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));max-width:100%}
   .analysis-nav button{width:100%;min-height:41px;padding:9px 7px;white-space:nowrap}
 }
+

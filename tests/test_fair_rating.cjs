@@ -77,4 +77,71 @@ assert.ok(bt.training+bt.tested<=640);
 assert.ok(bt.training>=200);
 const ci=F.interval(F.clean(rows,opts));
 assert.deepEqual(ci.range,F.interval(F.clean(rows,opts)).range);
+// Rolling estimates use only the exact preceding window, with no future
+// matches or crossing between ACTs. The newest point always gets recomputed.
+const clean=F.clean(rows,opts);
+const roll=report.rolling;
+assert.deepEqual(roll.windows,[50,100,200]);
+assert.equal(roll.points.at(-1).count,640);
+assert.ok(roll.series[100].some(p=>p.crossing!==null));
+for(const n of roll.windows){
+  assert.ok(roll.series[n].filter(p=>p.count<n).every(p=>p.crossing===null));
+  const p=roll.series[n].at(-1),sample=clean.slice(-n),m=F.fit(sample),c=F.conditions(sample,m,n===50?50:100);
+  assert.equal(p.crossing,c.ok?m.cross:null);
+  const prefix=F.rolling(clean.slice(0,400));
+  assert.deepEqual(prefix.series[n],roll.series[n].filter(p=>p.count<=400));
+}
+assert.ok(separated.rolling.series[50].every(p=>p.crossing===null));
+assert.equal(explicit.rolling.points.at(-1).count,450);
+const tied=clean.slice(0,110).map((r,i)=>i===10?{...r,t:clean[9].t}:r);
+assert.match(F.rolling(tied).series[100].at(-1).reason,/同時刻/);
+assert.ok(F.rolling(F.clean(opposite,opts)).series[100].every(p=>p.crossing===null));
+// The same strength-adjustment model, trained only on earlier sessions,
+// exposes a deliberately stronger/weaker opponent-character effect.
+const mixed=[];
+for(let si=0;si<20;si++){
+  for(let i=0;i<40;i++){
+    const opp=1200+Math.floor(random()*450),char=i%2?'RYU':'KEN';
+    const p=F.sigmoid(-.8*(opp-1400)/100+(char==='RYU'?.8:-.8));
+    mixed.push({key:'mixed-'+si+'-'+i,t:Date.UTC(2026,10,1+si,0,i),opp,own:1400,opponent:char,y:Number(random()<p)});
+  }
+}
+const scored=F.adjustedMatchups(mixed),ryu=scored.matchups.find(x=>x.character==='RYU'),ken=scored.matchups.find(x=>x.character==='KEN');
+assert.ok(ryu.qualified&&ken.qualified&&ryu.delta>0&&ken.delta<0);
+assert.ok(scored.tested+scored.skipped===mixed.length);
+assert.ok(scored.tested<mixed.length-100);
+assert.equal(F.adjustedMatchups(mixed.slice(0,40)).tested,0);
+const first=F.adjustedMatchups(mixed.slice(0,400));
+const changed=F.adjustedMatchups(mixed.slice(0,400).map((r,i)=>i<360?r:{...r,y:1-r.y}));
+assert.equal(first.tested,changed.tested);
+for(const m of first.matchups){const other=changed.matchups.find(x=>x.character===m.character);assert.equal(m.expected,other.expected);}
+assert.equal(F.adjustedMatchups(mixed.map(r=>({...r,opponent:'unknown'}))).tested,0);
+// UI contract: required IDs exist in HTML, event handlers render both views,
+// changing the window redraws the chart without changing the ACT/character.
+const html=require('node:fs').readFileSync(require('node:path').join(__dirname,'../web/index.html'),'utf8');
+class FakeNode{
+  constructor(tag){this.tagName=tag;this.children=[];this.options=[];this.style={};this.attributes={};this.value='';this.textContent='';}
+  append(...children){this.children.push(...children);}
+  add(option){this.options.push(option);}
+  replaceChildren(){this.children=[];}
+  setAttribute(k,v){this.attributes[k]=v;}
+}
+const ids=new Map([...html.matchAll(/id="([^"]+)"/g)].map(m=>[m[1],new FakeNode('id')]));
+global.document={getElementById:id=>ids.get(id),createElement:tag=>new FakeNode(tag),createElementNS:(_,tag)=>new FakeNode(tag)};
+global.Option=class{constructor(label,value){this.label=label;this.value=value;}};
+global.SF6PhaseConfig={assignedAct:()=>14,version:()=>14};
+ids.get('fair-window').value='100';
+require('../web/fair-rating-ui.js');
+global.SF6FairRatingUI.render(rows);
+assert.equal(ids.get('fair-character').value,'AKUMA');
+assert.equal(ids.get('fair-act').value,'act:14');
+assert.equal(ids.get('fair-rolling-chart').children[0].tagName,'svg');
+assert.ok(ids.get('fair-adjusted-body').children.length);
+ids.get('fair-window').value='200';ids.get('fair-window').onchange();
+assert.match(ids.get('fair-rolling-chart').children[0].attributes['aria-label'],/200試合/);
+global.SF6FairRatingUI.render([]);
+assert.match(ids.get('fair-rolling-summary').textContent,/対象データなし/);
+assert.match(ids.get('fair-adjusted-body').children[0].children[0].textContent,/対象/);
 console.log('Equal-win MR: ACT separation, session bootstrap, leakage-free backtest and fail-closed modeling passed');
+console.log('Rolling MR and adjusted matchups: exact windows, timestamp ties, ACT isolation, past-only scoring and sparse-data guards passed');
+

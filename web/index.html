@@ -1,4 +1,4 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="ストリートファイター6のMR・LP観測履歴"><meta name="theme-color" content="#0a0e19"><title>SF6 | RATING ARCHIVE</title><link rel="stylesheet" href="style.css?v=20261110-5"><link rel="stylesheet" href="design-system.css?v=20261115-4"></head><body><main class="shell"><header class="app-header"><div class="brand"><span class="mark" aria-hidden="true">Ⅵ</span><div><strong>RATING ARCHIVE</strong><small>STREET FIGHTER 6 · PERSONAL ANALYTICS</small></div></div><div class="live" aria-live="polite"><span class="dot"></span><span id="health">接続確認中</span></div></header>
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="ストリートファイター6のMR・LP観測履歴"><meta name="theme-color" content="#0a0e19"><title>SF6 | RATING ARCHIVE</title><link rel="stylesheet" href="style.css?v=20261110-5"><link rel="stylesheet" href="design-system.css?v=20261115-5"></head><body><main class="shell"><header class="app-header"><div class="brand"><span class="mark" aria-hidden="true">Ⅵ</span><div><strong>RATING ARCHIVE</strong><small>STREET FIGHTER 6 · PERSONAL ANALYTICS</small></div></div><div class="live" aria-live="polite"><span class="dot"></span><span id="health">接続確認中</span></div></header>
 <nav class="primary-nav" role="tablist" aria-label="画面切り替え">
 <button type="button" data-nav-view="overview" role="tab" aria-controls="view-overview" aria-selected="true" class="active">概要</button>
 <button type="button" data-nav-view="matches" role="tab" aria-controls="view-matches" aria-selected="false">対戦履歴</button>
@@ -66,6 +66,22 @@
    <p id="fair-trend">成長傾向を確認中…</p>
   </section>
  </div>
+ <section class="fairmr-section fairmr-extra" aria-label="対戦互角MRの時系列推移">
+  <div class="fairmr-extra-heading"><div><span class="kicker">ROLLING EQUAL-WIN MR</span><h4>対戦互角MRの推移</h4></div>
+    <label class="fairmr-window">集計窓<select id="fair-window"><option value="50">直近50試合（参考）</option><option value="100" selected>直近100試合</option><option value="200">直近200試合</option></select></label></div>
+  <p>同じACT内の直近N試合から、約10試合ごとに互角MRを推定します。条件未達の区間は線をつなぎません。</p>
+  <div id="fair-rolling-summary" class="fairmr-rolling-summary"></div>
+  <div id="fair-rolling-chart" class="fairmr-chart"></div>
+  <div class="fairmr-legend"><span class="fairmr-legend-real">実測の対戦前MR</span><span class="fairmr-legend-est">推定互角MR</span></div>
+  <p id="fair-rolling-note"></p>
+ </section>
+ <section class="fairmr-section fairmr-extra" aria-label="相手MR補正キャラ別戦績">
+  <span class="kicker">STRENGTH-ADJUSTED MATCHUPS</span><h4>相手の強さを補正したキャラ別戦績</h4>
+  <p>相手のMRから予測した勝率と、実際の勝率の差を表示します。マイナスは期待より苦戦、プラスは期待より好成績です。</p>
+  <p id="fair-adjusted-status"></p>
+  <div class="fairmr-table-scroll"><table class="fairmr-matchups"><thead><tr><th scope="col">相手キャラ</th><th scope="col">比較試合</th><th scope="col">実際</th><th scope="col">期待</th><th scope="col">差 (pt)</th></tr></thead><tbody id="fair-adjusted-body"></tbody></table></div>
+  <p>同一ACTの過去セッション（直近最大約300試合、最低100試合）の全キャラ戦で相手MRモデルを学習し、次のセッションを採点。観測MR範囲外は除外します。20試合・3セッション未満は参考のみ。差はキャラ固有の有利不利の証明ではありません。</p>
+ </section>
  <details class="analysis-guide fairmr-details"><summary>計算方法・不確実性・注意事項</summary>
   <p id="fair-limits">ランクマッチの勝敗と双方の対戦前MRのみを利用します。</p>
  </details>
@@ -106,4 +122,5 @@
 <article class="panel activity"><span class="kicker">SYSTEM / DATA</span><h2>取得状況とデータ</h2><p id="error">取得エラーはありません。</p><p id="freshness">取得状況を確認しています。</p><p id="coverage">取得履歴を確認しています。</p><p id="cadence">予定間隔と実際の取得間隔を確認しています。</p><p id="longest-gap"></p><p id="token-expiry"></p><p id="phase-note"></p><p>最終画面確認：<span id="last-check">未確認</span></p><div class="actions"><button id="refresh" type="button">今すぐ更新 ↻</button><button id="csv">CSV を保存 ↗</button><button id="json">JSON を保存 ↗</button></div><p id="refresh-state" aria-live="polite">画面データを確認しています。</p><small>MR・LPグラフは公式PLAYの定期観測値を表示します。バトルログの試合前値は別途保存し、対戦履歴・分析に利用します。</small><details><summary>取得エラー履歴</summary><ul id="errors"></ul></details></article>
 </section>
 <footer>RATING ARCHIVE <span>Unofficial personal tracker · Data from Buckler's Boot Camp</span></footer>
-</main><script src="time-analysis.js?v=20261109-3"></script><script src="time-analysis-ui.js?v=20261111-3"></script><script src="match-analysis.js?v=20261111-1"></script><script src="time-performance.js?v=20261110-1"></script><script src="deep-analysis.js?v=20261110-1"></script><script src="phase-config.js?v=20261115-unified1"></script><script src="match-deltas.js?v=20261115-actauto1"></script><script src="match-goal-forecast.js?v=20261115-actauto2"></script><script src="master-promotion-forecast.js?v=20261115-actauto3"></script><script src="master-promotion-ui.js?v=20261113-1"></script><script src="match-goal-ui.js?v=20261115-unified1"></script><script src="fair-rating.js?v=20261115-unified1"></script><script src="fair-rating-ui.js?v=20261115-unified1"></script><script src="matches-ui.js?v=20261115-unified3"></script><script src="chart-trends.js?v=20261111-1"></script><script src="rating-evidence.js?v=20261115-1"></script><script src="app.js?v=20261115-unified1"></script><script src="view-navigation.js?v=20261115-1"></script></body></html>
+</main><script src="time-analysis.js?v=20261109-3"></script><script src="time-analysis-ui.js?v=20261111-3"></script><script src="match-analysis.js?v=20261111-1"></script><script src="time-performance.js?v=20261110-1"></script><script src="deep-analysis.js?v=20261110-1"></script><script src="phase-config.js?v=20261115-unified1"></script><script src="match-deltas.js?v=20261115-actauto1"></script><script src="match-goal-forecast.js?v=20261115-actauto2"></script><script src="master-promotion-forecast.js?v=20261115-actauto3"></script><script src="master-promotion-ui.js?v=20261113-1"></script><script src="match-goal-ui.js?v=20261115-unified1"></script><script src="fair-rating.js?v=20261115-rolling1"></script><script src="fair-rating-ui.js?v=20261115-rolling1"></script><script src="matches-ui.js?v=20261115-unified3"></script><script src="chart-trends.js?v=20261111-1"></script><script src="rating-evidence.js?v=20261115-1"></script><script src="app.js?v=20261115-unified1"></script><script src="view-navigation.js?v=20261115-1"></script></body></html>
+

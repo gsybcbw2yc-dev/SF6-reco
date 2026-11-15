@@ -23,6 +23,68 @@
     }
     el.value=values.includes(selected)?selected:values[0]||'';
   }
+  const signed=n=>(n>0?'+':'')+n.toFixed(1);
+  const date=t=>new Date(t).toLocaleDateString('ja-JP',{timeZone:'Asia/Tokyo',month:'numeric',day:'numeric'});
+  function drawRolling(result){
+    const n=Number($('fair-window').value)||100,points=result.series[n]||[],latest=points.at(-1),
+      valid=points.filter(p=>p.crossing!==null),host=$('fair-rolling-chart');
+    host.replaceChildren();
+    $('fair-rolling-summary').textContent=latest?
+      '最新 '+(latest.crossing===null?'算定保留':fmt(latest.crossing)+' MR')+
+      ' ／ 実測 '+(latest.own===null?'不明':fmt(latest.own)+' MR'):
+      '対象データなし';
+    $('fair-rolling-note').textContent=(latest?'最新の計算：'+latest.reason+'。':'')+
+      ' 推定可能 '+valid.length+' / '+points.length+'地点。'+
+      (n===50?'50試合窓は変動が大きいため探索用です。':'')+
+      ' 実測は各地点の最後の試合の対戦前MR。重複する窓は独立ではなく、成長の証明ではありません。';
+    const vals=points.flatMap(p=>[p.own,p.crossing]).filter(Number.isFinite);
+    if(!points.length||!vals.length){host.append(node('p','表示できるMRデータがありません。'));return;}
+    const svg=(tag,attrs={},content)=>{const e=document.createElementNS('http://www.w3.org/2000/svg',tag);
+      Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,String(v)));if(content!==undefined)e.textContent=content;return e;};
+    const chart=svg('svg',{viewBox:'0 0 620 260',role:'img','aria-label':'実測対戦前MRと直近'+n+'試合による推定互角MRの推移'});
+    const min=Math.floor(vals.reduce((a,b)=>Math.min(a,b),Infinity)/50)*50-50,
+      max=Math.ceil(vals.reduce((a,b)=>Math.max(a,b),-Infinity)/50)*50+50;
+    const left=63,right=601,top=15,bottom=220,first=points[0].t,last=latest.t;
+    const x=t=>first===last?(left+right)/2:left+(t-first)/(last-first)*(right-left),
+      y=v=>bottom-(v-min)/(max-min)*(bottom-top);
+    for(let i=0;i<=4;i++){
+      const v=min+(max-min)*i/4,yy=y(v);
+      chart.append(svg('line',{x1:left,x2:right,y1:yy,y2:yy,class:'fairmr-gridline'}),
+        svg('text',{x:left-8,y:yy+5,'text-anchor':'end',class:'fairmr-axis'},fmt(v)));
+    }
+    const ticks=first===last?[first]:[first,(first+last)/2,last];
+    for(const t of ticks)chart.append(svg('text',{x:x(t),y:245,'text-anchor':t===first&&first!==last?'start':t===last&&first!==last?'end':'middle',class:'fairmr-axis'},date(t)));
+    for(const [field,cls] of [['own','fairmr-line-real'],['crossing','fairmr-line-est']]){
+      let path='',prev=false;
+      for(const p of points){
+        if(!Number.isFinite(p[field])){prev=false;continue;}
+        path+=(prev?'L':'M')+x(p.t)+' '+y(p[field])+' ';prev=true;
+      }
+      chart.append(svg('path',{d:path,class:cls}));
+      for(const p of points){if(!Number.isFinite(p[field]))continue;
+        const dot=svg('circle',{cx:x(p.t),cy:y(p[field]),r:2.2,class:cls+' fairmr-chart-dot'});
+        dot.append(svg('title',{},date(p.t)+' · '+p.count+'試合目 · '+fmt(p[field])+' MR'));chart.append(dot);
+      }
+    }
+    host.append(chart);
+  }
+  function drawAdjusted(result){
+    $('fair-adjusted-status').textContent='比較対象 '+result.tested+'試合 ／ 条件外 '+result.skipped+'試合'+
+      (result.unknown?' ／ 相手キャラ不明 '+result.unknown+'試合':'')+'。'+
+      (result.tested>=60?' Brier（低いほど良い）：相手MR '+dec(result.brier)+' ／ 過去勝率 '+dec(result.baselineBrier)+'。'+
+        (result.validated?'今回の比較試合で改善。':'改善は未確認。補正結果は参考のみ。'):' 予測精度の検証には比較60試合以上が必要です。');
+    const body=$('fair-adjusted-body');body.replaceChildren();
+    for(const r of result.matchups){
+      const row=node('tr');if(!r.qualified)row.className='fairmr-unqualified';
+      const name=node('th',r.character);name.scope='row';
+      if(!r.qualified||!result.validated)name.append(node('small','参考'));
+      const count=node('td',r.n+' / '+r.total);count.title=r.sessions+'セッション';
+      row.append(name,count,node('td',r.actual===null?'—':pct(r.actual)),node('td',r.expected===null?'—':pct(r.expected)),
+        node('td',r.delta===null?'—':signed(r.delta),r.delta!==null&&r.qualified&&result.validated?(r.delta>0?'fairmr-positive':r.delta<0?'fairmr-negative':''):''));
+      body.append(row);
+    }
+    if(!result.matchups.length){const row=node('tr'),cell=node('td','対象の対戦記録がありません。');cell.colSpan=5;row.append(cell);body.append(row);}
+  }
   function show(){
     const chars=[...new Set(snapshot.filter(r=>r&&r.mode==='ranked'&&
       typeof r.mr_before==='number'&&r.mr_before>0).map(r=>r.character))].sort();
@@ -46,6 +108,8 @@
       (snapshot.at(-1)?.key||'')+':'+(snapshot[0]?.key||'');
     if(key!==cacheKey){cached=SF6FairRating.analyze(snapshot,{character,actAt,selectedAct});cacheKey=key;}
     const report=cached;
+    drawRolling(report.rolling);
+    drawAdjusted(report.adjusted);
     const c=report.current;
     $('fair-phase-note').textContent=report.actLabel+
       ' · 検証可能 '+report.selectedN+'試合 · 公式PLAYのActで統合集計。'+
@@ -116,9 +180,11 @@
     if(!bound){
       $('fair-character').onchange=()=>{cacheKey='';$('fair-act').value='';show();};
       $('fair-act').onchange=show;
+      $('fair-window').onchange=()=>{if(cached)drawRolling(cached.rolling);};
       bound=true;
     }
     show();
   }
   root.SF6FairRatingUI={render};
 })(typeof globalThis!=='undefined'?globalThis:this);
+
