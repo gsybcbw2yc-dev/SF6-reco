@@ -11,6 +11,38 @@
   const MAX_AGE_MS=3*60*60*1000,MAX_GAMES=10000,MIN_COVERAGE=.7;
   const finite=n=>typeof n==='number'&&Number.isFinite(n);
   const validTime=x=>typeof x==='string'&&Number.isFinite(Date.parse(x));
+  const HORIZONS=[100,200,500],TRIALS=2000;
+  function simulate({rows,deltas,current,stale,targets=GOALS,act,observedAt}){
+    const result={horizons:HORIZONS,trials:TRIALS,known:0,blocks:0,covered:0,targets:targets.map(target=>({target,probabilities:HORIZONS.map(()=>finite(current)&&current>=target?1:null)})),reason:''};
+    if(!finite(current)||current<=0||stale||!Number.isInteger(act)){result.reason='現在MR・公式Actの更新待ち';return result;}
+    const recent=rows.slice(0,100).reverse();
+    const known=recent.map(r=>{const d=deltas.get(r.key);return d&&['verified','inferred'].includes(d.basis)&&finite(d.delta)?d.delta:null;});
+    result.known=known.filter(finite).length;
+    if(recent.length<100||result.known<70){result.reason='直近100試合・MR差分70件以上が必要';return result;}
+    if(Date.parse(recent.at(-1).occurred_at)>Date.parse(observedAt)){result.reason='最新試合後のMR定期観測待ち';return result;}
+    // Moving blocks of five observed consecutive games retain short-term dependencies.
+    const blocks=[],covered=new Set();
+    for(let i=0;i+5<=recent.length;i++){
+      const slice=known.slice(i,i+5);if(!slice.every(finite))continue;
+      const unique=recent.slice(i,i+5).every((r,j)=>{const at=Date.parse(r.occurred_at),prev=recent[i+j-1],next=recent[i+j+1];
+        return (!prev||Date.parse(prev.occurred_at)<at)&&(!next||Date.parse(next.occurred_at)>at)&&(!j||at-Date.parse(prev.occurred_at)<=600000);});
+      if(!unique)continue;
+      blocks.push(slice);for(let j=0;j<5;j++)covered.add(i+j);
+    }
+    result.blocks=blocks.length;result.covered=covered.size;
+    if(blocks.length<10||covered.size<50){result.reason='連続5試合のまとまりが不足';return result;}
+    let state=20261115;const rand=()=>{state=(Math.imul(state,1664525)+1013904223)>>>0;return state/4294967296;};
+    const counts=targets.map(()=>HORIZONS.map(()=>0));
+    for(let trial=0;trial<TRIALS;trial++){
+      let mr=current,max=current;
+      for(let i=0;i<500;){const block=blocks[Math.floor(rand()*blocks.length)];for(const delta of block){
+        mr+=delta;max=Math.max(max,mr);i++;
+        const h=HORIZONS.indexOf(i);if(h>=0)targets.forEach((target,t)=>{if(max>=target)counts[t][h]++;});
+      }}
+    }
+    result.targets=targets.map((target,i)=>({target,probabilities:counts[i].map(n=>n/TRIALS)}));
+    result.reason='ready';return result;
+  }
   function renderCount(value){
     if(value===0)return '達成済み';
     return Number.isInteger(value)?`約${value.toLocaleString('ja-JP')}試合`:'算定不可';
@@ -95,8 +127,13 @@
       fullyExplained:sessionAudits.filter(s=>s.fullyExplained).length,
       sessions:sessionAudits.slice(0,6)
     };
+    const sameAct=[...new Map(rows.filter(r=>r.key&&r.mode==='ranked'&&r.character===character&&validTime(r.occurred_at)&&Number.isInteger(act)&&
+      (/^\d{1,3}$/.test(String(r.phase))?Number(r.phase)===act:r.phase==='unknown'&&actAt(r.occurred_at)===act)&&Date.parse(r.occurred_at)<=now)
+      .map(r=>[r.key,r])).values()].sort((a,b)=>Date.parse(b.occurred_at)-Date.parse(a.occurred_at)||String(a.key).localeCompare(String(b.key)));
+    const simulation=simulate({rows:sameAct,deltas,current,stale,targets,act,observedAt});
     return {character,phase,act,current,observedAt,stale,storedGames:ranked.length,
-      cohort,targets,audit,method:'next_ranked_pre_match_mr_delta',minCoverage:MIN_COVERAGE};
+      cohort,targets,audit,simulation,method:'next_ranked_pre_match_mr_delta',minCoverage:MIN_COVERAGE};
   }
-  return {analyze,renderCount,WINDOWS,GOALS,MIN_COVERAGE,MAX_AGE_MS};
+  return {analyze,simulate,renderCount,WINDOWS,GOALS,MIN_COVERAGE,MAX_AGE_MS};
 });
+

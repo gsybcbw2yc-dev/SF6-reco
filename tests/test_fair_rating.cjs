@@ -1,5 +1,6 @@
 const assert=require('node:assert/strict');
 const F=require('../web/fair-rating.js');
+const T=require('../web/training-insights.js');
 const seed=1234567;let state=seed;
 const random=()=>{state=(Math.imul(state,1664525)+1013904223)>>>0;return state/4294967296;};
 const rows=[];
@@ -116,6 +117,18 @@ const changed=F.adjustedMatchups(mixed.slice(0,400).map((r,i)=>i<360?r:{...r,y:1
 assert.equal(first.tested,changed.tested);
 for(const m of first.matchups){const other=changed.matchups.find(x=>x.character===m.character);assert.equal(m.expected,other.expected);}
 assert.equal(F.adjustedMatchups(mixed.map(r=>({...r,opponent:'unknown'}))).tested,0);
+const trainDeltas=new Map(mixed.map(r=>[r.key,{basis:'inferred',delta:r.y?8:-8}]));
+const priority=T.priorities({...scored,validated:true},mixed,trainDeltas);
+assert.ok(priority.rows.some(r=>r.character==='KEN'&&r.mrGain>0));
+assert.ok(!priority.rows.some(r=>r.character==='RYU'));
+assert.equal(T.priorities({...scored,validated:false},mixed,trainDeltas).rows.length,0);
+const rematchRows=['loss','win','loss','win','win'].map((outcome,i)=>({key:'r'+i,occurred_at:new Date(Date.UTC(2026,10,1,0,i*2)).toISOString(),mode:'ranked',character:'AKUMA',opponent_character:'RYU',own_control:'classic',opponent_control:'classic',mr_before:1400,outcome,rematch_edge:i?{previous:'r'+(i-1),same:i!==1&&i!==3}:undefined}));
+const re=T.rematches(rematchRows,rematchRows,()=>14);
+assert.equal(re.counters.first.n,2);assert.equal(re.counters.second.n,2);assert.equal(re.counters.twoWin.w,1);assert.equal(re.counters.twoLoss.w,0);
+assert.equal(T.rematches(rematchRows,rematchRows.slice(0,1),()=>14).linked,0);
+assert.equal(T.rematches(rematchRows,rematchRows,()=>null).known,0);
+const b=T.matchupMR(rematchRows,new Map([['r0',{basis:'inferred',delta:-8}],['r1',{basis:'verified',delta:9}]]));
+assert.deepEqual(b.get(T.key('AKUMA','RYU')),{total:5,known:2,verified:1,net:1,average:.5,coverage:.4});
 // UI contract: required IDs exist in HTML, event handlers render both views,
 // changing the window redraws the chart without changing the ACT/character.
 const html=require('node:fs').readFileSync(require('node:path').join(__dirname,'../web/index.html'),'utf8');
@@ -130,6 +143,8 @@ const ids=new Map([...html.matchAll(/id="([^"]+)"/g)].map(m=>[m[1],new FakeNode(
 global.document={getElementById:id=>ids.get(id),createElement:tag=>new FakeNode(tag),createElementNS:(_,tag)=>new FakeNode(tag)};
 global.Option=class{constructor(label,value){this.label=label;this.value=value;}};
 global.SF6PhaseConfig={assignedAct:()=>14,version:()=>14};
+require('../web/match-deltas.js');
+require('../web/training-insights.js');
 ids.get('fair-window').value='100';
 require('../web/fair-rating-ui.js');
 global.SF6FairRatingUI.render(rows);

@@ -33,7 +33,7 @@
           b.classList.toggle('active', b===button);
           b.setAttribute('aria-selected', String(b===button));
         });
-        for (const id of ['streak','rating','position','recent'])
+        for (const id of ['streak','rating','position','recent','rematch'])
           $('deep-panel-'+id).hidden = id !== button.dataset.deepTab;
       });
     }
@@ -258,7 +258,14 @@
       }
       if(!sessions.length)line(sessionList,'日時のある試合が集まると表示します。');
       $('sessions-more').hidden=sessions.length<=this.sessionLimit;
-      const matchups=SF6Matches.matchups(rows,$('matchup-order').value),matchupList=$('matchup-list');matchupList.replaceChildren();
+      const order=$('matchup-order').value,matchups=SF6Matches.matchups(rows,order),matchupList=$('matchup-list');matchupList.replaceChildren();
+      const balances=SF6TrainingInsights.matchupMR(rows,mrDeltas);
+      const balanceFor=m=>balances.get(SF6TrainingInsights.key(m.character,m.opponent));
+      if(order==='mr-loss'||order==='mr-gain')matchups.sort((a,b)=>{
+        const x=balanceFor(a),y=balanceFor(b),xOK=x&&x.known>=5&&x.coverage>=.7,yOK=y&&y.known>=5&&y.coverage>=.7;
+        if(Boolean(xOK)!==Boolean(yOK))return xOK?-1:1;
+        return xOK?(order==='mr-loss'?x.net-y.net:y.net-x.net)||b.games-a.games:b.games-a.games;
+      });
       for(const m of matchups) {
         const card=element('article',undefined,'battle-card');
         const heading=element('div',undefined,'battle-heading');
@@ -276,15 +283,31 @@
           bar.append(segment);
         }
         card.append(bar);
+        const balance=balanceFor(m);
+        if(balance){
+          const label=balance.known?`${balance.verified===balance.total?'確定':'記録上の参考'}MR収支 ${signed(balance.net)} MR`:'MR収支：算定不可';
+          const box=element('div',undefined,'training-balance');
+          box.append(element('strong',label,balance.known?(balance.net<0?'training-negative':balance.net>0?'training-positive':''):''),
+            element('small',`算定 ${balance.known}/${balance.total}試合 · ${balance.verified}件確定${balance.average!==null?' · 平均 '+signed(balance.average)+' MR/試合':''}${balance.coverage<.7||balance.known<5?' · 参考・少数':''}`));
+          card.append(box);
+        }
         if(m.smallSample)line(card,'5試合未満の参考値。相性の良し悪しは判断できません。','sample-warning');
         matchupList.append(card);
       }
       if(!matchups.length)line(matchupList,'この条件の組合せはありません。');
       this.renderTimePerformance(rows);
       this.renderDeep(rows);
+      const re=SF6TrainingInsights.rematches(this.rows,rows,r=>SF6PhaseConfig.phaseKey(r.phase,r.occurred_at));
+      $('deep-rematch-note').textContent=`照合済み ${re.known}/${re.total}試合 · 確認できた再戦 ${re.linked}件。相手IDは取得時にのみ照合し、保存しません。初戦を確認できない連戦、時刻の曖昧な試合、フィルタ外の試合は該当指標から除外。`;
+      const rematchList=$('deep-rematch-list');rematchList.replaceChildren();
+      for(const [k,label] of [['first','初戦勝率'],['second','2戦目勝率'],['third','3戦目勝率'],['afterWin','初戦勝利後の再戦勝率'],['afterLoss','初戦敗北後の再戦勝率'],['twoWin','初戦から2連勝'],['twoLoss','初戦から2連敗']]){
+        const m=re.counters[k],card=element('div',undefined,'training-metric');
+        card.append(element('span',label),element('strong',m.n?percent(100*m.w/m.n):'—'),element('small',`${m.w}/${m.n}件${m.n<20?' · 参考':''}`));rematchList.append(card);
+      }
       SF6MatchGoalUI.render(this.rows,this.observations);
       SF6FairRatingUI.render(this.rows);
     }
   }
   window.matchDashboard=new Dashboard();
 })();
+

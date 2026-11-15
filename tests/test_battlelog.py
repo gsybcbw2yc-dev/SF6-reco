@@ -62,6 +62,32 @@ class BattleLogTests(unittest.TestCase):
         with self.assertRaises(ValueError): b.normalize(r, PLAYER, AT)
         with self.assertRaises(ValueError): b.match_key(None)
 
+    def test_rematch_edges_backfill_without_identity(self):
+        first, second, third = replay('EDGE0001'), replay('EDGE0002'), replay('EDGE0003', 2)
+        first['player2_info']['player']['short_id'] = 1111111111
+        second['uploaded_at'] += 120
+        third['uploaded_at'] += 240
+        with tempfile.TemporaryDirectory() as tmp, patch.dict(os.environ, {'MATCH_MAX_PAGES': '1'}):
+            folder = Path(tmp) / 'matches'
+            def fetch(*_): return {'total_page': 1, 'replay_list': [third, second, first]}
+            rows = [third, second, first]
+            event = b.capture(raw(rows), PLAYER, 'TEST_SECRET', folder, AT, fetch, lambda _: None)
+            self.assertEqual(event['added'], 3)
+            index = json.loads((folder / 'index.json').read_text())
+            records = json.loads((folder / index['months'][0]['path']).read_text())['matches']
+            self.assertNotIn('rematch_edge', records[0])
+            self.assertEqual(records[1]['rematch_edge'], {'previous': records[0]['key'], 'same': False})
+            self.assertEqual(records[2]['rematch_edge'], {'previous': records[1]['key'], 'same': True})
+            self.assertNotIn('9999999999', json.dumps(records))
+            self.assertNotIn('1111111111', json.dumps(records))
+            # A prior archive lacking links is enriched when records reappear.
+            for row in records: row.pop('rematch_edge', None)
+            b.write_json(folder / index['months'][0]['path'], {'schema': 1, 'matches': records})
+            event = b.capture(raw(rows), PLAYER, 'TEST_SECRET', folder, AT, fetch, lambda _: None)
+            self.assertEqual(event['added'], 0)
+            enriched = json.loads((folder / index['months'][0]['path']).read_text())['matches']
+            self.assertTrue(enriched[2]['rematch_edge']['same'])
+
     def test_pagination_archive_dedupe_and_failure_preserves(self):
         calls = []
         def fetch(build, locale, player, page, cookie):
@@ -163,3 +189,4 @@ class BattleLogTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+

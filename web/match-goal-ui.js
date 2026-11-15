@@ -13,6 +13,8 @@
     if(!character){
       $('goal-forecast-current').textContent='キャラクターを選択';
       $('goal-forecast-quality').textContent='概要または対戦履歴で対象キャラを選んでください。';
+      $('goal-probability-status').textContent='キャラクターを選択してください。';
+      for(const t of [1500,1600])for(const h of [100,200,500])$('goal-prob-'+t+'-'+h).textContent='—';
       return;
     }
     // The mode follows the *character's* recorded promotion status.
@@ -34,6 +36,14 @@
     });
     $('goal-forecast-current').textContent=report.current===null?
       '現在MR：未取得':`現在 MR ${num(report.current)} · ${character}`;
+    const sim=report.simulation;
+    $('goal-probability-status').textContent=sim.reason==='ready'?
+      `直近100試合中、差分${sim.known}件・連続5試合のブロック${sim.blocks}個（${sim.covered}試合）、${num(sim.trials)}回試行。`:
+      '算定条件：'+sim.reason+'。';
+    for(const t of sim.targets)for(let i=0;i<sim.horizons.length;i++){
+      const p=t.probabilities[i],cell=$('goal-prob-'+t.target+'-'+sim.horizons[i]);
+      cell.textContent=report.current!==null&&report.current>=t.target?'達成済み':p===null?'—':p===0?'0%（試行内）':p===1?'100%（試行内）':(p*100).toFixed(1)+'%';
+    }
     for(const target of report.targets){
       const field='goal-'+target;
       const remaining=report.current===null?null:Math.max(0,target-report.current);
@@ -84,3 +94,4 @@
   }
   root.SF6MatchGoalUI={render};
 })(typeof globalThis!=='undefined'?globalThis:this);
+

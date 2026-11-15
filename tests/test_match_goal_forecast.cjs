@@ -21,6 +21,8 @@ assert.equal(a.cohort[0].winRate,50);
 assert.deepEqual(a.cohort.map(x=>x.targets[0].required),[25,25,25]);
 assert.deepEqual(a.cohort.map(x=>x.targets[1].required),[75,75,75]);
 assert.equal(a.cohort[0].targets[0].label,'約25試合');
+assert.equal(a.simulation.reason,'ready');
+assert.deepEqual(a.simulation.targets[0].probabilities,[1,1,1]);
 assert.equal(F.renderCount(0),'達成済み');
 // 14/20 valid is still eligible, 13/20 is insufficient.
 let partial=new Map(deltas);
@@ -41,6 +43,13 @@ const down=F.analyze({...options,deltas:negative});
 assert.equal(down.cohort[0].status,'no_positive_growth');
 assert.equal(down.cohort[0].targets[0].label,'増加傾向なし');
 assert.equal(down.cohort[0].targets[0].required,null);
+assert.deepEqual(down.simulation.targets[0].probabilities,[0,0,0]);
+assert.equal(F.analyze({...options,actAt:()=>null}).simulation.reason,'現在MR・公式Actの更新待ち');
+assert.equal(F.analyze({...options,deltas:new Map()}).simulation.targets[0].probabilities[0],null);
+const fluctuating=new Map(matches.map((m,i)=>[m.key,{basis:'inferred',delta:i%3===0?8:-7}]));
+const sim=F.analyze({...options,deltas:fluctuating}).simulation;
+assert.ok(sim.targets.every(t=>t.probabilities.every((p,i)=>!i||p>=t.probabilities[i-1])));
+assert.deepEqual(sim,F.analyze({...options,deltas:fluctuating}).simulation);
 const stale=F.analyze({...options,now:now+4*60*60*1000});
 assert.equal(stale.stale,true);
 assert.equal(stale.cohort[0].targets[0].label,'MR更新待ち');
@@ -70,3 +79,4 @@ assert.equal(audited.cohort[0].average,2);
 const huge=F.analyze({...options,deltas:new Map(matches.map(m=>[m.key,{basis:'inferred',delta:0.0001}]))});
 assert.equal(huge.cohort[0].targets[0].label,'1万試合超（範囲外）');
 console.log('Required match-count goals 20/50/100: coverage, stale data, falling rate, Act boundaries, session audit passed');
+

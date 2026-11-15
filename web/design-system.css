@@ -533,6 +533,18 @@ footer{border-top:1px solid var(--app-border);color:var(--app-faint);font-size:1
 
 /* Four analysis categories fit on iPhone without squeezed labels. */
 .fairmr-extra{margin-top:16px}
+.training-section{margin-top:16px;border:1px solid #354057;border-radius:12px;padding:14px;background:#171e2d}
+.training-section h4{font-size:15px;color:#e3e8f7;margin:5px 0 10px}
+.training-section p{font-size:12px;color:#a9b6ca;line-height:1.65;margin:8px 0}
+.training-balance{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:5px 12px;margin-top:9px;padding-top:8px;border-top:1px solid #30394b;font-variant-numeric:tabular-nums}
+.training-balance strong{font-size:13px}.training-balance small{font-size:11px;color:#a9b6ca}
+.training-positive{color:#71deb7}.training-negative{color:#ff9c9b}
+.training-metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px;margin:12px 0}
+.training-metric{display:grid;gap:6px;padding:12px;border:1px solid #354057;background:#171e2d;border-radius:10px}
+.training-metric span,.training-metric small{font-size:11px;color:#a9b6ca}.training-metric strong{font-size:22px;color:#e2d5fa;font-variant-numeric:tabular-nums}
+.deep-tabs{grid-template-columns:repeat(5,minmax(0,1fr))}
+@media(max-width:650px){.deep-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.deep-tabs button:last-child{grid-column:1/-1}}
+@media(max-width:530px){.training-metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.training-section{padding:10px}.training-balance{display:grid}}
 .fairmr-extra-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .fairmr-extra .kicker{font-size:10px;color:#b7a6dc;display:block;margin-bottom:5px}
 .fairmr-window{display:flex;align-items:center;gap:8px;color:#a9b6ca;font-size:11px;font-weight:600}

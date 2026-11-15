@@ -110,6 +110,16 @@
     const report=cached;
     drawRolling(report.rolling);
     drawAdjusted(report.adjusted);
+    const scoped=SF6FairRating.clean(snapshot,{character,actAt}).filter(r=>r.phase===report.selectedAct);
+    const priorities=SF6TrainingInsights.priorities(report.adjusted,scoped,SF6MatchDeltas.infer(snapshot));
+    $('fair-priority-status').textContent=priorities.rows.length?
+      `補正後の苦戦幅×対戦頻度で並べています。${priorities.swing===null?'MR改善量は差分不足で保留。':`勝利と敗北の平均MR差 ${priorities.swing.toFixed(1)}（${priorities.knownDeltas}試合の参考差分）。`}`:
+      '予測精度・試合数の条件を満たす苦手キャラはまだありません。';
+    const priority=$('fair-priority-body');priority.replaceChildren();
+    for(const [i,r] of priorities.rows.entries()){
+      const row=node('tr');row.append(node('th',`${i+1}. ${r.character}`),node('td',pct(r.share*100)),node('td',signed(r.delta)),node('td',r.score.toFixed(2)),node('td',r.mrGain===null?'—':'+'+r.mrGain.toFixed(1)+' MR'));priority.append(row);
+    }
+    if(!priorities.rows.length){const row=node('tr'),cell=node('td','条件未達');cell.colSpan=5;row.append(cell);priority.append(row);}
     const c=report.current;
     $('fair-phase-note').textContent=report.actLabel+
       ' · 検証可能 '+report.selectedN+'試合 · 公式PLAYのActで統合集計。'+

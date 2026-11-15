@@ -101,6 +101,32 @@ def normalize(replay, player, fetched_at):
             'fetched_at': fetched_at, 'source': 'buckler_battlelog', 'missing': missing}
 
 
+def rematch_edges(items):
+    """Compare adjacent source records in memory. Persist only match-to-match
+    adjacency and same-opponent boolean, never an opponent ID or its hash."""
+    edges = {}
+    for a, b in zip(items, items[1:]):
+        if a is None or b is None:
+            continue
+        ra, ia = a
+        rb, ib = b
+        if not ia or not ib or not ra['occurred_at'] or not rb['occurred_at']:
+            continue
+        if ra['occurred_at'] == rb['occurred_at'] or ra['key'] == rb['key']:
+            continue
+        if ra['occurred_at'] > rb['occurred_at']:
+            ra, rb, ia, ib = rb, ra, ib, ia
+        if rb['mode'] != 'ranked':
+            continue
+        gap = (datetime.fromisoformat(rb['occurred_at'].replace('Z', '+00:00')) -
+               datetime.fromisoformat(ra['occurred_at'].replace('Z', '+00:00'))).total_seconds()
+        same = (ia == ib and 0 < gap <= 600 and ra['mode'] == rb['mode'] and
+                all(ra[k] == rb[k] for k in ('character', 'opponent_character', 'own_control', 'opponent_control')) and
+                ra['phase'] == rb['phase'])
+        edges[rb['key']] = {'previous': ra['key'], 'same': same}
+    return edges
+
+
 def read_json(path, default):
     try:
         return json.loads(path.read_text())
@@ -129,12 +155,24 @@ def load_archive(folder):
     return index, by_month, known
 
 
-def save_archive(folder, index, by_month, additions, fetched_at):
+def save_archive(folder, index, by_month, additions, fetched_at, edges=None):
     changed = set()
     for row in additions:
         month = row['occurred_at'][:7] if row['occurred_at'] else 'undated'
         by_month.setdefault(month, []).append(row)
         changed.add(month)
+    if edges:
+        ordered = sorted((r for records in by_month.values() for r in records if r['occurred_at']),
+                         key=lambda r: (r['occurred_at'], r['key']))
+        for i in range(1, len(ordered)):
+            prev, row = ordered[i-1], ordered[i]
+            edge = edges.get(row['key'])
+            if (edge and edge['previous'] == prev['key'] and row['occurred_at'] != prev['occurred_at'] and
+                    (i < 2 or ordered[i-2]['occurred_at'] != prev['occurred_at']) and
+                    (i+1 == len(ordered) or ordered[i+1]['occurred_at'] != row['occurred_at']) and
+                    'rematch_edge' not in row):
+                row['rematch_edge'] = edge
+                changed.add(row['occurred_at'][:7])
     for month in changed:
         by_month[month].sort(key=lambda row: (row['occurred_at'] or '', row['key']))
         write_json(folder / (month + '.json'), {'schema': 1, 'matches': by_month[month]})
@@ -249,7 +287,7 @@ def capture(raw, player, cookie, folder, fetched_at, fetcher=fetch_page, delay=t
     clock = clock or (lambda: datetime.now(timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z'))
     event = {'at': fetched_at, 'run_id': os.environ.get('GITHUB_RUN_ID'), 'result': 'failure',
              'pages': 0, 'added': 0, 'duplicates': 0, 'invalid': 0, 'error': None}
-    additions = []
+    additions, edges = [], {}
     index = by_month = None
     try:
         root, initial = decode_page(raw)
@@ -257,18 +295,24 @@ def capture(raw, player, cookie, folder, fetched_at, fetcher=fetch_page, delay=t
         previously_known = set(known)
         # First page was already fetched for MR/LP. Its normalized rows cost no request.
         def accept(page, page_fetched_at):
-            page_keys = []
+            page_keys, transient = [], []
             for replay in page['replay_list']:
                 try:
                     row = normalize(replay, player, page_fetched_at)
                 except (ValueError, TypeError, OverflowError):
                     event['invalid'] += 1
+                    transient.append(None)
                     continue
+                other = replay.get('player2_info' if row['own_side'] == 1 else 'player1_info') or {}
+                ident = (other.get('player') or {}).get('short_id')
+                ident = str(ident) if type(ident) in (int, str) and re.fullmatch(r'[0-9]{1,20}', str(ident)) else None
+                transient.append((row, ident))
                 page_keys.append(row['key'])
                 if row['key'] in known:
                     event['duplicates'] += 1
                 else:
                     known.add(row['key']); additions.append(row)
+            edges.update(rematch_edges(transient))
             return bool(page_keys) and all(key in previously_known for key in page_keys)
         accept(initial, fetched_at)
         max_pages = max(1, min(10, int(os.environ.get('MATCH_MAX_PAGES', '2'))))
@@ -289,16 +333,17 @@ def capture(raw, player, cookie, folder, fetched_at, fetcher=fetch_page, delay=t
                                       for row in page['replay_list'] if isinstance(row.get('replay_id'), str)
                                       and re.fullmatch(r'[A-Za-z0-9_-]{4,100}', row['replay_id']))
             old_page = accept(page, clock())
-            if old_page and index.get('source_window_scanned'):
+            if old_page and index.get('source_window_scanned') and index.get('rematch_edges_scanned'):
                 stop = 'known_page'; break
             if page_number >= min(total, 10):
                 stop = 'exposed_end'; break
         index['source_window_scanned'] = bool(index.get('source_window_scanned') or stop == 'exposed_end')
+        index['rematch_edges_scanned'] = bool(index.get('rematch_edges_scanned') or stop == 'exposed_end')
         if index.get('count', 0) and stop == 'exposed_end' and not overlap:
             index['possible_gap_detected_at'] = fetched_at
         index['coverage_note'] = 'Only the exposed recent source window is available; gaps and older uncollected matches cannot be reconstructed.'
         completed_at = clock()
-        save_archive(folder, index, by_month, additions, completed_at)
+        save_archive(folder, index, by_month, additions, completed_at, edges)
         write_rating_evidence(folder, by_month, completed_at)
         event.update(result='success', added=len(additions), stop_reason=stop, source_total_pages=total)
         status.update(last_success=completed_at, last_error=None, route='mixed_battlelog', source_total_pages=total)
@@ -309,7 +354,7 @@ def capture(raw, player, cookie, folder, fetched_at, fetcher=fetch_page, delay=t
         if additions and index is not None and by_month is not None:
             try:
                 incomplete_at = clock()
-                save_archive(folder, index, by_month, additions, incomplete_at)
+                save_archive(folder, index, by_month, additions, incomplete_at, edges)
                 write_rating_evidence(folder, by_month, incomplete_at)
                 event.update(result='partial', added=len(additions))
             except Exception:
@@ -352,3 +397,4 @@ def inspect_page(raw, player):
             'round_codes': sorted({c for p in participants for c in p.get('round_results', []) if type(c) is int}),
             'mode_codes': sorted({row['replay_battle_type'] for row in rows if type(row.get('replay_battle_type')) is int}),
             'client_assets': re.findall(r'<script[^>]+src=["\']([^"\']*static/chunks/pages/profile/[^"\']+)["\']', raw)[:5]}
+
