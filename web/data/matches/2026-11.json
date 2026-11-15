@@ -23327,7 +23327,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-15T14:00:46Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "4735b58ba63f804ec81f4b59b097bd56b79089645112013836c0e2c9633501b7",
+        "same": true
+      }
     },
     {
       "key": "0810dddeef249261617c0b17d5e3e6e9b23c671ab1dc5a58c02b98a1fb6e11bf",
@@ -23578,6 +23582,90 @@
       "missing": [],
       "rematch_edge": {
         "previous": "35e76704a3bcb25110519ec7431c5f881eebdaf756d16f7ca333adb0931ef0fa",
+        "same": true
+      }
+    },
+    {
+      "key": "8109552a32851aed851da36840c0b5facc1d22ce4ee4c7a7510f4b1a4e837c18",
+      "occurred_at": "2026-11-15T14:03:17Z",
+      "time_basis": "buckler_uploaded_at",
+      "character": "TERRY",
+      "opponent_character": "AKUMA",
+      "own_side": 2,
+      "outcome": "loss",
+      "outcome_basis": "paired_round_results",
+      "mode": "ranked",
+      "own_control": "classic",
+      "opponent_control": "classic",
+      "mr_before": 0,
+      "lp_before": 22937,
+      "opponent_mr_before": 0,
+      "opponent_lp_before": 23451,
+      "phase": "unknown",
+      "mr_delta": null,
+      "lp_delta": null,
+      "delta_basis": "unavailable_no_verified_post_match_rating",
+      "fetched_at": "2026-11-15T14:30:42Z",
+      "source": "buckler_battlelog",
+      "missing": [],
+      "rematch_edge": {
+        "previous": "909c1ac730f2cc7c8e793bcc7da1e1eb81a0dd9063755f57364c1413dfb0e3ca",
+        "same": false
+      }
+    },
+    {
+      "key": "c955cc7f8a6abcefd42da14e5b9edb01902758aa6a6976295509ca12ef621540",
+      "occurred_at": "2026-11-15T14:05:54Z",
+      "time_basis": "buckler_uploaded_at",
+      "character": "TERRY",
+      "opponent_character": "AKUMA",
+      "own_side": 2,
+      "outcome": "win",
+      "outcome_basis": "paired_round_results",
+      "mode": "ranked",
+      "own_control": "classic",
+      "opponent_control": "classic",
+      "mr_before": 0,
+      "lp_before": 22897,
+      "opponent_mr_before": 0,
+      "opponent_lp_before": 23501,
+      "phase": "unknown",
+      "mr_delta": null,
+      "lp_delta": null,
+      "delta_basis": "unavailable_no_verified_post_match_rating",
+      "fetched_at": "2026-11-15T14:30:42Z",
+      "source": "buckler_battlelog",
+      "missing": [],
+      "rematch_edge": {
+        "previous": "8109552a32851aed851da36840c0b5facc1d22ce4ee4c7a7510f4b1a4e837c18",
+        "same": true
+      }
+    },
+    {
+      "key": "0a371a062c5f08bac47712c040a6337efb6ddab8093108fbc36e101ce1d86249",
+      "occurred_at": "2026-11-15T14:07:39Z",
+      "time_basis": "buckler_uploaded_at",
+      "character": "TERRY",
+      "opponent_character": "AKUMA",
+      "own_side": 2,
+      "outcome": "loss",
+      "outcome_basis": "paired_round_results",
+      "mode": "ranked",
+      "own_control": "classic",
+      "opponent_control": "classic",
+      "mr_before": 0,
+      "lp_before": 22958,
+      "opponent_mr_before": 0,
+      "opponent_lp_before": 23461,
+      "phase": "unknown",
+      "mr_delta": null,
+      "lp_delta": null,
+      "delta_basis": "unavailable_no_verified_post_match_rating",
+      "fetched_at": "2026-11-15T14:30:42Z",
+      "source": "buckler_battlelog",
+      "missing": [],
+      "rematch_edge": {
+        "previous": "c955cc7f8a6abcefd42da14e5b9edb01902758aa6a6976295509ca12ef621540",
         "same": true
       }
     }
