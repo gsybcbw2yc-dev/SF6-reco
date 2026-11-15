@@ -24116,6 +24116,62 @@
         "previous": "fd24117f3d8c21fa7b992864a6c9d82ef1b597cc24080fb06c604c3aaa68668a",
         "same": true
       }
+    },
+    {
+      "key": "c70ca53f5a186961b9742501af77593ea8f22b0c79db76d172557affdc0983a8",
+      "occurred_at": "2026-11-15T21:32:39Z",
+      "time_basis": "buckler_uploaded_at",
+      "character": "AKUMA",
+      "opponent_character": "JAMIE",
+      "own_side": 1,
+      "outcome": "win",
+      "outcome_basis": "paired_round_results",
+      "mode": "ranked",
+      "own_control": "classic",
+      "opponent_control": "classic",
+      "mr_before": 1435,
+      "lp_before": 116120,
+      "opponent_mr_before": 1454,
+      "opponent_lp_before": 25360,
+      "phase": "unknown",
+      "mr_delta": null,
+      "lp_delta": null,
+      "delta_basis": "unavailable_no_verified_post_match_rating",
+      "fetched_at": "2026-11-15T22:01:04Z",
+      "source": "buckler_battlelog",
+      "missing": [],
+      "rematch_edge": {
+        "previous": "c6071135f689f4d3e4bc9c44100cbe087cf71ece4ea558b4c03a03d46a119609",
+        "same": false
+      }
+    },
+    {
+      "key": "2a2ad01fa8e1cc9ee8061a11c8ea1c656d76bdd78fc134f1c4b4cf36fa01c13d",
+      "occurred_at": "2026-11-15T21:35:21Z",
+      "time_basis": "buckler_uploaded_at",
+      "character": "AKUMA",
+      "opponent_character": "JAMIE",
+      "own_side": 1,
+      "outcome": "win",
+      "outcome_basis": "paired_round_results",
+      "mode": "ranked",
+      "own_control": "classic",
+      "opponent_control": "classic",
+      "mr_before": 1443,
+      "lp_before": 116170,
+      "opponent_mr_before": 1446,
+      "opponent_lp_before": 25320,
+      "phase": "unknown",
+      "mr_delta": null,
+      "lp_delta": null,
+      "delta_basis": "unavailable_no_verified_post_match_rating",
+      "fetched_at": "2026-11-15T22:01:04Z",
+      "source": "buckler_battlelog",
+      "missing": [],
+      "rematch_edge": {
+        "previous": "c70ca53f5a186961b9742501af77593ea8f22b0c79db76d172557affdc0983a8",
+        "same": true
+      }
     }
   ]
 }
