@@ -19915,7 +19915,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T17:30:36Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "dfe1dea18c75ecd5bb6ac5ba233f336505d76894f9656acd9ca1edeede41a695",
+        "same": true
+      }
     },
     {
       "key": "0ecd5e98cdd398cf95c849dc9dc79c1b01c8d956e5215a4c82749dab965462df",
@@ -19939,7 +19943,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T18:00:52Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "e5d1a4118c56f008816ed41715cc6d510c8d001ae9741227e7dbaf547dccd63a",
+        "same": false
+      }
     },
     {
       "key": "2b9ec458e1c7d3bd1ff1cf39f4cb30a2e160494b397b819ca0618f0ca02c58a9",
@@ -19963,7 +19971,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T18:00:52Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "0ecd5e98cdd398cf95c849dc9dc79c1b01c8d956e5215a4c82749dab965462df",
+        "same": true
+      }
     },
     {
       "key": "e131e14c6a25c00171feeb6aec56b76d020bc1f47a0c0051e22bcc2ea5f1d0e1",
@@ -19987,7 +19999,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T18:00:48Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "2b9ec458e1c7d3bd1ff1cf39f4cb30a2e160494b397b819ca0618f0ca02c58a9",
+        "same": false
+      }
     },
     {
       "key": "a1cdabb7d1079e4876bb57e806c2320ff240a94ed428f1ff6b46a6a39be1547e",
@@ -20011,7 +20027,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T18:00:48Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "e131e14c6a25c00171feeb6aec56b76d020bc1f47a0c0051e22bcc2ea5f1d0e1",
+        "same": true
+      }
     },
     {
       "key": "0750dc85c3f65ebd6c5eeca8a2607e2ecbd7c794a02146d979322505da22d69d",
@@ -20035,7 +20055,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T18:00:48Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "a1cdabb7d1079e4876bb57e806c2320ff240a94ed428f1ff6b46a6a39be1547e",
+        "same": true
+      }
     },
     {
       "key": "bd22ea7570367666291876969120af916aff926a42f2ef0d9f958cabc1610e78",
@@ -20059,7 +20083,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T18:00:48Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "0750dc85c3f65ebd6c5eeca8a2607e2ecbd7c794a02146d979322505da22d69d",
+        "same": false
+      }
     },
     {
       "key": "c63d5d5dc27dd953921cb98ea937e512e721894395c70704aa3086bfacd277e3",
@@ -20083,7 +20111,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T18:00:48Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "bd22ea7570367666291876969120af916aff926a42f2ef0d9f958cabc1610e78",
+        "same": true
+      }
     },
     {
       "key": "09b1902111f773975e5ad8be84a0c9d15a726592014f2c0f587f1226fac91689",
@@ -20107,7 +20139,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T18:00:48Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "c63d5d5dc27dd953921cb98ea937e512e721894395c70704aa3086bfacd277e3",
+        "same": true
+      }
     },
     {
       "key": "74299f6b34dc57d85a65ea6121c82c2547984da75744914337f7a23abe55d375",
@@ -20155,7 +20191,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T18:00:48Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "74299f6b34dc57d85a65ea6121c82c2547984da75744914337f7a23abe55d375",
+        "same": true
+      }
     },
     {
       "key": "cbacf1f28eb2645738d410c1ac438124fe278d54086830ba430f3dc2e7ff43eb",
@@ -20179,7 +20219,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T18:00:48Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "a17ab1ae7e037660316718809a9f3bf3b6c48f8afee0b43ee16e15dda713ab89",
+        "same": true
+      }
     },
     {
       "key": "8575e63fe24f1a68e3c78a032a25acfde7b7382441d72a3438b9db51492ddacc",
@@ -20203,7 +20247,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T18:00:48Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "cbacf1f28eb2645738d410c1ac438124fe278d54086830ba430f3dc2e7ff43eb",
+        "same": false
+      }
     },
     {
       "key": "8e418477a3f8f61d34b3e261f84ab608c183142ab759281aa9f010251f26bef3",
@@ -20227,7 +20275,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T18:30:36Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "8575e63fe24f1a68e3c78a032a25acfde7b7382441d72a3438b9db51492ddacc",
+        "same": false
+      }
     },
     {
       "key": "517eeb78ae96cf308937915021e6242044741074373372b14f9968dae3fb0301",
@@ -20251,7 +20303,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T18:30:36Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "8e418477a3f8f61d34b3e261f84ab608c183142ab759281aa9f010251f26bef3",
+        "same": true
+      }
     },
     {
       "key": "e4822dfe0ad4158b7594989aaeb3ede1b06e5976fe00c0d5ec7d0570e101905e",
@@ -20275,7 +20331,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T18:30:36Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "517eeb78ae96cf308937915021e6242044741074373372b14f9968dae3fb0301",
+        "same": true
+      }
     },
     {
       "key": "0a9fec40c836a9efccdc6d5ae0de58ff2ef82f27cfbb2fbdab057171debb295d",
@@ -20299,7 +20359,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T18:30:36Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "e4822dfe0ad4158b7594989aaeb3ede1b06e5976fe00c0d5ec7d0570e101905e",
+        "same": false
+      }
     },
     {
       "key": "21e82ced7cf9477e03a8a21b492aff1b05ba1ec54d92a31a87773142a715cc12",
@@ -20323,7 +20387,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T18:30:36Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "0a9fec40c836a9efccdc6d5ae0de58ff2ef82f27cfbb2fbdab057171debb295d",
+        "same": true
+      }
     },
     {
       "key": "7d48528bf2ee402ab4836c20aa4c60d778c8505c42af039ecc69cd0fc17eb025",
@@ -20347,7 +20415,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T18:30:36Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "21e82ced7cf9477e03a8a21b492aff1b05ba1ec54d92a31a87773142a715cc12",
+        "same": true
+      }
     },
     {
       "key": "4da4c8f3a832eeaaba9abdf5450bec67602a72c4b19e5921ec06522b28d2e2d2",
@@ -20395,7 +20467,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T18:30:36Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "4da4c8f3a832eeaaba9abdf5450bec67602a72c4b19e5921ec06522b28d2e2d2",
+        "same": true
+      }
     },
     {
       "key": "ed0bc97e2d528e076d2de6c0c0f079cfedc2f534a322ea693ce2de36a5cbcc9c",
@@ -20419,7 +20495,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T18:30:36Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "154f8ecb18388e05f79d2405197c8ae657596ac6a11a0cb15b8818edb726f2ef",
+        "same": false
+      }
     },
     {
       "key": "f2a23dcc26a3cf02c2ba209576e13a48bb414cd56cb9c2c519b02afe7961880b",
@@ -20443,7 +20523,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T18:30:36Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "ed0bc97e2d528e076d2de6c0c0f079cfedc2f534a322ea693ce2de36a5cbcc9c",
+        "same": true
+      }
     },
     {
       "key": "6f1ece69eaefe3fa82e1026cf107b7815f7c2233b67510d3ef03a0944f867dc4",
@@ -20467,7 +20551,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T19:00:47Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "f2a23dcc26a3cf02c2ba209576e13a48bb414cd56cb9c2c519b02afe7961880b",
+        "same": false
+      }
     },
     {
       "key": "d231bf14eed28226d6494112eb97c3ce0874fd2de30043da68c8d6e938be77e1",
@@ -20491,7 +20579,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T19:00:47Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "6f1ece69eaefe3fa82e1026cf107b7815f7c2233b67510d3ef03a0944f867dc4",
+        "same": true
+      }
     },
     {
       "key": "d4d5db836d75de40b81733edc3b52f54a191a2b0fdc58231b5b84f155b599fda",
@@ -20515,7 +20607,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T19:00:43Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "d231bf14eed28226d6494112eb97c3ce0874fd2de30043da68c8d6e938be77e1",
+        "same": false
+      }
     },
     {
       "key": "0ca8d41aba0026cb6bd4ea38dc7fa1a188aabe124071098ead77d68980a1f45a",
@@ -20539,7 +20635,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T19:00:43Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "d4d5db836d75de40b81733edc3b52f54a191a2b0fdc58231b5b84f155b599fda",
+        "same": true
+      }
     },
     {
       "key": "54592f085eb0dc72b426602087591d296e9dda179cc948e8afc1c474a982ec82",
@@ -20563,7 +20663,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T19:00:43Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "0ca8d41aba0026cb6bd4ea38dc7fa1a188aabe124071098ead77d68980a1f45a",
+        "same": true
+      }
     },
     {
       "key": "4c970ef7351be317b52f58ed1e0d80b3625c4fdad45b44125a9079c0b84a9f04",
@@ -20587,7 +20691,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T19:00:43Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "54592f085eb0dc72b426602087591d296e9dda179cc948e8afc1c474a982ec82",
+        "same": false
+      }
     },
     {
       "key": "80c8a1118896bb68c8a48c3b0c473cfe319b54aa61ddf0e2ddb39c269d7d23f2",
@@ -20635,7 +20743,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T19:00:43Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "80c8a1118896bb68c8a48c3b0c473cfe319b54aa61ddf0e2ddb39c269d7d23f2",
+        "same": false
+      }
     },
     {
       "key": "c9d412c33ad868f50313cd62196b534016ae53c82af7a2cc6002824b32e46936",
@@ -20659,7 +20771,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T19:00:43Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "586b6a96b1d7837d72c5483a7d354a40e647d2494922b69bf9a992b09d1820a2",
+        "same": true
+      }
     },
     {
       "key": "067052843938d715937366c2fb0cba3691f818c1dd676056c3feb9cfab204b42",
@@ -20683,7 +20799,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T19:00:43Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "c9d412c33ad868f50313cd62196b534016ae53c82af7a2cc6002824b32e46936",
+        "same": true
+      }
     },
     {
       "key": "22250683d22f9d91c4645a1ee698f426b1c4b5c822a4c38792015b614e078996",
@@ -20707,7 +20827,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T19:00:43Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "067052843938d715937366c2fb0cba3691f818c1dd676056c3feb9cfab204b42",
+        "same": false
+      }
     },
     {
       "key": "c3e3de93ded4bdfe85841f5c1643c4fac5b8e02bf5769ab1969a3411de6bc93e",
@@ -20731,7 +20855,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T19:00:43Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "22250683d22f9d91c4645a1ee698f426b1c4b5c822a4c38792015b614e078996",
+        "same": true
+      }
     },
     {
       "key": "93e03a0024664dd3afeb6ddc40ee1e1bbc8622467f6431caef3faf4d2b7b0b9b",
@@ -20755,7 +20883,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T19:30:39Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "c3e3de93ded4bdfe85841f5c1643c4fac5b8e02bf5769ab1969a3411de6bc93e",
+        "same": false
+      }
     },
     {
       "key": "f94060df31713c1966b53af36fc6da0c9473e70a39381017dbfc51be905cad99",
@@ -20779,7 +20911,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T19:30:39Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "93e03a0024664dd3afeb6ddc40ee1e1bbc8622467f6431caef3faf4d2b7b0b9b",
+        "same": true
+      }
     },
     {
       "key": "8db1b8f542688a55fdeca82e98f586b4da0608f5c759ed1cc71a791d3d0688aa",
@@ -20803,7 +20939,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T19:30:35Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "f94060df31713c1966b53af36fc6da0c9473e70a39381017dbfc51be905cad99",
+        "same": true
+      }
     },
     {
       "key": "14d74fddddbbe2162057911392a71a89f9afe27ecd05e4d3f5358191bfe50cbb",
@@ -20827,7 +20967,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T19:30:35Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "8db1b8f542688a55fdeca82e98f586b4da0608f5c759ed1cc71a791d3d0688aa",
+        "same": false
+      }
     },
     {
       "key": "c03f5be80028a85dd725fdb9e14116c8c80e3a6a8f297c3936f80aa394a8c3f3",
@@ -20875,7 +21019,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T19:30:35Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "c03f5be80028a85dd725fdb9e14116c8c80e3a6a8f297c3936f80aa394a8c3f3",
+        "same": true
+      }
     },
     {
       "key": "1a03d4d09427b46ae1a080a4aef11ea3e0ec8372bc2feb07df90ca4f6d3ad1f0",
@@ -20899,7 +21047,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T19:30:35Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "554dd744e794ffbf152664aedcc4be17af813396c13798b6986795f8a406bb53",
+        "same": false
+      }
     },
     {
       "key": "6404462711330c0ca1f729a2b36ffa3b46298b0bad30b78f2de5fdf68c38867f",
@@ -20923,7 +21075,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T19:30:35Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "1a03d4d09427b46ae1a080a4aef11ea3e0ec8372bc2feb07df90ca4f6d3ad1f0",
+        "same": true
+      }
     },
     {
       "key": "d003d00d5d7b5360a506caa672e234198fcf4420613f2c91b6975cd69e4c605e",
@@ -20947,7 +21103,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T19:30:35Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "6404462711330c0ca1f729a2b36ffa3b46298b0bad30b78f2de5fdf68c38867f",
+        "same": false
+      }
     },
     {
       "key": "50a33d84c34c3f15ab534c097dd8237221a7a157ba71caed882ab7c910578ac0",
@@ -20971,7 +21131,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T19:30:35Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "d003d00d5d7b5360a506caa672e234198fcf4420613f2c91b6975cd69e4c605e",
+        "same": true
+      }
     },
     {
       "key": "97ba249d537d1dac06319987488d8f719db8458f378ada15b896d76710fe9d82",
@@ -20995,7 +21159,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T19:30:35Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "50a33d84c34c3f15ab534c097dd8237221a7a157ba71caed882ab7c910578ac0",
+        "same": false
+      }
     },
     {
       "key": "45074f655a911aa57336fc69082be2bf4978004e6b2c6fc2c053c5e68c9048f9",
@@ -21019,7 +21187,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T19:30:35Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "97ba249d537d1dac06319987488d8f719db8458f378ada15b896d76710fe9d82",
+        "same": true
+      }
     },
     {
       "key": "3d3a34bc67b30c089bf38c28f175be50a954b4c5962a5ca251c00ebd6aae4c9e",
@@ -21043,7 +21215,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T20:00:47Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "45074f655a911aa57336fc69082be2bf4978004e6b2c6fc2c053c5e68c9048f9",
+        "same": false
+      }
     },
     {
       "key": "bc86df1b2a7166fbb5fb877b1370cbe3ff0aaf18b9332ef412f72a6340ddbf84",
@@ -21067,7 +21243,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T20:00:42Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "3d3a34bc67b30c089bf38c28f175be50a954b4c5962a5ca251c00ebd6aae4c9e",
+        "same": true
+      }
     },
     {
       "key": "4396281bac6be73cfca79a9752a0cad7f0aebd135cd2c22eb7cb40fbadee65de",
@@ -21115,7 +21295,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T20:00:42Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "4396281bac6be73cfca79a9752a0cad7f0aebd135cd2c22eb7cb40fbadee65de",
+        "same": true
+      }
     },
     {
       "key": "607f8c7a1e774a7eb70042846d708e62528fd758452929b59629e62b94586ed4",
@@ -21139,7 +21323,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T20:00:42Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "1aae9899f71059a0b83e98f6aa1aa36f955509e217a05609fe950b6c4e9d57fa",
+        "same": true
+      }
     },
     {
       "key": "a78c3f1cc1057949f91d4e5304487be83f2fcc7a83f1388eac12854b13da6d08",
@@ -21163,7 +21351,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T20:00:42Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "607f8c7a1e774a7eb70042846d708e62528fd758452929b59629e62b94586ed4",
+        "same": false
+      }
     },
     {
       "key": "1a9e4cbf31ec6ecc363c7175f79b6bdb88eccc48d1591ba33f7f54d34e50f4cf",
@@ -21187,7 +21379,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T20:00:42Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "a78c3f1cc1057949f91d4e5304487be83f2fcc7a83f1388eac12854b13da6d08",
+        "same": true
+      }
     },
     {
       "key": "8d523ac308ca54993f105c1444d6ae379ad6d1c647c487507c4027b1c343233d",
@@ -21211,7 +21407,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T20:00:42Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "1a9e4cbf31ec6ecc363c7175f79b6bdb88eccc48d1591ba33f7f54d34e50f4cf",
+        "same": true
+      }
     },
     {
       "key": "ef7ae292ceebc99534fedd8a39cadb18e61415e0c52f84a691067476a0b7eea2",
@@ -21235,7 +21435,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T20:00:42Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "8d523ac308ca54993f105c1444d6ae379ad6d1c647c487507c4027b1c343233d",
+        "same": false
+      }
     },
     {
       "key": "b8d79e983ef171b2692c04431fb8826efd691489a040f62ce0648a4a4b02f01f",
@@ -21259,7 +21463,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T20:00:42Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "ef7ae292ceebc99534fedd8a39cadb18e61415e0c52f84a691067476a0b7eea2",
+        "same": false
+      }
     },
     {
       "key": "8abbf58890e05b91a8a4c5738c86f3b6beed034b271c7efc6a7ae6dabd6842dc",
@@ -21283,7 +21491,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T20:00:42Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "b8d79e983ef171b2692c04431fb8826efd691489a040f62ce0648a4a4b02f01f",
+        "same": true
+      }
     },
     {
       "key": "29dfa9d4023b06aa5ed10801c6620877ab371d8e498f66fd04bb449ee82dae9d",
@@ -21307,7 +21519,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T20:30:41Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "8abbf58890e05b91a8a4c5738c86f3b6beed034b271c7efc6a7ae6dabd6842dc",
+        "same": false
+      }
     },
     {
       "key": "251088e2d2abc8543cef1b230891ae1f6085e560d87d9b4fe69426943e3dfe08",
@@ -21355,7 +21571,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T20:30:37Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "251088e2d2abc8543cef1b230891ae1f6085e560d87d9b4fe69426943e3dfe08",
+        "same": false
+      }
     },
     {
       "key": "818023c11ceebb93fc678f203e7631a5b2e8e6486a5e2228d7eb55c0ae674e22",
@@ -21379,7 +21599,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T20:30:37Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "8c4012c25e6e2dcf0ffb04c49ac1f9a511210cb3225ad28afad2442055c9d42c",
+        "same": false
+      }
     },
     {
       "key": "13a734448702710d920e9f9dae49fd2761762790b0eac138c41b17082f196f14",
@@ -21403,7 +21627,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T20:30:37Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "818023c11ceebb93fc678f203e7631a5b2e8e6486a5e2228d7eb55c0ae674e22",
+        "same": false
+      }
     },
     {
       "key": "8f80322e93bbc96fa4fe366cd664e175518cf9f782005bedef7fee213898d681",
@@ -21427,7 +21655,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T20:30:37Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "13a734448702710d920e9f9dae49fd2761762790b0eac138c41b17082f196f14",
+        "same": true
+      }
     },
     {
       "key": "c062613d662e6403dd830be578d4567008030e3a93e9094c6b487f37a261ff3b",
@@ -21451,7 +21683,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T20:30:37Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "8f80322e93bbc96fa4fe366cd664e175518cf9f782005bedef7fee213898d681",
+        "same": false
+      }
     },
     {
       "key": "d525707e7da39ec64c5666092ea7696ae0d5633f69a58517a5e690b9cde8b17b",
@@ -21475,7 +21711,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T20:30:37Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "c062613d662e6403dd830be578d4567008030e3a93e9094c6b487f37a261ff3b",
+        "same": true
+      }
     },
     {
       "key": "f03bad647ec5043643f424bcc5a7ad7ed35fc43066e57c810a870f2778f53b54",
@@ -21499,7 +21739,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T20:30:37Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "d525707e7da39ec64c5666092ea7696ae0d5633f69a58517a5e690b9cde8b17b",
+        "same": false
+      }
     },
     {
       "key": "46b7c0e8d36f600679e3ed99d32162c470b4be335ebee17e9de72b7d7806151a",
@@ -21523,7 +21767,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T20:30:37Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "f03bad647ec5043643f424bcc5a7ad7ed35fc43066e57c810a870f2778f53b54",
+        "same": true
+      }
     },
     {
       "key": "5df26c4d09464b989b7eb0f78d6256a2ce306691d4b79b9c7425e542a8ea5eb7",
@@ -21547,7 +21795,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T20:30:37Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "46b7c0e8d36f600679e3ed99d32162c470b4be335ebee17e9de72b7d7806151a",
+        "same": false
+      }
     },
     {
       "key": "dc2523dda9c3511d0710343a42417732f6bc2d2508d6398b337c9747755d7cdc",
@@ -21595,7 +21847,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T21:00:47Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "dc2523dda9c3511d0710343a42417732f6bc2d2508d6398b337c9747755d7cdc",
+        "same": true
+      }
     },
     {
       "key": "acb6ac5a137fe3cca7b0ab23d3e9994140b45332c0f04b308e0b59e3cc8ce0a4",
@@ -21619,7 +21875,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T21:00:43Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "6c4f359805bcb89db175d43fbb8bca4c01abecf412dc6e989b82fa71a9ef3785",
+        "same": false
+      }
     },
     {
       "key": "8043870e7b8b3b605bf4f55fd5c8bb8f367406fde86760c71ec65ce6d78d69b9",
@@ -21643,7 +21903,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T21:00:43Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "acb6ac5a137fe3cca7b0ab23d3e9994140b45332c0f04b308e0b59e3cc8ce0a4",
+        "same": true
+      }
     },
     {
       "key": "4a7efd0fe0e20bf5e6fc97b7fd14ec784c08f8844c8a583f781f1f2d597b7a94",
@@ -21667,7 +21931,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T21:00:43Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "8043870e7b8b3b605bf4f55fd5c8bb8f367406fde86760c71ec65ce6d78d69b9",
+        "same": false
+      }
     },
     {
       "key": "1fa2169b3f395c9ebbf0e6cb5217bae786539ded07224fda6b5ef6aa675264ab",
@@ -21691,7 +21959,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T21:00:43Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "4a7efd0fe0e20bf5e6fc97b7fd14ec784c08f8844c8a583f781f1f2d597b7a94",
+        "same": true
+      }
     },
     {
       "key": "eaab34cffd63d5e0f0734fc356971aa87aed678ca587c099ead12e0f294673d7",
@@ -21715,7 +21987,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T21:00:43Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "1fa2169b3f395c9ebbf0e6cb5217bae786539ded07224fda6b5ef6aa675264ab",
+        "same": false
+      }
     },
     {
       "key": "99f47c61ee64a9f722e5b4497698002d69a2ccceb14aefa26f61e82d549cf7c5",
@@ -21739,7 +22015,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T21:00:43Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "eaab34cffd63d5e0f0734fc356971aa87aed678ca587c099ead12e0f294673d7",
+        "same": true
+      }
     },
     {
       "key": "f1c0c1d97cb42a098af0188a7fafbfdfc11440fb529b490552c733a0506f7c9d",
@@ -21763,7 +22043,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T21:00:43Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "99f47c61ee64a9f722e5b4497698002d69a2ccceb14aefa26f61e82d549cf7c5",
+        "same": false
+      }
     },
     {
       "key": "29830f4477f18c896725e47354a8164264686491ded2922b83922144881662c6",
@@ -21787,7 +22071,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T21:00:43Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "f1c0c1d97cb42a098af0188a7fafbfdfc11440fb529b490552c733a0506f7c9d",
+        "same": true
+      }
     },
     {
       "key": "dba9171de5b630731eb32e129ee496f46f1c518cf9535fc16a5c4a003e875519",
@@ -21835,7 +22123,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T21:00:43Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "dba9171de5b630731eb32e129ee496f46f1c518cf9535fc16a5c4a003e875519",
+        "same": false
+      }
     },
     {
       "key": "3b0bcdbd5a63cd45bad12ad7300e8f76030cb8dd7a1a7ec8f0faa5cb1c11d94c",
@@ -21859,7 +22151,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T21:30:39Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "dd5728fbd977c54ff92e8f27e3b3421b5d7d46d95506aa3da4d917d16ea9ca13",
+        "same": true
+      }
     },
     {
       "key": "f2cf085f5598ffea0ca4b59be5392929388c701c40acc95d5170a150bf3ac032",
@@ -21883,7 +22179,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T21:30:35Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "3b0bcdbd5a63cd45bad12ad7300e8f76030cb8dd7a1a7ec8f0faa5cb1c11d94c",
+        "same": false
+      }
     },
     {
       "key": "77b929cf39738e3a0ebc0264ed5575935871e4b326e6d18ad909a2fa95fc3b68",
@@ -21907,7 +22207,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T21:30:35Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "f2cf085f5598ffea0ca4b59be5392929388c701c40acc95d5170a150bf3ac032",
+        "same": true
+      }
     },
     {
       "key": "1f9b80a8eee370912740c7863b848e89e600bb362c034a8a0e7ea855cc7248c5",
@@ -21931,7 +22235,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T21:30:35Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "77b929cf39738e3a0ebc0264ed5575935871e4b326e6d18ad909a2fa95fc3b68",
+        "same": false
+      }
     },
     {
       "key": "c4d8c3259a796e629ae9cfe15a98e72218196c51a12c53307c55cbbfe65270c1",
@@ -21955,7 +22263,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T21:30:35Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "1f9b80a8eee370912740c7863b848e89e600bb362c034a8a0e7ea855cc7248c5",
+        "same": true
+      }
     },
     {
       "key": "60470c21023baaba9c1c04fbb65c3dfbf11975dee8f0fe1ae3f9e6da847ee0fc",
@@ -21979,7 +22291,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T21:30:35Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "c4d8c3259a796e629ae9cfe15a98e72218196c51a12c53307c55cbbfe65270c1",
+        "same": false
+      }
     },
     {
       "key": "279e5738357c69ab1a84a4fba4ef4ff53787d63ee3ce12cd44af74f44423fc49",
@@ -22003,7 +22319,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T21:30:35Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "60470c21023baaba9c1c04fbb65c3dfbf11975dee8f0fe1ae3f9e6da847ee0fc",
+        "same": true
+      }
     },
     {
       "key": "120f235d0118c92b9d95c8ca6a601733efddedf1697e54875a7057932bfbba6b",
@@ -22027,7 +22347,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T21:30:35Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "279e5738357c69ab1a84a4fba4ef4ff53787d63ee3ce12cd44af74f44423fc49",
+        "same": false
+      }
     },
     {
       "key": "b18fd21536d978bca4802b533b734d57aa6bf6dd2307fe732feac9f7b78a4493",
@@ -22075,7 +22399,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T21:30:35Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "b18fd21536d978bca4802b533b734d57aa6bf6dd2307fe732feac9f7b78a4493",
+        "same": true
+      }
     },
     {
       "key": "1b639092d04533ba126c573145ab64fb71d3eef51dc1317edde95f761a42693b",
@@ -22099,7 +22427,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T21:30:35Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "eb2aa602f300172c68abbaa3c8c0eb124fc6d3d0575c817a1949a3a47fd0cc88",
+        "same": false
+      }
     },
     {
       "key": "7d3a519861882569d4d6b1587cb70944393fefdf771ed04493e6cbba42b12404",
@@ -22123,7 +22455,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T21:55:07Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "1b639092d04533ba126c573145ab64fb71d3eef51dc1317edde95f761a42693b",
+        "same": true
+      }
     },
     {
       "key": "e7d55464c0dc9ee43ea94110ac1ae676e00e2342d4b4d93881ba442152a50132",
@@ -22147,7 +22483,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T21:55:07Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "7d3a519861882569d4d6b1587cb70944393fefdf771ed04493e6cbba42b12404",
+        "same": true
+      }
     },
     {
       "key": "5a3afe6c6147c64cd86cadb8502aa19a4f61b87e7eb59b4316ab1b98249e37c3",
@@ -22171,7 +22511,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T21:55:07Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "e7d55464c0dc9ee43ea94110ac1ae676e00e2342d4b4d93881ba442152a50132",
+        "same": false
+      }
     },
     {
       "key": "4851223498939f8a582f97ff11e1c705fba78ec8f09e2119994f924a58e83ee1",
@@ -22195,7 +22539,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T21:55:07Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "5a3afe6c6147c64cd86cadb8502aa19a4f61b87e7eb59b4316ab1b98249e37c3",
+        "same": true
+      }
     },
     {
       "key": "7f0fc9923ba9fb3258c220aad5ab942687e8f5e75ebf4d519e03290b1bd6ee99",
@@ -22219,7 +22567,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T21:55:07Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "4851223498939f8a582f97ff11e1c705fba78ec8f09e2119994f924a58e83ee1",
+        "same": true
+      }
     },
     {
       "key": "5a34e82cd07191ee77af3f5184f5d4b770996d00fc9779d26b6a4325acaa91db",
@@ -22243,7 +22595,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T21:55:07Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "7f0fc9923ba9fb3258c220aad5ab942687e8f5e75ebf4d519e03290b1bd6ee99",
+        "same": false
+      }
     },
     {
       "key": "d88260cf0ad0e011f9557c84361b11514c098342c9dacd41537a34641d552336",
@@ -22267,7 +22623,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-14T21:55:07Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "5a34e82cd07191ee77af3f5184f5d4b770996d00fc9779d26b6a4325acaa91db",
+        "same": true
+      }
     }
   ]
 }
