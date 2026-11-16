@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "source": "stored_ranked_battlelog_pre_match",
-  "checked_at": "2026-11-16T12:49:28Z",
+  "checked_at": "2026-11-16T13:31:07Z",
   "timestamp_basis": "buckler_uploaded_at",
   "rating_basis": "pre_match_not_current_or_post_match",
   "events": [
@@ -9805,6 +9805,50 @@
       "lp": 116170,
       "source": "battlelog_pre_match",
       "rating_basis": "pre_match"
+    },
+    {
+      "key": "93d55effd541f909a24ac0bfdd82007db5661b489634087aac3bc8d2a94eb4e7",
+      "character": "RYU",
+      "phase": "unknown",
+      "observed_at": "2026-11-16T13:01:53Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 0,
+      "lp": 14931,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
+    },
+    {
+      "key": "532f9aeae546c48a1627a388c784ebba3665979d650c0ac549c68adbd2eff991",
+      "character": "RYU",
+      "phase": "unknown",
+      "observed_at": "2026-11-16T13:03:57Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 0,
+      "lp": 14996,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
+    },
+    {
+      "key": "1fa0567906f83907996f83e7ecdca2379f064a3bacc1efa2b3aede3653f328f1",
+      "character": "RYU",
+      "phase": "unknown",
+      "observed_at": "2026-11-16T13:07:01Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 0,
+      "lp": 14956,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
+    },
+    {
+      "key": "8675a843679f8fd14d3426afe3fd28bc3d8c7f68f93a4508f736c00c86b46ae1",
+      "character": "RYU",
+      "phase": "unknown",
+      "observed_at": "2026-11-16T13:09:33Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 0,
+      "lp": 15021,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
     }
   ],
   "characters": {
@@ -9817,6 +9861,11 @@
       "last_match_uploaded_at": "2026-11-15T20:43:06Z",
       "last_pre_match_mr": 0,
       "last_pre_match_lp": 22798
+    },
+    "RYU": {
+      "last_match_uploaded_at": "2026-11-16T13:09:33Z",
+      "last_pre_match_mr": 0,
+      "last_pre_match_lp": 15021
     }
   }
 }

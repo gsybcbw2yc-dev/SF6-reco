@@ -1,12 +1,13 @@
 {
   "schema": 1,
-  "checked_at": "2026-11-16T12:49:31Z",
+  "checked_at": "2026-11-16T13:31:09Z",
   "source": "play_character_league_infos",
   "rating_view": "latest_default",
   "result": "success",
-  "characters_available": 2,
+  "characters_available": 3,
   "characters": [
     "AKUMA",
+    "RYU",
     "TERRY"
   ],
   "current_act": 14,
