@@ -16,9 +16,10 @@
   function ensureOptions(el, options){
     const selected=el.value;
     const values=options.map(x=>x.value);
-    const current=[...el.options].map(x=>x.value);
-    if(current.length!==values.length||current.some((x,i)=>x!==values[i])){
-      el.options.length=0;
+    const current=[...el.options];
+    if(current.length!==values.length||current.some((x,i)=>x.value!==values[i]||x.label!==options[i].label)){
+      if(typeof el.remove==='function')while(el.options.length)el.remove(0);
+      else el.options.length=0;
       options.forEach(x=>el.add(new Option(x.label,x.value)));
     }
     el.value=values.includes(selected)?selected:values[0]||'';
@@ -184,17 +185,32 @@
       c.status==='uncertain'?'交点の候補はありますが、不確実性が大きいため判断を保留します。':
       'データ条件が足りないため、対戦互角MRを表示しません。';
   }
+  function notify(){
+    if(typeof root.dispatchEvent==='function'&&typeof root.CustomEvent==='function')
+      root.dispatchEvent(new root.CustomEvent('sf6-fair-rating-updated'));
+  }
+  function getPilotReport(){
+    if(!cached)return null;
+    const c=cached.current,n=Number($('fair-window').value)||100;
+    const latest=cached.rolling.series[n]?.at(-1);
+    return {character:$('fair-character').value,act:cached.selectedAct,actLabel:cached.actLabel,
+      window:n,estimate:c.crossing,sample:c.n,sessions:c.groups,wins:c.wins,status:c.status,
+      referenceInterval:c.interval.range,reason:c.check.reason,
+      rollingLatest:latest?{estimate:latest.crossing,ownMR:latest.own,count:latest.count,reason:latest.reason}:null,
+      validation:{status:c.backtest.status,tested:c.backtest.tested??0,improved:c.backtest.improved??null},
+      caveat:'探索的な50%交点。実力・到達MRの保証ではありません。'};
+  }
   function render(rows){
     if(rows!==lastRows){cacheKey='';lastRows=rows;}
     snapshot=Array.isArray(rows)?rows:[];
     if(!bound){
-      $('fair-character').onchange=()=>{cacheKey='';$('fair-act').value='';show();};
-      $('fair-act').onchange=show;
-      $('fair-window').onchange=()=>{if(cached)drawRolling(cached.rolling);};
+      $('fair-character').onchange=()=>{cacheKey='';$('fair-act').value='';show();notify();};
+      $('fair-act').onchange=()=>{show();notify();};
+      $('fair-window').onchange=()=>{if(cached)drawRolling(cached.rolling);notify();};
       bound=true;
     }
-    show();
+    show();notify();
   }
-  root.SF6FairRatingUI={render};
+  root.SF6FairRatingUI={render,getPilotReport};
 })(typeof globalThis!=='undefined'?globalThis:this);
 
