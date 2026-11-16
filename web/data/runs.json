@@ -8073,6 +8073,21 @@
       "observations_added": 2,
       "changed_characters": [],
       "error": null
+    },
+    {
+      "started_at": "2026-11-16T12:49:24Z",
+      "finished_at": "2026-11-16T12:49:31Z",
+      "trigger": "push",
+      "external_trigger_at": null,
+      "scheduled_for_estimate": null,
+      "estimated_delay_seconds": null,
+      "run_id": "43870024447",
+      "attempt": "1",
+      "result": "success",
+      "character_count": 2,
+      "observations_added": 2,
+      "changed_characters": [],
+      "error": null
     }
   ]
 }
