@@ -25158,6 +25158,58 @@
       "missing": [
         "own_lp_before"
       ]
+    },
+    {
+      "key": "1f89bacf3ddf204df95f29a2a04c1808215a804b5a8d4db1add4e41324d41008",
+      "occurred_at": "2026-11-16T15:02:31Z",
+      "time_basis": "buckler_uploaded_at",
+      "character": "MAI",
+      "opponent_character": "GUILE",
+      "own_side": 1,
+      "outcome": "win",
+      "outcome_basis": "paired_round_results",
+      "mode": "custom",
+      "own_control": "classic",
+      "opponent_control": "classic",
+      "mr_before": 0,
+      "lp_before": null,
+      "opponent_mr_before": 0,
+      "opponent_lp_before": null,
+      "phase": "unknown",
+      "mr_delta": null,
+      "lp_delta": null,
+      "delta_basis": "unavailable_no_verified_post_match_rating",
+      "fetched_at": "2026-11-16T15:30:44Z",
+      "source": "buckler_battlelog",
+      "missing": [
+        "own_lp_before"
+      ]
+    },
+    {
+      "key": "e08b2b03ea38f295510b1789787575eeab78fbce7235f3185e341ccd6ec76efd",
+      "occurred_at": "2026-11-16T15:03:57Z",
+      "time_basis": "buckler_uploaded_at",
+      "character": "MAI",
+      "opponent_character": "GUILE",
+      "own_side": 1,
+      "outcome": "loss",
+      "outcome_basis": "paired_round_results",
+      "mode": "custom",
+      "own_control": "classic",
+      "opponent_control": "classic",
+      "mr_before": 0,
+      "lp_before": null,
+      "opponent_mr_before": 0,
+      "opponent_lp_before": null,
+      "phase": "unknown",
+      "mr_delta": null,
+      "lp_delta": null,
+      "delta_basis": "unavailable_no_verified_post_match_rating",
+      "fetched_at": "2026-11-16T15:30:44Z",
+      "source": "buckler_battlelog",
+      "missing": [
+        "own_lp_before"
+      ]
     }
   ]
 }
