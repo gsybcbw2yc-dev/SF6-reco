@@ -8268,6 +8268,21 @@
       "observations_added": 4,
       "changed_characters": [],
       "error": null
+    },
+    {
+      "started_at": "2026-11-16T18:54:26Z",
+      "finished_at": "2026-11-16T18:54:26Z",
+      "trigger": "schedule",
+      "external_trigger_at": null,
+      "scheduled_for_estimate": "2026-11-16T18:41:00Z",
+      "estimated_delay_seconds": 806,
+      "run_id": "43933709021",
+      "attempt": "1",
+      "result": "skipped_recent_success",
+      "character_count": 0,
+      "observations_added": 0,
+      "changed_characters": [],
+      "error": null
     }
   ]
 }
