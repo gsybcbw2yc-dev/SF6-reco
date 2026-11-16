@@ -8088,6 +8088,21 @@
       "observations_added": 2,
       "changed_characters": [],
       "error": null
+    },
+    {
+      "started_at": "2026-11-16T13:00:48Z",
+      "finished_at": "2026-11-16T13:00:48Z",
+      "trigger": "external_dispatch",
+      "external_trigger_at": "2026-11-16T12:59:06Z",
+      "scheduled_for_estimate": null,
+      "estimated_delay_seconds": null,
+      "run_id": "43871729557",
+      "attempt": "1",
+      "result": "skipped_recent_success",
+      "character_count": 0,
+      "observations_added": 0,
+      "changed_characters": [],
+      "error": null
     }
   ]
 }
