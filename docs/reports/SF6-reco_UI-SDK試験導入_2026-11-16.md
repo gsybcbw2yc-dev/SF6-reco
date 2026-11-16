@@ -20,8 +20,11 @@
 
 - 既存ローカルテスト6ファイル（dashboard / fair_rating / master_promotion / match_goal_forecast / matches_ui / view_navigation）成功。
 - 新規 test_fair_sdk_pilot.mjs 成功。実際のベンダーSDKを使用し、DOMはhappy-dom、WebMCPは模擬API。3つの選択肢の取得、query、SDK経由の選択操作、nativeへの同期、集計レポート、無効値・不許可アクション・別画面での拒否、登録解除、通常UI復帰、再有効化を確認。
-- ローカルChromiumは実行環境のソケット制限で起動できなかったため、実ブラウザの描画・ポップオーバー・タッチ・ネイティブWebMCP接続は上記テストでは未確認。
-- WebMCPは実験的仕様であり、ChatGPTやiPad Safariから直接ツールが認識されることを保証しない。
+- ローカルChromiumは実行環境のソケット制限で起動できなかったが、公開後にChatGPTのクラウドChromeで実地検証に成功。
+- 公開サイトでWebMCPの4ツールを認識。AIによるsnapshotで3つの選択項目を取得。actで100→200試合に切り替え、グラフのARIAラベルと最新推定1,384 MRを確認。reportで集計値を取得（豪鬼Act 14・567試合・全体1,389 MR）。
+- 手動操作で200→50試合を選び、グラフが変更されることを確認。通常UIに戻すと50試合選択が保持され、WebMCPの4ツールが解除された。100試合に戻して再有効化も確認済み。
+- GitHub Actions: Publish dashboard（43870024570）成功、Collect SF6 ratings（43870024447）成功。
+- WebMCPは実験的仕様。今回のChatGPTクラウドChromeでは動作したが、iPad Safariや通常チャットが同じように直接ツールを認識することは未確認。iPadでのタッチ操作は要実機確認。
 
 ## 再現方法
 
