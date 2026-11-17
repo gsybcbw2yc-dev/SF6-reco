@@ -1,4 +1,5 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="ストリートファイター6のMR・LP観測履歴"><meta name="theme-color" content="#0a0e19"><title>SF6 | RATING ARCHIVE</title><link rel="stylesheet" href="style.css?v=20261110-5"><link rel="stylesheet" href="design-system.css?v=20261115-6"><link rel="stylesheet" href="fair-sdk-pilot.css?v=20261116-sdk1"></head><body><main class="shell"><header class="app-header"><div class="brand"><span class="mark" aria-hidden="true">Ⅵ</span><div><strong>RATING ARCHIVE</strong><small>STREET FIGHTER 6 · PERSONAL ANALYTICS</small></div></div><div class="live" aria-live="polite"><span class="dot"></span><span id="health">接続確認中</span></div></header>
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="ストリートファイター6のMR・LP観測履歴"><meta name="theme-color" content="#0a0e19"><title>SF6 | RATING ARCHIVE</title><link rel="stylesheet" href="style.css?v=20261110-5"><link rel="stylesheet" href="design-system.css?v=20261115-6"><link rel="stylesheet" href="fair-sdk-pilot.css?v=20261116-sdk1"><link rel="stylesheet" href="dashboard-sdk.css?v=20261117-1"></head><body><main class="shell"><header class="app-header"><div class="brand"><span class="mark" aria-hidden="true">Ⅵ</span><div><strong>RATING ARCHIVE</strong><small>STREET FIGHTER 6 · PERSONAL ANALYTICS</small></div></div><div class="live" aria-live="polite"><span class="dot"></span><span id="health">接続確認中</span></div></header>
+<div class="dashboard-sdk-bar"><button id="dashboard-sdk-toggle" type="button" aria-pressed="false">AI操作を有効にする</button><span id="dashboard-sdk-status" role="status">通常UI · 全画面対応（任意）</span></div>
 <nav class="primary-nav" role="tablist" aria-label="画面切り替え">
 <button type="button" data-nav-view="overview" role="tab" aria-controls="view-overview" aria-selected="true" class="active">概要</button>
 <button type="button" data-nav-view="matches" role="tab" aria-controls="view-matches" aria-selected="false">対戦履歴</button>
@@ -43,7 +44,7 @@
      <label>ACT<select id="fair-act"><option value="">データを確認中</option></select></label>
    </div>
  </div>
- <div class="fair-sdk-pilot"><button type="button" id="fair-sdk-toggle" aria-pressed="false">AI操作 試験版を使う</button><span id="fair-sdk-status" role="status">通常UI · 任意で切替</span></div>
+ <div class="fair-sdk-pilot" hidden><button type="button" id="fair-sdk-toggle" aria-pressed="false">AI操作 試験版を使う</button><span id="fair-sdk-status" role="status">通常UI · 任意で切替</span></div>
  <p id="fair-phase-note" class="fairmr-phase">対象データを確認中…</p>
  <div class="fairmr-headline">
    <div><span class="kicker">50% WIN-RATE CROSSING</span>
@@ -89,6 +90,19 @@
   <div class="fairmr-table-scroll"><table class="fairmr-matchups"><thead><tr><th>対策対象</th><th>遭遇率</th><th>補正差 (pt)</th><th>優先度</th><th>改善/100戦</th></tr></thead><tbody id="fair-priority-body"></tbody></table></div>
   <p>優先度＝遭遇率×期待勝率を下回る幅（割合×pt）。改善量は対象キャラへの勝率を最大5pt（期待勝率まで）改善した場合の参考MR/100試合です。同ACTの平均勝利・敗北MR差で試算し、上昇を保証しません。比較20試合・3セッション以上かつ予測検証が改善したキャラのみ。</p>
  </section>
+ <section class="fairmr-section fairmr-extra" aria-label="キャラ対策によるMR改善シミュレーション">
+  <span class="kicker">MATCHUP IMPROVEMENT SIMULATOR</span><h4>キャラ対策によるMR改善シミュレーション</h4>
+  <p>上の自分のキャラ・ACTを対象に、特定の相手キャラへの勝率だけを変えた場合の参考MR収支を試算します。</p>
+  <div class="fairmr-filters improve-filters">
+   <label>対策キャラ<select id="improve-opponent"><option value="">集計中</option></select></label>
+   <label>目標勝率<select id="improve-target"><option value="5">+5ポイント</option><option value="10">+10ポイント</option><option value="20" selected>+20ポイント</option><option value="30">+30ポイント</option><option value="50pct">勝率50%</option></select></label>
+   <label>今後の総試合数<select id="improve-horizon"><option value="50">50試合</option><option value="100" selected>100試合</option><option value="200">200試合</option><option value="500">500試合</option></select></label>
+  </div>
+  <div class="improve-hero"><small>対象キャラ戦によるMR収支の増減（参考）</small><strong id="improve-gain">—</strong><span id="improve-rate">—</span></div>
+  <div class="training-metric-grid improve-results"><div class="training-metric"><span>想定対戦回数</span><strong id="improve-encounters">—</strong></div><div class="training-metric"><span>改善前の参考収支</span><strong id="improve-before">—</strong></div><div class="training-metric"><span>改善後の参考収支</span><strong id="improve-after">—</strong></div></div>
+  <p id="improve-evidence" aria-live="polite">集計中…</p>
+  <details class="analysis-guide"><summary>計算方法・注意事項</summary><p>総試合数 × 対戦頻度 × 勝率差 ×（平均勝利MR＋平均敗北MRの絶対値）。同ACTの対戦前双方MRがある勝敗確定ランク戦を使用し、引き分け・不明は除外。勝敗別の算定率70%以上、各5件以上で対象キャラ固有の差分を使用。足りない場合は同キャラ・同ACT全体の各10件以上を満たす参考値を使用。それも不足する場合は算定しません。MR変化は記録上の参考差分を含み、相手の強さや対戦頻度が将来も一定と仮定します。実際のMR上昇や因果関係を保証しません。</p></details>
+ </section>
  <details class="analysis-guide fairmr-details"><summary>計算方法・不確実性・注意事項</summary>
   <p id="fair-limits">ランクマッチの勝敗と双方の対戦前MRのみを利用します。</p>
  </details>
@@ -129,5 +143,5 @@
 <article class="panel activity"><span class="kicker">SYSTEM / DATA</span><h2>取得状況とデータ</h2><p id="error">取得エラーはありません。</p><p id="freshness">取得状況を確認しています。</p><p id="coverage">取得履歴を確認しています。</p><p id="cadence">予定間隔と実際の取得間隔を確認しています。</p><p id="longest-gap"></p><p id="token-expiry"></p><p id="phase-note"></p><p>最終画面確認：<span id="last-check">未確認</span></p><div class="actions"><button id="refresh" type="button">今すぐ更新 ↻</button><button id="csv">CSV を保存 ↗</button><button id="json">JSON を保存 ↗</button></div><p id="refresh-state" aria-live="polite">画面データを確認しています。</p><small>MR・LPグラフは公式PLAYの定期観測値を表示します。バトルログの試合前値は別途保存し、対戦履歴・分析に利用します。</small><details><summary>取得エラー履歴</summary><ul id="errors"></ul></details></article>
 </section>
 <footer>RATING ARCHIVE <span>Unofficial personal tracker · Data from Buckler's Boot Camp</span></footer>
-</main><script src="time-analysis.js?v=20261109-3"></script><script src="time-analysis-ui.js?v=20261111-3"></script><script src="match-analysis.js?v=20261111-1"></script><script src="time-performance.js?v=20261110-1"></script><script src="deep-analysis.js?v=20261110-1"></script><script src="phase-config.js?v=20261115-unified1"></script><script src="match-deltas.js?v=20261117-finalmr1"></script><script src="match-goal-forecast.js?v=20261117-finalmr1"></script><script src="master-promotion-forecast.js?v=20261115-actauto3"></script><script src="master-promotion-ui.js?v=20261113-1"></script><script src="match-goal-ui.js?v=20261117-finalmr1"></script><script src="fair-rating.js?v=20261115-rolling1"></script><script src="training-insights.js?v=20261115-1"></script><script src="fair-rating-ui.js?v=20261117-finalmr1"></script><script src="fair-sdk-pilot.js?v=20261116-sdk1"></script><script src="matches-ui.js?v=20261117-finalmr1"></script><script src="chart-trends.js?v=20261111-1"></script><script src="rating-evidence.js?v=20261115-1"></script><script src="app.js?v=20261115-unified1"></script><script src="view-navigation.js?v=20261115-1"></script></body></html>
+</main><script src="time-analysis.js?v=20261109-3"></script><script src="time-analysis-ui.js?v=20261111-3"></script><script src="match-analysis.js?v=20261111-1"></script><script src="time-performance.js?v=20261110-1"></script><script src="deep-analysis.js?v=20261110-1"></script><script src="phase-config.js?v=20261115-unified1"></script><script src="match-deltas.js?v=20261117-finalmr1"></script><script src="match-goal-forecast.js?v=20261117-finalmr1"></script><script src="master-promotion-forecast.js?v=20261115-actauto3"></script><script src="master-promotion-ui.js?v=20261113-1"></script><script src="match-goal-ui.js?v=20261117-finalmr1"></script><script src="fair-rating.js?v=20261115-rolling1"></script><script src="training-insights.js?v=20261115-1"></script><script src="matchup-improvement.js?v=20261117-1"></script><script src="matchup-improvement-ui.js?v=20261117-1"></script><script src="fair-rating-ui.js?v=20261117-improve1"></script><script src="matches-ui.js?v=20261117-finalmr1"></script><script src="chart-trends.js?v=20261111-1"></script><script src="rating-evidence.js?v=20261115-1"></script><script src="app.js?v=20261115-unified1"></script><script src="view-navigation.js?v=20261115-1"></script><script src="dashboard-sdk.js?v=20261117-1"></script></body></html>
 
