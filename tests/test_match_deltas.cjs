@@ -54,4 +54,37 @@ assert.equal(global.SF6PhaseConfig.label('unknown',a.occurred_at),'Act 14');
 assert.equal(global.SF6PhaseConfig.label('unknown',b.occurred_at),'Act 15');
 assert.equal(D.infer([a,b]).get(a.key).delta,null);
 global.SF6PhaseConfig.setVerifiedObservations([]);
+// Last ranked match is settled by official current MR, even if casual games follow.
+const snapshot=(mins,mr,lp,extra={})=>({character:'AKUMA',phase:'14',
+  observed_at:new Date(start+mins*60000).toISOString(),mr,lp,
+  source:'periodic_buckler_snapshot',rating_source:'play_character_league_infos',
+  phase_source:'play_page.play.current_season_id',...extra});
+const last=match('last',20,1498,'win',{phase:'14',lp_before:117217});
+const casual=match('casual-after',30,1505,'loss',{mode:'casual',phase:'14',lp_before:117270});
+const obs=[snapshot(29,1505,117270),snapshot(60,1505,117270),snapshot(240,1505,117270)];
+const final=D.infer([last,casual],obs).get(last.key);
+assert.equal(final.delta,7);
+assert.equal(final.source,'periodic_snapshot');
+assert.equal(final.basis,'inferred');
+assert.equal(final.observedAt,obs[2].observed_at);
+assert.equal(D.infer([last,casual],obs).get(casual.key).delta,null);
+const nextDay=match('next-day',1440,1505,'win',{phase:'14',lp_before:117270});
+assert.equal(D.infer([last,casual,nextDay],obs).get(last.key).delta,7);
+assert.equal(D.infer([last,{...nextDay,mr_before:1513}],obs).get(last.key).delta,null);
+assert.equal(D.infer([last,casual],[snapshot(29,1505,117270),snapshot(60,1512,117330)]).get(last.key).delta,null);
+assert.equal(D.infer([last,casual],[snapshot(29,1505,117270,{character:'KEN'})]).get(last.key).delta,null);
+assert.equal(D.infer([last,casual],[snapshot(29,1505,117270,{phase:'15'})]).get(last.key).delta,null);
+assert.equal(D.infer([last,casual],[snapshot(29,1505,117270,{source:'unverified'})]).get(last.key).delta,null);
+assert.equal(D.infer([last,casual],[snapshot(19,1505,117270)]).get(last.key).delta,null);
+assert.equal(D.infer([last,casual],[snapshot(240,1505,117270)]).get(last.key).delta,null);
+assert.equal(D.infer([last,casual],[snapshot(29,1493,117200)]).get(last.key).delta,null);
+assert.equal(D.infer([last,casual],[snapshot(29,1505,117200)]).get(last.key).delta,null);
+assert.equal(D.infer([last,casual],[snapshot(29,1560,117270)]).get(last.key).delta,null);
+assert.equal(D.infer([last,{...casual,occurred_at:last.occurred_at}],obs).get(last.key).delta,null);
+assert.equal(D.infer([{...last,outcome:'loss'},casual],[snapshot(29,1491,117170)]).get(last.key).delta,-7);
+global.SF6PhaseConfig.setVerifiedObservations([snapshot(10,1498,117217),...obs]);
+assert.equal(D.infer([{...last,phase:'unknown'},casual],obs).get(last.key).delta,7);
+global.SF6PhaseConfig.setVerifiedObservations([snapshot(10,1498,117217,{phase:'13'}),...obs]);
+assert.equal(D.infer([{...last,phase:'unknown'},casual],obs).get(last.key).delta,null);
+global.SF6PhaseConfig.setVerifiedObservations([]);
 console.log('Match MR reference changes, strict sign/gap checks and provisional Act label passed');

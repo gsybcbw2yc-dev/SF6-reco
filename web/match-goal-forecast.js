@@ -132,7 +132,7 @@
       .map(r=>[r.key,r])).values()].sort((a,b)=>Date.parse(b.occurred_at)-Date.parse(a.occurred_at)||String(a.key).localeCompare(String(b.key)));
     const simulation=simulate({rows:sameAct,deltas,current,stale,targets,act,observedAt});
     return {character,phase,act,current,observedAt,stale,storedGames:ranked.length,
-      cohort,targets,audit,simulation,method:'next_ranked_pre_match_mr_delta',minCoverage:MIN_COVERAGE};
+      cohort,targets,audit,simulation,method:'next_ranked_pre_match_or_periodic_snapshot_mr_delta',minCoverage:MIN_COVERAGE};
   }
   return {analyze,simulate,renderCount,WINDOWS,GOALS,MIN_COVERAGE,MAX_AGE_MS};
 });

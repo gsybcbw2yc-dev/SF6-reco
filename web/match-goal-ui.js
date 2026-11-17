@@ -26,7 +26,7 @@
     $('goal-forecast-title').textContent='あと何試合で到達するか';
     $('goal-forecast-intro').textContent='マスター到達済みキャラのMR増減を使った試合数予測です。プレイ時間は計算しません。';
     const ranked=rows.filter(r=>r.mode==='ranked');
-    const deltas=SF6MatchDeltas.infer(rows);
+    const deltas=SF6MatchDeltas.infer(rows,observations);
     const gap=45; // independent of the match-list display threshold
     const report=SF6MatchGoalForecast.analyze({
       rows,observations,deltas,character,phase,now:Date.now(),

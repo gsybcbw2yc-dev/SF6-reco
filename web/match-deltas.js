@@ -1,4 +1,5 @@
-/* Infers a displayed MR change from consecutive rank-match PRE-match snapshots.
+/* Infers a displayed MR change from consecutive rank-match PRE-match snapshots
+ * or a stable official periodic post-match observation.
  * This is a reference estimate, never an official per-battle settled MR result.
  * Deliberately ignores unseen matches, different Acts/characters, timestamps tied
  * or farther than 10 minutes apart, and implausible/sign-inconsistent changes.
@@ -8,9 +9,16 @@
   if(typeof module==='object'&&module.exports)module.exports=api;
   root.SF6MatchDeltas=api;
 })(typeof globalThis!=='undefined'?globalThis:this,function(){
-  const MAX_GAP_MINUTES=10,MAX_ABS_MR=50;
+  const MAX_GAP_MINUTES=10,MAX_ABS_MR=50,MAX_FIRST_OBSERVATION_MINUTES=180;
   function usable(n){return typeof n==='number'&&Number.isFinite(n)&&n>0;}
-  function infer(rows){
+  function actOf(r,time){
+    if(typeof SF6PhaseConfig!=='undefined')return SF6PhaseConfig.resolve(r.phase,time).act;
+    return /^\d{1,3}$/.test(String(r.phase??''))?Number(r.phase):null;
+  }
+  function signOK(outcome,mr,lp){
+    return outcome==='win'?mr>0&&lp>=0:outcome==='loss'?mr<0&&lp<=0:outcome==='draw'?mr===0&&lp===0:false;
+  }
+  function infer(rows,observations=[]){
     const records=rows.filter(r=>r&&Number.isFinite(Date.parse(r.occurred_at||'')))
       .slice().sort((a,b)=>Date.parse(a.occurred_at)-Date.parse(b.occurred_at)||
         String(a.key||'').localeCompare(String(b.key||'')));
@@ -65,7 +73,47 @@
       results.set(cur.key,{delta,basis:'inferred',reason:
         `次のランクマッチまで${gap.toFixed(1)}分。次試合の対戦前MRとの差による参考値（未取得試合なしとは断定できません）`});
     }
+    // A casual match or another character's match does not change this
+    // character's ranked MR. Use only observations before its next rank match.
+    const official=Array.isArray(observations)?observations.filter(o=>o&&
+      o.source==='periodic_buckler_snapshot'&&o.rating_source==='play_character_league_infos'&&
+      o.phase_source==='play_page.play.current_season_id'&&usable(o.mr)&&usable(o.lp)&&
+      Number.isFinite(Date.parse(o.observed_at||''))):[];
+    const nextRanked=new Map();
+    for(let i=records.length-1;i>=0;i--){
+      const cur=records[i];
+      if(cur.mode!=='ranked')continue;
+      const next=nextRanked.get(cur.character);
+      nextRanked.set(cur.character,cur);
+      if(!cur.key||results.get(cur.key)?.delta!==null||!usable(cur.mr_before)||!usable(cur.lp_before))continue;
+      const from=Date.parse(cur.occurred_at),until=next?Date.parse(next.occurred_at):Infinity;
+      const act=actOf(cur,cur.occurred_at);
+      if(act===null||until<=from||records[i-1]?.occurred_at===cur.occurred_at||records[i+1]?.occurred_at===cur.occurred_at)continue;
+      const sameActNext=next&&actOf(next,next.occurred_at)===act;
+      // Never use the fallback to override contradictory closely adjacent rank data.
+      if(sameActNext&&until-from<=MAX_GAP_MINUTES*60000)continue;
+      const post=official.filter(o=>o.character===cur.character&&Number(o.phase)===act&&
+        Date.parse(o.observed_at)>from&&Date.parse(o.observed_at)<until)
+        .sort((a,b)=>Date.parse(a.observed_at)-Date.parse(b.observed_at));
+      if(!post.length||Date.parse(post[0].observed_at)-from>MAX_FIRST_OBSERVATION_MINUTES*60000)continue;
+      const last=post.at(-1);
+      const delta=last.mr-cur.mr_before,lp=last.lp-cur.lp_before;
+      if(Math.abs(delta)>MAX_ABS_MR||!signOK(cur.outcome,delta,lp))continue;
+      if(post.some(o=>o.mr!==last.mr||o.lp!==last.lp)){
+        results.set(cur.key,{delta:null,basis:'unavailable',reason:'試合後の定期観測MR/LPが不一致のため算定不可'});continue;
+      }
+      if(sameActNext&&(!usable(next.mr_before)||!usable(next.lp_before)||
+         next.mr_before!==last.mr||next.lp_before!==last.lp)){
+        results.set(cur.key,{delta:null,basis:'unavailable',reason:'定期観測値と次のランクマッチ対戦前MR/LPが不一致'});continue;
+      }
+      results.set(cur.key,{delta,basis:'inferred',source:'periodic_snapshot',
+        observedAt:last.observed_at,postMr:last.mr,postLp:last.lp,
+        reason:'公式PLAYの試合後定期観測MR '+last.mr+' と対戦前MR '+cur.mr_before+' の差。'+
+          (sameActNext?'次のランクマッチ対戦前MR/LPとも一致。':'次のランクマッチで再照合します。')+
+          ' 個別試合の公式確定値ではなく、未取得試合がないことを前提とした観測値です。'});
+    }
     return results;
   }
   return {infer,MAX_GAP_MINUTES};
 });
+

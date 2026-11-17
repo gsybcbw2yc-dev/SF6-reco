@@ -90,6 +90,14 @@ async function run(){
  assert.equal(get('goal-1500-20-games').textContent,'達成済み');
  assert.equal(get('goal-1600-20-games').textContent,'データ不足');
  assert.ok(get('goal-forecast-audit').textContent.includes('セッション境界'));
+ // A periodic official observation refreshes the last battle delta even when
+ // no new match was added and the monthly archive hash is unchanged.
+ Object.assign(observations[1],{source:'periodic_buckler_snapshot',
+   rating_source:'play_character_league_infos'});
+ await app.refresh();
+ const closingIndicator=get('match-list').children[0].children[0].children[1];
+ assert.equal(closingIndicator.children[0].textContent,'-8 MR');
+ assert.equal(closingIndicator.children[1].textContent,'定期観測');
 
  // Terry is collected from the same profile. The rank archive and LP remain
  // usable even though its pre-match MR (and periodic MR) is zero.

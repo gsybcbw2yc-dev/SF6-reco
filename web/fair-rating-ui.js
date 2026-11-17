@@ -12,7 +12,7 @@
     if(cls)e.className=cls;
     return e;
   }
-  let snapshot=[],bound=false,cacheKey='',cached=null,lastRows=null;
+  let snapshot=[],observations=[],bound=false,cacheKey='',cached=null,lastRows=null;
   function ensureOptions(el, options){
     const selected=el.value;
     const values=options.map(x=>x.value);
@@ -112,7 +112,7 @@
     drawRolling(report.rolling);
     drawAdjusted(report.adjusted);
     const scoped=SF6FairRating.clean(snapshot,{character,actAt}).filter(r=>r.phase===report.selectedAct);
-    const priorities=SF6TrainingInsights.priorities(report.adjusted,scoped,SF6MatchDeltas.infer(snapshot));
+    const priorities=SF6TrainingInsights.priorities(report.adjusted,scoped,SF6MatchDeltas.infer(snapshot,observations));
     $('fair-priority-status').textContent=priorities.rows.length?
       `補正後の苦戦幅×対戦頻度で並べています。${priorities.swing===null?'MR改善量は差分不足で保留。':`勝利と敗北の平均MR差 ${priorities.swing.toFixed(1)}（${priorities.knownDeltas}試合の参考差分）。`}`:
       '予測精度・試合数の条件を満たす苦手キャラはまだありません。';
@@ -200,9 +200,10 @@
       validation:{status:c.backtest.status,tested:c.backtest.tested??0,improved:c.backtest.improved??null},
       caveat:'探索的な50%交点。実力・到達MRの保証ではありません。'};
   }
-  function render(rows){
+  function render(rows,periodicObservations=[]){
     if(rows!==lastRows){cacheKey='';lastRows=rows;}
     snapshot=Array.isArray(rows)?rows:[];
+    observations=Array.isArray(periodicObservations)?periodicObservations:[];
     if(!bound){
       $('fair-character').onchange=()=>{cacheKey='';$('fair-act').value='';show();notify();};
       $('fair-act').onchange=()=>{show();notify();};
