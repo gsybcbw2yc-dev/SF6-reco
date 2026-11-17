@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "source": "stored_ranked_battlelog_pre_match",
-  "checked_at": "2026-11-17T06:00:57Z",
+  "checked_at": "2026-11-17T06:30:57Z",
   "timestamp_basis": "buckler_uploaded_at",
   "rating_basis": "pre_match_not_current_or_post_match",
   "events": [
@@ -10223,6 +10223,39 @@
       "lp": 22608,
       "source": "battlelog_pre_match",
       "rating_basis": "pre_match"
+    },
+    {
+      "key": "9d23d31c99cbea18a5ab04a4f54cab7017406aebf920165b2a17ff4cfefbfd6c",
+      "character": "MAI",
+      "phase": "unknown",
+      "observed_at": "2026-11-17T06:02:36Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 0,
+      "lp": 18850,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
+    },
+    {
+      "key": "dad01d2d560ca0dcee6170542b24878fad08503ac504162e8d1ac9bfbd74fde7",
+      "character": "MAI",
+      "phase": "unknown",
+      "observed_at": "2026-11-17T06:06:09Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 0,
+      "lp": 18924,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
+    },
+    {
+      "key": "a480573e31992203764fde29019ab300d0d9b501fe31a917e5d209f181281133",
+      "character": "MAI",
+      "phase": "unknown",
+      "observed_at": "2026-11-17T06:08:25Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 0,
+      "lp": 18884,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
     }
   ],
   "characters": {
@@ -10255,6 +10288,11 @@
       "last_match_uploaded_at": "2026-11-17T05:28:53Z",
       "last_pre_match_mr": 0,
       "last_pre_match_lp": 18960
+    },
+    "MAI": {
+      "last_match_uploaded_at": "2026-11-17T06:08:25Z",
+      "last_pre_match_mr": 0,
+      "last_pre_match_lp": 18884
     }
   }
 }
