@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "source": "stored_ranked_battlelog_pre_match",
-  "checked_at": "2026-11-17T05:30:43Z",
+  "checked_at": "2026-11-17T06:00:57Z",
   "timestamp_basis": "buckler_uploaded_at",
   "rating_basis": "pre_match_not_current_or_post_match",
   "events": [
@@ -10091,6 +10091,138 @@
       "lp": 18960,
       "source": "battlelog_pre_match",
       "rating_basis": "pre_match"
+    },
+    {
+      "key": "a8823e2f78250a9644f6bbdc63311b830c3fb7ee0f3a2604c7f383fdcf5eb1ab",
+      "character": "KEN",
+      "phase": "unknown",
+      "observed_at": "2026-11-17T05:33:01Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 0,
+      "lp": 18800,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
+    },
+    {
+      "key": "9bd4f714f493a26a98ce387a0c4ed25fc85a36f312119690eba48aad47b076d4",
+      "character": "KEN",
+      "phase": "unknown",
+      "observed_at": "2026-11-17T05:35:02Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 0,
+      "lp": 18760,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
+    },
+    {
+      "key": "b735c187e6cef351a663e9dee3634848148515092001dac6d5240e226e93cf8d",
+      "character": "TERRY",
+      "phase": "unknown",
+      "observed_at": "2026-11-17T05:37:33Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 0,
+      "lp": 22668,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
+    },
+    {
+      "key": "8d19177988e1c1faa9c7b2e9e230e718c8dcc720004a3450fef37d58c4fbb76b",
+      "character": "TERRY",
+      "phase": "unknown",
+      "observed_at": "2026-11-17T05:39:47Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 0,
+      "lp": 22628,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
+    },
+    {
+      "key": "50de7775b8fda5a5cdc833d4869c6b0f96bd8b826835a6bc1616cee25c62ed2a",
+      "character": "TERRY",
+      "phase": "unknown",
+      "observed_at": "2026-11-17T05:41:54Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 0,
+      "lp": 22600,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
+    },
+    {
+      "key": "ec0d71a3405c3f691b9d79a875e93ca1daadf411441478357dd0f5b07a6c7866",
+      "character": "TERRY",
+      "phase": "unknown",
+      "observed_at": "2026-11-17T05:45:21Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 0,
+      "lp": 22560,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
+    },
+    {
+      "key": "45ca61b34944e5cc070a80bfc4771696b788824fb996116d9c1daead83d60146",
+      "character": "TERRY",
+      "phase": "unknown",
+      "observed_at": "2026-11-17T05:47:01Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 0,
+      "lp": 22520,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
+    },
+    {
+      "key": "e4f0cd18b272aba02fc2a5d6ed66a3a92662c57974081cc2517a445ab9830d53",
+      "character": "TERRY",
+      "phase": "unknown",
+      "observed_at": "2026-11-17T05:49:40Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 0,
+      "lp": 22575,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
+    },
+    {
+      "key": "dc8324dd1e45d96c206e3137e902bc784ca3985130d60de20ae58b49b78bb1b4",
+      "character": "TERRY",
+      "phase": "unknown",
+      "observed_at": "2026-11-17T05:51:41Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 0,
+      "lp": 22535,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
+    },
+    {
+      "key": "31a6b7ac9940c0086791bd103813535f6f209e8a6090e64dad22ce49ffa505b2",
+      "character": "TERRY",
+      "phase": "unknown",
+      "observed_at": "2026-11-17T05:54:38Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 0,
+      "lp": 22592,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
+    },
+    {
+      "key": "ab9d47071690dc4d1f8a85f6c12bc89c30ec34af93b59635c738e88976024d7c",
+      "character": "TERRY",
+      "phase": "unknown",
+      "observed_at": "2026-11-17T05:57:04Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 0,
+      "lp": 22648,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
+    },
+    {
+      "key": "a5901891cbb472f2420ad8871a5fb28e14c611c5e89c52549199683ad91662c9",
+      "character": "TERRY",
+      "phase": "unknown",
+      "observed_at": "2026-11-17T05:58:55Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 0,
+      "lp": 22608,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
     }
   ],
   "characters": {
@@ -10100,9 +10232,9 @@
       "last_pre_match_lp": 117217
     },
     "TERRY": {
-      "last_match_uploaded_at": "2026-11-17T05:06:16Z",
+      "last_match_uploaded_at": "2026-11-17T05:58:55Z",
       "last_pre_match_mr": 0,
-      "last_pre_match_lp": 22708
+      "last_pre_match_lp": 22608
     },
     "RYU": {
       "last_match_uploaded_at": "2026-11-16T13:09:33Z",
@@ -10110,9 +10242,9 @@
       "last_pre_match_lp": 15021
     },
     "KEN": {
-      "last_match_uploaded_at": "2026-11-17T05:17:20Z",
+      "last_match_uploaded_at": "2026-11-17T05:35:02Z",
       "last_pre_match_mr": 0,
-      "last_pre_match_lp": 18840
+      "last_pre_match_lp": 18760
     },
     "ZANGIEF": {
       "last_match_uploaded_at": "2026-11-17T05:25:02Z",

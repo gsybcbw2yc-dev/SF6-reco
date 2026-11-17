@@ -8664,6 +8664,24 @@
         "TERRY"
       ],
       "error": null
+    },
+    {
+      "started_at": "2026-11-17T06:00:48Z",
+      "finished_at": "2026-11-17T06:00:58Z",
+      "trigger": "external_dispatch",
+      "external_trigger_at": "2026-11-17T05:59:06Z",
+      "scheduled_for_estimate": null,
+      "estimated_delay_seconds": null,
+      "run_id": "44028046425",
+      "attempt": "1",
+      "result": "success",
+      "character_count": 7,
+      "observations_added": 7,
+      "changed_characters": [
+        "KEN",
+        "TERRY"
+      ],
+      "error": null
     }
   ]
 }
