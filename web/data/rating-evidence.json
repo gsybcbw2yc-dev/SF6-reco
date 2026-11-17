@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "source": "stored_ranked_battlelog_pre_match",
-  "checked_at": "2026-11-17T04:30:39Z",
+  "checked_at": "2026-11-17T05:01:02Z",
   "timestamp_basis": "buckler_uploaded_at",
   "rating_basis": "pre_match_not_current_or_post_match",
   "events": [
@@ -9926,6 +9926,50 @@
       "lp": 117217,
       "source": "battlelog_pre_match",
       "rating_basis": "pre_match"
+    },
+    {
+      "key": "ed9c0022b48c0506d779239ecc4eb80885b9c70642aa11f6e72076df3437497c",
+      "character": "TERRY",
+      "phase": "unknown",
+      "observed_at": "2026-11-17T04:53:55Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 0,
+      "lp": 22758,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
+    },
+    {
+      "key": "f6b607190305c45af6446628f045b042234f8531327b7ca26d23f5c2b2a6a3d7",
+      "character": "TERRY",
+      "phase": "unknown",
+      "observed_at": "2026-11-17T04:55:28Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 0,
+      "lp": 22813,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
+    },
+    {
+      "key": "e94d24fbd128337b8e8275d61e111779dbdde5767c2509b10bdbf1db24ebe524",
+      "character": "TERRY",
+      "phase": "unknown",
+      "observed_at": "2026-11-17T04:56:55Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 0,
+      "lp": 22773,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
+    },
+    {
+      "key": "c7bf9cdaf7351ab3f8d8d3c9f9df3cd56d956596d604cdc6c498795cc34fc45a",
+      "character": "TERRY",
+      "phase": "unknown",
+      "observed_at": "2026-11-17T04:59:28Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 0,
+      "lp": 22828,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
     }
   ],
   "characters": {
@@ -9935,9 +9979,9 @@
       "last_pre_match_lp": 117217
     },
     "TERRY": {
-      "last_match_uploaded_at": "2026-11-15T20:43:06Z",
+      "last_match_uploaded_at": "2026-11-17T04:59:28Z",
       "last_pre_match_mr": 0,
-      "last_pre_match_lp": 22798
+      "last_pre_match_lp": 22828
     },
     "RYU": {
       "last_match_uploaded_at": "2026-11-16T13:09:33Z",

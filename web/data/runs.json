@@ -8630,6 +8630,23 @@
       "observations_added": 3,
       "changed_characters": [],
       "error": null
+    },
+    {
+      "started_at": "2026-11-17T05:00:57Z",
+      "finished_at": "2026-11-17T05:01:04Z",
+      "trigger": "external_dispatch",
+      "external_trigger_at": "2026-11-17T04:59:06Z",
+      "scheduled_for_estimate": null,
+      "estimated_delay_seconds": null,
+      "run_id": "44021038862",
+      "attempt": "1",
+      "result": "success",
+      "character_count": 3,
+      "observations_added": 3,
+      "changed_characters": [
+        "TERRY"
+      ],
+      "error": null
     }
   ]
 }
