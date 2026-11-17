@@ -1,14 +1,17 @@
 {
   "schema": 1,
-  "checked_at": "2026-11-17T05:01:04Z",
+  "checked_at": "2026-11-17T05:30:45Z",
   "source": "play_character_league_infos",
   "rating_view": "latest_default",
   "result": "success",
-  "characters_available": 3,
+  "characters_available": 6,
   "characters": [
     "AKUMA",
+    "KEN",
+    "LUKE",
     "RYU",
-    "TERRY"
+    "TERRY",
+    "ZANGIEF"
   ],
   "current_act": 14,
   "act_source": "play_page.play.current_season_id"
