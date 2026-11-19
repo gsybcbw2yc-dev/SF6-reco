@@ -31922,6 +31922,30 @@
       "fetched_at": "2026-11-19T15:31:06Z",
       "source": "buckler_battlelog",
       "missing": []
+    },
+    {
+      "key": "842d5cacb3303883cebf7a8524dae23e339f814ef5501b150d802f47fcb4b6c3",
+      "occurred_at": "2026-11-19T15:32:17Z",
+      "time_basis": "buckler_uploaded_at",
+      "character": "TERRY",
+      "opponent_character": "ALEX",
+      "own_side": 1,
+      "outcome": "win",
+      "outcome_basis": "paired_round_results",
+      "mode": "custom",
+      "own_control": "classic",
+      "opponent_control": "classic",
+      "mr_before": 0,
+      "lp_before": 22600,
+      "opponent_mr_before": 0,
+      "opponent_lp_before": 17800,
+      "phase": "unknown",
+      "mr_delta": null,
+      "lp_delta": null,
+      "delta_basis": "unavailable_no_verified_post_match_rating",
+      "fetched_at": "2026-11-19T16:00:48Z",
+      "source": "buckler_battlelog",
+      "missing": []
     }
   ]
 }
