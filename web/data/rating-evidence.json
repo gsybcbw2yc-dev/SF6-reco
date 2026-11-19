@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "source": "stored_ranked_battlelog_pre_match",
-  "checked_at": "2026-11-19T02:30:44Z",
+  "checked_at": "2026-11-19T03:01:08Z",
   "timestamp_basis": "buckler_uploaded_at",
   "rating_basis": "pre_match_not_current_or_post_match",
   "events": [
@@ -11290,13 +11290,145 @@
       "lp": 119599,
       "source": "battlelog_pre_match",
       "rating_basis": "pre_match"
+    },
+    {
+      "key": "5e65c957b34de808ae53da6cb84d37f88fd8692de2b75850794e137c728ebf30",
+      "character": "AKUMA",
+      "phase": "unknown",
+      "observed_at": "2026-11-19T02:31:52Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 1401,
+      "lp": 119559,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
+    },
+    {
+      "key": "88d1e0e7dc247b27435d8a3e9969e1360bed3b327b4b8542040bb5c210886bd5",
+      "character": "AKUMA",
+      "phase": "unknown",
+      "observed_at": "2026-11-19T02:34:26Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 1408,
+      "lp": 119609,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
+    },
+    {
+      "key": "a3771d80850efc75b4252ba18fe93676f9ef957d3508c624b33f294ad6e86aae",
+      "character": "AKUMA",
+      "phase": "unknown",
+      "observed_at": "2026-11-19T02:37:00Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 1415,
+      "lp": 119659,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
+    },
+    {
+      "key": "031e5410bddb060199a0de414caf747ac2e5dee561b601a50e27f4cfda0e131c",
+      "character": "AKUMA",
+      "phase": "unknown",
+      "observed_at": "2026-11-19T02:39:58Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 1423,
+      "lp": 119709,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
+    },
+    {
+      "key": "8a443351173773e729721319015a8d79d8575b5a798356febcea6e54b2b65e3e",
+      "character": "AKUMA",
+      "phase": "unknown",
+      "observed_at": "2026-11-19T02:43:57Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 1430,
+      "lp": 119759,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
+    },
+    {
+      "key": "7fd8cb21dd254c533e02407f2e63e96fed4ee6fc4b6935b2f516e5fec2677410",
+      "character": "AKUMA",
+      "phase": "unknown",
+      "observed_at": "2026-11-19T02:46:33Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 1422,
+      "lp": 119719,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
+    },
+    {
+      "key": "37c41260a08c75cec57a25d1e1d68f7470b1f0fe134bab79e7042ef825c27411",
+      "character": "AKUMA",
+      "phase": "unknown",
+      "observed_at": "2026-11-19T02:48:29Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 1430,
+      "lp": 119969,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
+    },
+    {
+      "key": "20e1b4bb7b259726a009672cd461d8fa786b9b6c52bd0e876726abf581d0375d",
+      "character": "AKUMA",
+      "phase": "unknown",
+      "observed_at": "2026-11-19T02:50:14Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 1422,
+      "lp": 119929,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
+    },
+    {
+      "key": "8f996705ad3f157a9e1562526bd622253fc705ec713ee068f04e942be8088829",
+      "character": "AKUMA",
+      "phase": "unknown",
+      "observed_at": "2026-11-19T02:52:40Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 1430,
+      "lp": 119979,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
+    },
+    {
+      "key": "01112f0e7bae90abcebb1860fbc66edab8ca1e024f0281e35d69b11f12921868",
+      "character": "AKUMA",
+      "phase": "unknown",
+      "observed_at": "2026-11-19T02:55:32Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 1438,
+      "lp": 120029,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
+    },
+    {
+      "key": "63ed6297dcd55a029829f72cdf921ab60d924826fe7a7fbbc7b12d9841b4144f",
+      "character": "AKUMA",
+      "phase": "unknown",
+      "observed_at": "2026-11-19T02:57:45Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 1427,
+      "lp": 119989,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
+    },
+    {
+      "key": "03a1e6ae233390d9ecf55444c2a5819810bb82e00ea1874f7126986cac4b13db",
+      "character": "AKUMA",
+      "phase": "unknown",
+      "observed_at": "2026-11-19T02:59:43Z",
+      "time_basis": "buckler_uploaded_at",
+      "mr": 1420,
+      "lp": 119949,
+      "source": "battlelog_pre_match",
+      "rating_basis": "pre_match"
     }
   ],
   "characters": {
     "AKUMA": {
-      "last_match_uploaded_at": "2026-11-19T02:29:35Z",
-      "last_pre_match_mr": 1409,
-      "last_pre_match_lp": 119599
+      "last_match_uploaded_at": "2026-11-19T02:59:43Z",
+      "last_pre_match_mr": 1420,
+      "last_pre_match_lp": 119949
     },
     "TERRY": {
       "last_match_uploaded_at": "2026-11-17T05:58:55Z",
