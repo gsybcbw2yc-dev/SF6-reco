@@ -30653,7 +30653,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-19T04:30:39Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "bf55d29a0b8fb2c42f30bc12234b3c292e32eb6683a3e84f775d9f7fa0d7c57a",
+        "same": true
+      }
     },
     {
       "key": "c2b7f0ea88cb557523dcb621088863af48db772e27f749af1392e8cb5ae924b8",
@@ -30904,6 +30908,118 @@
       "missing": [],
       "rematch_edge": {
         "previous": "eced4d4f33c7c78b67fd133d3e7d55c7afd56299ebc06aae944a3ba1a9c33777",
+        "same": true
+      }
+    },
+    {
+      "key": "c29c231cb220f7a0ba376e247a1606fcfbd83a4d8e2bd2d34fead97af518d478",
+      "occurred_at": "2026-11-19T04:35:45Z",
+      "time_basis": "buckler_uploaded_at",
+      "character": "AKUMA",
+      "opponent_character": "ALEX",
+      "own_side": 1,
+      "outcome": "loss",
+      "outcome_basis": "paired_round_results",
+      "mode": "ranked",
+      "own_control": "classic",
+      "opponent_control": "modern",
+      "mr_before": 1383,
+      "lp_before": 120909,
+      "opponent_mr_before": 1371,
+      "opponent_lp_before": 86757,
+      "phase": "unknown",
+      "mr_delta": null,
+      "lp_delta": null,
+      "delta_basis": "unavailable_no_verified_post_match_rating",
+      "fetched_at": "2026-11-19T05:01:02Z",
+      "source": "buckler_battlelog",
+      "missing": [],
+      "rematch_edge": {
+        "previous": "8df8973afdd7ca7adefefeadf19f5c1d77c6afab7b06da33090a609ad178e19a",
+        "same": false
+      }
+    },
+    {
+      "key": "488d9d428c8a299b2fe86445622d5ec6c2e1ecdc48b20fa239827db35668b721",
+      "occurred_at": "2026-11-19T04:38:45Z",
+      "time_basis": "buckler_uploaded_at",
+      "character": "AKUMA",
+      "opponent_character": "ELENA",
+      "own_side": 1,
+      "outcome": "loss",
+      "outcome_basis": "paired_round_results",
+      "mode": "ranked",
+      "own_control": "classic",
+      "opponent_control": "modern",
+      "mr_before": 1375,
+      "lp_before": 120869,
+      "opponent_mr_before": 1344,
+      "opponent_lp_before": 60353,
+      "phase": "unknown",
+      "mr_delta": null,
+      "lp_delta": null,
+      "delta_basis": "unavailable_no_verified_post_match_rating",
+      "fetched_at": "2026-11-19T05:01:02Z",
+      "source": "buckler_battlelog",
+      "missing": [],
+      "rematch_edge": {
+        "previous": "c29c231cb220f7a0ba376e247a1606fcfbd83a4d8e2bd2d34fead97af518d478",
+        "same": false
+      }
+    },
+    {
+      "key": "88dff3701cf27636204779d356082cb4c0cd4c2f212f91d7a8cf59f447a553d2",
+      "occurred_at": "2026-11-19T04:40:14Z",
+      "time_basis": "buckler_uploaded_at",
+      "character": "AKUMA",
+      "opponent_character": "ELENA",
+      "own_side": 1,
+      "outcome": "win",
+      "outcome_basis": "paired_round_results",
+      "mode": "ranked",
+      "own_control": "classic",
+      "opponent_control": "modern",
+      "mr_before": 1366,
+      "lp_before": 120829,
+      "opponent_mr_before": 1353,
+      "opponent_lp_before": 60603,
+      "phase": "unknown",
+      "mr_delta": null,
+      "lp_delta": null,
+      "delta_basis": "unavailable_no_verified_post_match_rating",
+      "fetched_at": "2026-11-19T05:01:02Z",
+      "source": "buckler_battlelog",
+      "missing": [],
+      "rematch_edge": {
+        "previous": "488d9d428c8a299b2fe86445622d5ec6c2e1ecdc48b20fa239827db35668b721",
+        "same": true
+      }
+    },
+    {
+      "key": "fc3fee6a52ca9e15a1947cc7495ee55f9a86ea1469c3e274e4d4ae6e37cf2bb6",
+      "occurred_at": "2026-11-19T04:42:21Z",
+      "time_basis": "buckler_uploaded_at",
+      "character": "AKUMA",
+      "opponent_character": "ELENA",
+      "own_side": 1,
+      "outcome": "loss",
+      "outcome_basis": "paired_round_results",
+      "mode": "ranked",
+      "own_control": "classic",
+      "opponent_control": "modern",
+      "mr_before": 1374,
+      "lp_before": 120879,
+      "opponent_mr_before": 1345,
+      "opponent_lp_before": 60563,
+      "phase": "unknown",
+      "mr_delta": null,
+      "lp_delta": null,
+      "delta_basis": "unavailable_no_verified_post_match_rating",
+      "fetched_at": "2026-11-19T05:01:02Z",
+      "source": "buckler_battlelog",
+      "missing": [],
+      "rematch_edge": {
+        "previous": "88dff3701cf27636204779d356082cb4c0cd4c2f212f91d7a8cf59f447a553d2",
         "same": true
       }
     }
