@@ -1,5 +1,5 @@
 {
-  "last_success": "2026-11-20T21:00:51Z",
+  "last_success": "2026-11-20T21:30:42Z",
   "last_error": null,
   "errors": [
     {
@@ -96,7 +96,7 @@
       "rating_view": "latest_default"
     }
   ],
-  "last_attempt": "2026-11-20T21:00:46Z",
+  "last_attempt": "2026-11-20T21:30:38Z",
   "phase_diagnostic": {
     "candidate_paths": [],
     "reason": null
@@ -105,7 +105,7 @@
   "last_rating_change": "2026-11-20T16:00:52Z",
   "act_current": {
     "number": 14,
-    "verified_at": "2026-11-20T21:00:51Z",
+    "verified_at": "2026-11-20T21:30:42Z",
     "source": "play_page.play.current_season_id"
   }
 }
