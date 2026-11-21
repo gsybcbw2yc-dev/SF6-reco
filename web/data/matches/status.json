@@ -1,19 +1,6 @@
 {
-  "last_success": "2026-11-21T06:30:39Z",
+  "last_success": "2026-11-21T07:00:48Z",
   "events": [
-    {
-      "at": "2026-11-17T02:30:38Z",
-      "run_id": "44003488704",
-      "result": "success",
-      "pages": 1,
-      "added": 0,
-      "duplicates": 20,
-      "invalid": 0,
-      "error": null,
-      "stop_reason": "known_page",
-      "source_total_pages": 10,
-      "finished_at": "2026-11-17T02:30:40Z"
-    },
     {
       "at": "2026-11-17T03:00:54Z",
       "run_id": "44007078974",
@@ -2596,10 +2583,23 @@
       "stop_reason": "known_page",
       "source_total_pages": 10,
       "finished_at": "2026-11-21T06:30:39Z"
+    },
+    {
+      "at": "2026-11-21T07:00:47Z",
+      "run_id": "44878195441",
+      "result": "success",
+      "pages": 1,
+      "added": 0,
+      "duplicates": 20,
+      "invalid": 0,
+      "error": null,
+      "stop_reason": "known_page",
+      "source_total_pages": 10,
+      "finished_at": "2026-11-21T07:00:48Z"
     }
   ],
   "last_error": null,
   "route": "mixed_battlelog",
   "source_total_pages": 10,
-  "last_attempt": "2026-11-21T06:30:38Z"
+  "last_attempt": "2026-11-21T07:00:47Z"
 }
