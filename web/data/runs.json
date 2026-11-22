@@ -13184,6 +13184,21 @@
       "observations_added": 7,
       "changed_characters": [],
       "error": null
+    },
+    {
+      "started_at": "2026-11-22T16:30:36Z",
+      "finished_at": "2026-11-22T16:30:39Z",
+      "trigger": "external_dispatch",
+      "external_trigger_at": "2026-11-22T16:29:06Z",
+      "scheduled_for_estimate": null,
+      "estimated_delay_seconds": null,
+      "run_id": "45044213762",
+      "attempt": "1",
+      "result": "success",
+      "character_count": 7,
+      "observations_added": 7,
+      "changed_characters": [],
+      "error": null
     }
   ]
 }
