@@ -1,5 +1,5 @@
 {
-  "last_success": "2026-11-22T19:00:46Z",
+  "last_success": "2026-11-22T19:30:45Z",
   "last_error": null,
   "errors": [
     {
@@ -34,8 +34,8 @@
   "latest": [
     {
       "character": "AKUMA",
-      "mr": 1466,
-      "lp": 128829,
+      "mr": 1443,
+      "lp": 128949,
       "phase": "14",
       "phase_source": "play_page.play.current_season_id",
       "rating_source": "play_character_league_infos",
@@ -96,16 +96,16 @@
       "rating_view": "latest_default"
     }
   ],
-  "last_attempt": "2026-11-22T19:00:43Z",
+  "last_attempt": "2026-11-22T19:30:35Z",
   "phase_diagnostic": {
     "candidate_paths": [],
     "reason": null
   },
   "auth_health": "ok",
-  "last_rating_change": "2026-11-21T18:30:45Z",
+  "last_rating_change": "2026-11-22T19:30:45Z",
   "act_current": {
     "number": 14,
-    "verified_at": "2026-11-22T19:00:46Z",
+    "verified_at": "2026-11-22T19:30:45Z",
     "source": "play_page.play.current_season_id"
   }
 }
