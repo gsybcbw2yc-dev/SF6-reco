@@ -36637,7 +36637,11 @@
       "delta_basis": "unavailable_no_verified_post_match_rating",
       "fetched_at": "2026-11-22T20:30:36Z",
       "source": "buckler_battlelog",
-      "missing": []
+      "missing": [],
+      "rematch_edge": {
+        "previous": "62b208f41c3a1c371e24d15b540e22cef341688e7531d303652962b300ca91fd",
+        "same": true
+      }
     },
     {
       "key": "83baa98c8a5eba9dc49e6853dc419b5b6f23bca5cccd6c668603d8aa05935792",
@@ -36888,6 +36892,90 @@
       "missing": [],
       "rematch_edge": {
         "previous": "72eff6c9a9ff0929e5b0bda62da9c956549b994e76b0c5b5fe4b4222819f3038",
+        "same": true
+      }
+    },
+    {
+      "key": "2785c4d9f227c79572608b7a66abe23fa255002fa34e51e9cfab9e2716e00b08",
+      "occurred_at": "2026-11-22T20:32:34Z",
+      "time_basis": "buckler_uploaded_at",
+      "character": "AKUMA",
+      "opponent_character": "AKUMA",
+      "own_side": 1,
+      "outcome": "loss",
+      "outcome_basis": "paired_round_results",
+      "mode": "ranked",
+      "own_control": "classic",
+      "opponent_control": "classic",
+      "mr_before": 1445,
+      "lp_before": 129941,
+      "opponent_mr_before": 1479,
+      "opponent_lp_before": 116367,
+      "phase": "unknown",
+      "mr_delta": null,
+      "lp_delta": null,
+      "delta_basis": "unavailable_no_verified_post_match_rating",
+      "fetched_at": "2026-11-22T21:00:48Z",
+      "source": "buckler_battlelog",
+      "missing": [],
+      "rematch_edge": {
+        "previous": "fc77fb3a0c43f846169778b14c727eb29062ac55bb567ab6e830bc3c9615d07a",
+        "same": false
+      }
+    },
+    {
+      "key": "f8cbc0a829260357d6be17c0a267055f9f5b4af44a52e23576132b1e3672e15b",
+      "occurred_at": "2026-11-22T20:34:08Z",
+      "time_basis": "buckler_uploaded_at",
+      "character": "AKUMA",
+      "opponent_character": "AKUMA",
+      "own_side": 1,
+      "outcome": "win",
+      "outcome_basis": "paired_round_results",
+      "mode": "ranked",
+      "own_control": "classic",
+      "opponent_control": "classic",
+      "mr_before": 1438,
+      "lp_before": 129901,
+      "opponent_mr_before": 1486,
+      "opponent_lp_before": 116552,
+      "phase": "unknown",
+      "mr_delta": null,
+      "lp_delta": null,
+      "delta_basis": "unavailable_no_verified_post_match_rating",
+      "fetched_at": "2026-11-22T21:00:48Z",
+      "source": "buckler_battlelog",
+      "missing": [],
+      "rematch_edge": {
+        "previous": "2785c4d9f227c79572608b7a66abe23fa255002fa34e51e9cfab9e2716e00b08",
+        "same": true
+      }
+    },
+    {
+      "key": "1bd5fcf18aa8e4a4f03a54f25b5bbd08bfb006fb22367aea57a76dae67072f58",
+      "occurred_at": "2026-11-22T20:36:08Z",
+      "time_basis": "buckler_uploaded_at",
+      "character": "AKUMA",
+      "opponent_character": "AKUMA",
+      "own_side": 1,
+      "outcome": "win",
+      "outcome_basis": "paired_round_results",
+      "mode": "ranked",
+      "own_control": "classic",
+      "opponent_control": "classic",
+      "mr_before": 1447,
+      "lp_before": 129951,
+      "opponent_mr_before": 1477,
+      "opponent_lp_before": 116512,
+      "phase": "unknown",
+      "mr_delta": null,
+      "lp_delta": null,
+      "delta_basis": "unavailable_no_verified_post_match_rating",
+      "fetched_at": "2026-11-22T21:00:48Z",
+      "source": "buckler_battlelog",
+      "missing": [],
+      "rematch_edge": {
+        "previous": "f8cbc0a829260357d6be17c0a267055f9f5b4af44a52e23576132b1e3672e15b",
         "same": true
       }
     }
