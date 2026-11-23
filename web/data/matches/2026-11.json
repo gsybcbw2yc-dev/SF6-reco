@@ -37622,6 +37622,62 @@
         "previous": "7d5adf37f4248ce472b2165217b40788fa4d428118c9cbf4aca38a6a145ad6cd",
         "same": true
       }
+    },
+    {
+      "key": "c1a8917972b8bde7740626fb3a548af1fc44ced5206d2e1727a155ee8b207585",
+      "occurred_at": "2026-11-23T13:57:01Z",
+      "time_basis": "buckler_uploaded_at",
+      "character": "TERRY",
+      "opponent_character": "AKI",
+      "own_side": 1,
+      "outcome": "loss",
+      "outcome_basis": "paired_round_results",
+      "mode": "ranked",
+      "own_control": "classic",
+      "opponent_control": "classic",
+      "mr_before": 0,
+      "lp_before": 22600,
+      "opponent_mr_before": 0,
+      "opponent_lp_before": 23846,
+      "phase": "unknown",
+      "mr_delta": null,
+      "lp_delta": null,
+      "delta_basis": "unavailable_no_verified_post_match_rating",
+      "fetched_at": "2026-11-23T14:00:50Z",
+      "source": "buckler_battlelog",
+      "missing": [],
+      "rematch_edge": {
+        "previous": "271e8b857c1a271b9253a752bb09fd77fa0d632ec51a01c9f8635a3ee5438764",
+        "same": false
+      }
+    },
+    {
+      "key": "da3b50e366c5187cab8489b7938bee90bc46f2cadbe31452bcb8f7620f6e44e5",
+      "occurred_at": "2026-11-23T14:00:46Z",
+      "time_basis": "buckler_uploaded_at",
+      "character": "TERRY",
+      "opponent_character": "AKI",
+      "own_side": 1,
+      "outcome": "loss",
+      "outcome_basis": "paired_round_results",
+      "mode": "ranked",
+      "own_control": "classic",
+      "opponent_control": "classic",
+      "mr_before": 0,
+      "lp_before": 22560,
+      "opponent_mr_before": 0,
+      "opponent_lp_before": 23901,
+      "phase": "unknown",
+      "mr_delta": null,
+      "lp_delta": null,
+      "delta_basis": "unavailable_no_verified_post_match_rating",
+      "fetched_at": "2026-11-23T14:00:50Z",
+      "source": "buckler_battlelog",
+      "missing": [],
+      "rematch_edge": {
+        "previous": "c1a8917972b8bde7740626fb3a548af1fc44ced5206d2e1727a155ee8b207585",
+        "same": true
+      }
     }
   ]
 }
