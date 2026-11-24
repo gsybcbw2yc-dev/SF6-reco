@@ -1,5 +1,5 @@
 {
-  "last_success": "2026-11-24T05:57:50Z",
+  "last_success": "2026-11-24T06:30:48Z",
   "last_error": null,
   "errors": [
     {
@@ -34,8 +34,8 @@
   "latest": [
     {
       "character": "AKUMA",
-      "mr": 1519,
-      "lp": 132521,
+      "mr": 1521,
+      "lp": 132941,
       "phase": "14",
       "phase_source": "play_page.play.current_season_id",
       "rating_source": "play_character_league_infos",
@@ -80,7 +80,7 @@
     {
       "character": "TERRY",
       "mr": 0,
-      "lp": 23011,
+      "lp": 22976,
       "phase": "14",
       "phase_source": "play_page.play.current_season_id",
       "rating_source": "play_character_league_infos",
@@ -96,16 +96,16 @@
       "rating_view": "latest_default"
     }
   ],
-  "last_attempt": "2026-11-24T05:57:46Z",
+  "last_attempt": "2026-11-24T06:30:37Z",
   "phase_diagnostic": {
     "candidate_paths": [],
     "reason": null
   },
   "auth_health": "ok",
-  "last_rating_change": "2026-11-23T15:01:04Z",
+  "last_rating_change": "2026-11-24T06:30:48Z",
   "act_current": {
     "number": 14,
-    "verified_at": "2026-11-24T05:57:50Z",
+    "verified_at": "2026-11-24T06:30:48Z",
     "source": "play_page.play.current_season_id"
   }
 }
