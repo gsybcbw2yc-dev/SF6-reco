@@ -4,17 +4,17 @@
     {
       "month": "2026-11",
       "path": "2026-11.json",
-      "count": 1542,
-      "sha256": "995258214b7594834b5cea0c2d1756d10c74968d28a3bde911c84b1bc22eeabf",
-      "bytes": 1306303,
+      "count": 1556,
+      "sha256": "e7a9f38ea78da1afa513cca10e643240592bff283c222cd7a19e3fff7ba77485",
+      "bytes": 1319418,
       "first_at": "2026-11-06T09:26:50Z",
-      "last_at": "2026-11-24T06:59:29Z"
+      "last_at": "2026-11-24T07:30:36Z"
     }
   ],
-  "count": 1542,
+  "count": 1556,
   "source_window_scanned": true,
   "coverage_note": "Only the exposed recent source window is available; gaps and older uncollected matches cannot be reconstructed.",
-  "last_success": "2026-11-24T07:00:56Z",
+  "last_success": "2026-11-24T07:30:46Z",
   "time_basis": "buckler_uploaded_at",
   "archive_scope": "only_matches_actually_fetched",
   "rematch_edges_scanned": true
