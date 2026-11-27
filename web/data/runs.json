@@ -16937,6 +16937,21 @@
       "observations_added": 7,
       "changed_characters": [],
       "error": null
+    },
+    {
+      "started_at": "2026-11-27T08:17:16Z",
+      "finished_at": "2026-11-27T08:17:16Z",
+      "trigger": "schedule",
+      "external_trigger_at": null,
+      "scheduled_for_estimate": "2026-11-27T08:11:00Z",
+      "estimated_delay_seconds": 376,
+      "run_id": "45964460330",
+      "attempt": "1",
+      "result": "skipped_recent_success",
+      "character_count": 0,
+      "observations_added": 0,
+      "changed_characters": [],
+      "error": null
     }
   ]
 }
